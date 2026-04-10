@@ -1,0 +1,173 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import CTAButton from '../shared/CTAButton.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
+const openLabel = lang === 'da' ? 'Åbent nu' : 'Open now';
+const closedLabel = lang === 'da' ? 'Lukket nu' : 'Closed now';
+const opensAtLabel = lang === 'da' ? 'Åbner kl.' : 'Opens at';
+const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
+---
+
+<section class="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden">
+  <!-- Background pattern -->
+  <div class="absolute inset-0 opacity-[0.03]" aria-hidden="true">
+    <img src="/images/hero/hero-pattern.svg" alt="" class="w-full h-full object-cover" />
+  </div>
+
+  <!-- Decorative floating coffee cup -->
+  <div class="absolute right-[8%] top-1/3 w-32 md:w-48 lg:w-56 animate-float opacity-[0.08] hidden md:block" aria-hidden="true">
+    <img src="/images/hero/coffee-cup.svg" alt="" class="w-full h-full" />
+  </div>
+
+  <!-- Live open/closed indicator -->
+  <div
+    id="open-indicator"
+    class="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-20 opacity-0 transition-opacity duration-500"
+    data-open-label={openLabel}
+    data-closed-label={closedLabel}
+    data-opens-at-label={opensAtLabel}
+    data-closes-at-label={closesAtLabel}
+  >
+    <div class="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-warm-white/80 backdrop-blur-sm border border-ink/5">
+      <span id="open-dot" class="relative flex h-2.5 w-2.5">
+        <span class="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping bg-sage"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sage"></span>
+      </span>
+      <span id="open-text" class="font-body text-xs font-medium uppercase tracking-[0.15em] text-ink/60"></span>
+      <span id="open-detail" class="font-body text-xs font-light text-ink/40 hidden"></span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 text-center px-6 py-32 md:py-40">
+    <h1 class="animate-on-scroll font-display font-black text-[8rem] md:text-[12rem] lg:text-[14rem] text-deep-red leading-[0.85] tracking-wide">
+      MORS
+    </h1>
+
+    <p class="animate-on-scroll stagger-1 mt-4 font-body text-xs uppercase tracking-[0.3em] text-gold">
+      Est. 2026
+    </p>
+
+    <p class="animate-on-scroll stagger-2 mt-8 font-display text-2xl md:text-3xl text-ink max-w-lg mx-auto">
+      {t(lang, 'hero.tagline')}
+    </p>
+
+    <p class="animate-on-scroll stagger-3 mt-4 font-body font-light text-lg text-ink-light max-w-md mx-auto">
+      {t(lang, 'hero.subtitle')}
+    </p>
+
+    <div class="animate-on-scroll stagger-4 mt-12 flex flex-wrap items-center justify-center gap-6">
+      <CTAButton
+        href={contactHref}
+        variant="primary"
+        label={t(lang, 'hero.cta.visit')}
+      />
+      <CTAButton
+        href="#hours"
+        variant="outline"
+        label={t(lang, 'hero.cta.hours')}
+      />
+      <CTAButton
+        href={`tel:${config.phoneTel}`}
+        variant="secondary"
+        label={t(lang, 'hero.cta.call')}
+      />
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
+    <svg class="w-6 h-6 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7" />
+    </svg>
+  </div>
+</section>
+
+<script is:inline>
+  (function() {
+    // Opening hours: [open, close] in "HH:MM" for each day (0=Sun, 1=Mon, ..., 6=Sat)
+    var schedule = {
+      0: ['09:00', '16:00'], // Sunday
+      1: ['07:30', '17:00'], // Monday
+      2: ['07:30', '17:00'], // Tuesday
+      3: ['07:30', '17:00'], // Wednesday
+      4: ['07:30', '17:00'], // Thursday
+      5: ['07:30', '17:00'], // Friday
+      6: ['09:00', '17:00'], // Saturday
+    };
+
+    function toMinutes(hhmm) {
+      var parts = hhmm.split(':');
+      return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function formatTime(hhmm) {
+      return hhmm.replace(':', '.');
+    }
+
+    function update() {
+      var indicator = document.getElementById('open-indicator');
+      var dot = document.getElementById('open-dot');
+      var text = document.getElementById('open-text');
+      var detail = document.getElementById('open-detail');
+      if (!indicator || !dot || !text || !detail) return;
+
+      var now = new Date();
+      // Convert to Copenhagen time
+      var cph = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
+      var day = cph.getDay();
+      var nowMinutes = cph.getHours() * 60 + cph.getMinutes();
+      var hours = schedule[day];
+
+      var openMin = toMinutes(hours[0]);
+      var closeMin = toMinutes(hours[1]);
+      var isOpen = nowMinutes >= openMin && nowMinutes < closeMin;
+
+      var openLabel = indicator.getAttribute('data-open-label');
+      var closedLabel = indicator.getAttribute('data-closed-label');
+      var opensAtLabel = indicator.getAttribute('data-opens-at-label');
+      var closesAtLabel = indicator.getAttribute('data-closes-at-label');
+
+      if (isOpen) {
+        text.textContent = openLabel;
+        detail.textContent = closesAtLabel + ' ' + formatTime(hours[1]);
+        detail.classList.remove('hidden');
+        dot.querySelectorAll('span').forEach(function(s) {
+          s.classList.remove('bg-deep-red');
+          s.classList.add('bg-sage');
+        });
+      } else {
+        text.textContent = closedLabel;
+        // Show when we next open
+        var nextDay = day;
+        var nextHours = hours;
+        // If past closing today or before opening, show today's or tomorrow's open
+        if (nowMinutes >= closeMin) {
+          nextDay = (day + 1) % 7;
+          nextHours = schedule[nextDay];
+        }
+        detail.textContent = opensAtLabel + ' ' + formatTime(nextHours[0]);
+        detail.classList.remove('hidden');
+        dot.querySelector('.animate-ping').classList.add('hidden');
+        dot.querySelectorAll('span:not(.animate-ping)').forEach(function(s) {
+          s.classList.remove('bg-sage');
+          s.classList.add('bg-deep-red');
+        });
+      }
+
+      indicator.classList.remove('opacity-0');
+    }
+
+    update();
+    setInterval(update, 60000);
+  })();
+</script>

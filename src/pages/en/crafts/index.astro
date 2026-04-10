@@ -1,0 +1,73 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { t } from '../../../i18n/ui';
+import { config } from '../../../config';
+import { productCategories } from '../../../data/products';
+import { breadcrumbSchema } from '../../../utils/jsonld';
+import Container from '../../../components/shared/Container.astro';
+import CTAButton from '../../../components/shared/CTAButton.astro';
+
+const lang = 'en';
+
+const jsonLd = breadcrumbSchema([
+  { name: config.name, url: `${config.siteUrl}/en/` },
+  { name: t(lang, 'products.title'), url: `${config.siteUrl}/en/crafts` },
+]);
+---
+
+<PageLayout
+  title={t(lang, 'seo.products.title')}
+  description={t(lang, 'seo.products.description')}
+  lang={lang}
+  canonicalPath="/en/crafts"
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section class="bg-cream py-32 md:py-48">
+    <Container>
+      <div class="text-center animate-on-scroll">
+        <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red mb-6">
+          {t(lang, 'products.title')}
+        </h1>
+        <p class="font-body font-light text-lg text-ink-light max-w-lg mx-auto">
+          {t(lang, 'products.description')}
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Category grid -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+        {productCategories.map((cat, i) => (
+          <a
+            href={`/en/crafts/${cat.slug.en}`}
+            class:list={['animate-on-scroll hover-lift hover-zoom group block', `stagger-${i + 1}`]}
+          >
+            <!-- Image -->
+            <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+              <img
+                src={cat.heroImage}
+                alt={cat.name.en}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Content -->
+            <h2 class="font-display font-bold text-2xl text-deep-red group-hover:text-deep-red-dark transition-colors mb-2">
+              {cat.name.en}
+            </h2>
+            <p class="font-body font-light text-ink-light">
+              {cat.products.length} {cat.products.length === 1 ? 'product' : 'products'}
+            </p>
+            <span class="inline-block mt-3 font-body text-xs uppercase tracking-[0.2em] text-deep-red/60 group-hover:text-deep-red transition-colors">
+              {t(lang, 'products.viewCategory')} &rarr;
+            </span>
+          </a>
+        ))}
+      </div>
+    </Container>
+  </section>
+</PageLayout>

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <g stroke="#8B1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Coffee cup top-left area -->
+    <path d="M120 280 C120 240, 180 240, 180 280 L180 330 C180 345, 120 345, 120 330 Z"/>
+    <path d="M180 295 C200 290, 210 310, 195 320"/>
+    <!-- Steam from cup -->
+    <path d="M135 240 C130 215, 150 210, 145 185"/>
+    <path d="M155 235 C158 205, 170 200, 165 170"/>
+
+    <!-- Scattered beans cluster 1 -->
+    <ellipse cx="350" cy="150" rx="22" ry="14" transform="rotate(-30 350 150)"/>
+    <path d="M338 143 C348 150, 358 150, 365 143" transform="rotate(-30 350 150)"/>
+
+    <ellipse cx="390" cy="180" rx="22" ry="14" transform="rotate(15 390 180)"/>
+    <path d="M378 173 C388 180, 398 180, 405 173" transform="rotate(15 390 180)"/>
+
+    <ellipse cx="320" cy="190" rx="22" ry="14" transform="rotate(-10 320 190)"/>
+    <path d="M308 183 C318 190, 328 190, 335 183" transform="rotate(-10 320 190)"/>
+
+    <!-- Large steam swirl center -->
+    <path d="M600 500 C580 460, 620 420, 600 380 C580 340, 630 310, 610 270 C595 240, 635 210, 620 180"/>
+    <path d="M640 510 C660 470, 620 440, 645 400 C665 365, 630 330, 655 295"/>
+
+    <!-- Bean cluster 2 -->
+    <ellipse cx="800" cy="120" rx="22" ry="14" transform="rotate(25 800 120)"/>
+    <path d="M788 113 C798 120, 808 120, 815 113" transform="rotate(25 800 120)"/>
+
+    <ellipse cx="840" cy="100" rx="22" ry="14" transform="rotate(-20 840 100)"/>
+    <path d="M828 93 C838 100, 848 100, 855 93" transform="rotate(-20 840 100)"/>
+
+    <!-- Coffee cup right side -->
+    <path d="M950 420 C950 380, 1030 380, 1030 420 L1030 480 C1030 500, 950 500, 950 480 Z"/>
+    <path d="M1030 440 C1055 435, 1065 460, 1045 475"/>
+    <path d="M975 375 C970 345, 995 335, 990 305"/>
+    <path d="M1000 370 C1005 340, 1020 330, 1015 300"/>
+
+    <!-- Scattered beans bottom -->
+    <ellipse cx="200" cy="600" rx="22" ry="14" transform="rotate(40 200 600)"/>
+    <path d="M188 593 C198 600, 208 600, 215 593" transform="rotate(40 200 600)"/>
+
+    <ellipse cx="250" cy="630" rx="22" ry="14" transform="rotate(-15 250 630)"/>
+    <path d="M238 623 C248 630, 258 630, 265 623" transform="rotate(-15 250 630)"/>
+
+    <!-- Bean cluster 3 top-right -->
+    <ellipse cx="1050" cy="200" rx="22" ry="14" transform="rotate(10 1050 200)"/>
+    <path d="M1038 193 C1048 200, 1058 200, 1065 193" transform="rotate(10 1050 200)"/>
+
+    <!-- Small steam wisps scattered -->
+    <path d="M450 650 C445 625, 465 615, 460 590"/>
+    <path d="M750 550 C745 525, 765 520, 758 495"/>
+
+    <!-- Bean bottom-right -->
+    <ellipse cx="900" cy="680" rx="22" ry="14" transform="rotate(-35 900 680)"/>
+    <path d="M888 673 C898 680, 908 680, 915 673" transform="rotate(-35 900 680)"/>
+
+    <ellipse cx="950" cy="650" rx="22" ry="14" transform="rotate(20 950 650)"/>
+    <path d="M938 643 C948 650, 958 650, 965 643" transform="rotate(20 950 650)"/>
+
+    <!-- Small cup bottom-center -->
+    <path d="M520 700 C520 675, 570 675, 570 700 L570 730 C570 742, 520 742, 520 730 Z"/>
+    <path d="M570 712 C585 708, 590 722, 580 728"/>
+    <path d="M538 670 C535 650, 550 645, 548 625"/>
+
+    <!-- More scattered beans -->
+    <ellipse cx="100" cy="450" rx="22" ry="14" transform="rotate(50 100 450)"/>
+    <path d="M88 443 C98 450, 108 450, 115 443" transform="rotate(50 100 450)"/>
+
+    <ellipse cx="1100" cy="450" rx="22" ry="14" transform="rotate(-40 1100 450)"/>
+    <path d="M1088 443 C1098 450, 1108 450, 1115 443" transform="rotate(-40 1100 450)"/>
+
+    <!-- Gentle swirl top-center -->
+    <path d="M580 80 C560 60, 600 40, 620 65 C640 90, 610 100, 595 85"/>
+  </g>
+</svg>

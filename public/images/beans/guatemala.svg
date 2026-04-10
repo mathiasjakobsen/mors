@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#F5F0E8"/>
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Coffee bag body -->
+    <path d="M175 180 C170 180, 155 185, 150 200 L130 480 C128 500, 140 520, 165 525 L435 525 C460 520, 472 500, 470 480 L450 200 C445 185, 430 180, 425 180 Z"/>
+    <!-- Bag top fold -->
+    <path d="M175 180 C175 155, 185 140, 220 135 L380 135 C415 140, 425 155, 425 180"/>
+    <!-- Bag fold lines -->
+    <path d="M200 135 L210 105 C215 95, 240 88, 300 85 C360 88, 385 95, 390 105 L400 135"/>
+    <!-- Bag tie -->
+    <path d="M270 105 C275 90, 285 82, 300 80 C315 82, 325 90, 330 105"/>
+
+    <!-- Volcanic mountain -->
+    <g stroke-width="3.5">
+      <!-- Main volcano shape - tall and conical -->
+      <path d="M200 420 L275 290 C280 278, 290 270, 300 268 C310 270, 320 278, 325 290 L400 420"/>
+      <!-- Crater at top -->
+      <path d="M278 292 C285 285, 315 285, 322 292"/>
+      <!-- Smoke/eruption wisps from crater -->
+      <path d="M295 270 C290 250, 300 240, 295 220"/>
+      <path d="M305 268 C310 245, 305 235, 312 215"/>
+      <path d="M300 265 C298 248, 308 238, 302 218"/>
+      <!-- Lava flow lines on side -->
+      <path d="M290 300 C285 330, 270 360, 255 400" stroke-width="2.5"/>
+      <path d="M310 300 C320 340, 335 370, 350 400" stroke-width="2.5"/>
+      <!-- Base landscape -->
+      <path d="M180 425 C220 415, 280 420, 340 415 C380 412, 420 418, 440 425"/>
+    </g>
+
+    <!-- Label line -->
+    <path d="M220 470 L380 470" stroke-width="2"/>
+
+    <!-- Coffee beans -->
+    <g transform="translate(100, 470) rotate(-20)">
+      <ellipse cx="0" cy="0" rx="24" ry="15"/>
+      <path d="M-14 -8 C-4 0, 6 0, 16 -8"/>
+    </g>
+    <g transform="translate(485, 445) rotate(25)">
+      <ellipse cx="0" cy="0" rx="24" ry="15"/>
+      <path d="M-14 -8 C-4 0, 6 0, 16 -8"/>
+    </g>
+    <g transform="translate(495, 505) rotate(-5)">
+      <ellipse cx="0" cy="0" rx="20" ry="12"/>
+      <path d="M-12 -6 C-3 0, 5 0, 13 -6"/>
+    </g>
+  </g>
+</svg>

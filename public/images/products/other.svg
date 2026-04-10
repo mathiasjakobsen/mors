@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#F5F0E8"/>
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Tote bag -->
+    <!-- Bag body -->
+    <path d="M120 250 C115 250, 108 258, 105 270 L90 500 C88 518, 100 530, 120 532 L340 532 C360 530, 372 518, 370 500 L355 270 C352 258, 345 250, 340 250 Z"/>
+    <!-- Bag handles -->
+    <path d="M170 250 C168 220, 175 195, 200 190 C225 187, 230 210, 228 250"/>
+    <path d="M232 250 C230 220, 237 195, 262 190 C287 187, 292 210, 290 250"/>
+    <!-- Simple M on bag -->
+    <path d="M195 380 L195 340 L230 365 L265 340 L265 380" stroke-width="3.5"/>
+    <!-- Horizontal line decoration -->
+    <path d="M150 420 L310 420" stroke-width="2"/>
+
+    <!-- Postcard -->
+    <g transform="translate(340, 140) rotate(8)">
+      <!-- Card rectangle -->
+      <rect x="0" y="0" width="210" height="150" rx="8" ry="8"/>
+      <!-- Stamp area -->
+      <rect x="155" y="15" width="38" height="45" rx="4" ry="4" stroke-width="2.5"/>
+      <!-- Stamp wavy cancel lines -->
+      <path d="M120 30 C125 28, 130 32, 135 30 L150 30" stroke-width="2"/>
+      <path d="M120 38 C125 36, 130 40, 135 38 L150 38" stroke-width="2"/>
+      <path d="M120 46 C125 44, 130 48, 135 46 L150 46" stroke-width="2"/>
+      <!-- Address lines -->
+      <path d="M20 85 L140 85" stroke-width="2"/>
+      <path d="M20 100 L130 100" stroke-width="2"/>
+      <path d="M20 115 L120 115" stroke-width="2"/>
+      <!-- Dividing line -->
+      <path d="M105 20 L105 135" stroke-width="2" stroke-dasharray="6 4"/>
+      <!-- Small drawing on left side (coffee cup) -->
+      <path d="M35 40 C35 30, 70 30, 70 40 L70 60 C70 68, 35 68, 35 60 Z" stroke-width="2.5"/>
+      <path d="M45 28 C44 20, 52 18, 52 25" stroke-width="2"/>
+      <path d="M55 26 C56 18, 63 16, 62 24" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

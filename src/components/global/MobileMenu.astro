@@ -1,0 +1,118 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { getNavItems, getLocalizedPath } from '../../i18n/ui';
+import { config } from '../../config';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const navItems = getNavItems(lang);
+const homePath = getLocalizedPath(lang, '/');
+const currentPath = Astro.url.pathname;
+---
+
+<!-- Full-screen mobile menu -->
+<div
+  id="mobile-menu-panel"
+  class="fixed inset-0 z-[70] bg-cream opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col"
+  role="dialog"
+  aria-modal="true"
+  aria-label={lang === 'da' ? 'Mobilmenu' : 'Mobile menu'}
+  aria-hidden="true"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 h-20">
+    <a href={homePath} class="font-display font-black text-3xl text-deep-red tracking-wide">
+      MORS
+    </a>
+    <button
+      type="button"
+      id="mobile-menu-close"
+      class="flex items-center justify-center w-10 h-10 text-ink hover:text-deep-red transition-colors"
+      aria-label={lang === 'da' ? 'Luk menu' : 'Close menu'}
+    >
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Nav links -->
+  <nav class="flex-1 px-6 py-8 flex flex-col justify-center gap-2" aria-label={lang === 'da' ? 'Mobilnavigation' : 'Mobile navigation'}>
+    {navItems.map((item, i) => (
+      <a
+        href={item.href}
+        class:list={[
+          'mobile-nav-link font-display text-4xl md:text-5xl font-bold text-ink hover:text-deep-red transition-all duration-500 py-3',
+          `stagger-${i + 1}`,
+          { 'text-deep-red': currentPath === item.href },
+        ]}
+        style={`opacity: 0; transform: translateY(20px); transition-delay: ${i * 0.08}s;`}
+      >
+        {item.label}
+      </a>
+    ))}
+
+    <div class="mt-8 mobile-nav-link" style={`opacity: 0; transform: translateY(20px); transition-delay: ${navItems.length * 0.08}s;`}>
+      <LanguageSwitcher lang={lang} currentPath={currentPath} />
+    </div>
+  </nav>
+
+  <!-- Bottom info -->
+  <div class="px-6 py-8">
+    <address class="not-italic text-ink-light font-body font-light leading-relaxed">
+      <p>{config.address.street}</p>
+      <p>{config.address.zip} {config.address.city}</p>
+      <p class="mt-2"><a href={`tel:${config.phoneTel}`} class="hover:text-deep-red transition-colors">{config.phone}</a></p>
+      <p><a href={`mailto:${config.email}`} class="hover:text-deep-red transition-colors">{config.email}</a></p>
+    </address>
+  </div>
+</div>
+
+<script>
+  const panel = document.getElementById('mobile-menu-panel');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  const navLinks = panel?.querySelectorAll('.mobile-nav-link') as NodeListOf<HTMLElement>;
+
+  function openMenu() {
+    panel?.classList.remove('opacity-0', 'pointer-events-none');
+    panel?.classList.add('opacity-100');
+    panel?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // Animate nav links in
+    navLinks?.forEach(link => {
+      link.style.opacity = '1';
+      link.style.transform = 'translateY(0)';
+    });
+    closeBtn?.focus();
+  }
+
+  function closeMenu() {
+    panel?.classList.add('opacity-0', 'pointer-events-none');
+    panel?.classList.remove('opacity-100');
+    panel?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    // Reset nav links
+    navLinks?.forEach(link => {
+      link.style.opacity = '0';
+      link.style.transform = 'translateY(20px)';
+    });
+    document.getElementById('mobile-menu-toggle')?.focus();
+  }
+
+  document.addEventListener('mobile-menu:toggle', () => {
+    const isOpen = panel?.classList.contains('opacity-100');
+    isOpen ? closeMenu() : openMenu();
+  });
+
+  closeBtn?.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel?.classList.contains('opacity-100')) {
+      closeMenu();
+    }
+  });
+</script>

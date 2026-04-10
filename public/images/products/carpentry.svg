@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#F5F0E8"/>
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Cutting board -->
+    <!-- Board body - rounded rectangle, slightly organic -->
+    <path d="M100 200 C100 185, 115 170, 135 170 L420 170 C440 170, 455 185, 455 200 L455 480 C455 495, 440 510, 420 510 L135 510 C115 510, 100 495, 100 480 Z"/>
+    <!-- Board handle hole -->
+    <circle cx="420" cy="210" r="15"/>
+    <!-- Wood grain lines -->
+    <path d="M140 200 C145 300, 140 400, 145 490" stroke-width="2"/>
+    <path d="M200 180 C205 280, 195 380, 200 500" stroke-width="2"/>
+    <path d="M270 175 C268 275, 272 375, 270 505" stroke-width="2"/>
+    <path d="M340 178 C345 278, 338 378, 342 502" stroke-width="2"/>
+    <path d="M400 185 C398 285, 402 385, 400 498" stroke-width="2"/>
+
+    <!-- Coffee scoop -->
+    <g transform="translate(350, 350) rotate(35)">
+      <!-- Scoop handle -->
+      <path d="M0 0 L130 0" stroke-width="5"/>
+      <!-- Handle end knob -->
+      <path d="M130 0 C140 -5, 145 -3, 145 0 C145 3, 140 5, 130 0"/>
+      <!-- Scoop bowl -->
+      <path d="M0 0 C-15 -30, -50 -35, -55 -10 C-58 10, -40 30, -15 28 C5 25, 10 10, 0 0"/>
+      <!-- Inner scoop depth line -->
+      <path d="M-5 5 C-15 -15, -40 -18, -42 -2 C-44 12, -30 22, -15 20" stroke-width="2.5"/>
+    </g>
+
+    <!-- Coffee beans in scoop area -->
+    <g transform="translate(310, 310) rotate(15)">
+      <ellipse cx="0" cy="0" rx="14" ry="9" stroke-width="3"/>
+      <path d="M-8 -5 C-2 0, 4 0, 10 -5" stroke-width="3"/>
+    </g>
+    <g transform="translate(295, 330) rotate(-20)">
+      <ellipse cx="0" cy="0" rx="12" ry="8" stroke-width="3"/>
+      <path d="M-7 -4 C-1 0, 3 0, 8 -4" stroke-width="3"/>
+    </g>
+  </g>
+</svg>

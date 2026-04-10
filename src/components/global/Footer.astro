@@ -1,0 +1,109 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t, getNavItems, getLocalizedPath } from '../../i18n/ui';
+import { config } from '../../config';
+import { getHoursSummary } from '../../data/hours';
+import SocialLinks from '../shared/SocialLinks.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const navItems = getNavItems(lang);
+const homePath = getLocalizedPath(lang, '/');
+const hoursSummary = getHoursSummary(lang);
+---
+
+<footer class="bg-ink text-cream relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-32 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12">
+      <!-- Column 1: Brand -->
+      <div>
+        <a href={homePath} class="inline-block">
+          <span class="font-display font-black text-4xl text-cream tracking-wide">MORS</span>
+        </a>
+        <p class="mt-4 text-cream/60 font-body font-light leading-relaxed max-w-xs text-lg">
+          {t(lang, 'footer.tagline')}
+        </p>
+        <p class="mt-3 text-cream/40 text-xs font-body tracking-[0.3em] uppercase">
+          {t(lang, 'footer.est')}
+        </p>
+
+        <!-- Findsmiley badge -->
+        <a
+          href={config.findsmiley.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block mt-6 opacity-70 hover:opacity-100 transition-opacity"
+          aria-label="Findsmiley"
+        >
+          <img
+            src={config.findsmiley.image}
+            alt="Findsmiley - Elite smiley"
+            width="60"
+            height="60"
+            loading="lazy"
+          />
+        </a>
+      </div>
+
+      <!-- Column 2: Navigation + Hours -->
+      <div>
+        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mb-6">{t(lang, 'footer.navigation')}</h3>
+        <nav class="flex flex-col gap-3" aria-label="Footer navigation">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class="text-cream/70 font-body font-light hover:text-cream transition-colors w-fit"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mt-12 mb-4">{t(lang, 'hours.title')}</h3>
+        <div class="flex flex-col gap-1.5">
+          {hoursSummary.map((line) => (
+            <span class="text-cream/60 font-body font-light">{line}</span>
+          ))}
+        </div>
+      </div>
+
+      <!-- Column 3: Contact + Social -->
+      <div>
+        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mb-6">{t(lang, 'contact.title')}</h3>
+        <address class="not-italic text-cream/70 font-body font-light leading-loose">
+          <p>{config.address.street}</p>
+          <p>{config.address.zip} {config.address.city}</p>
+          <p class="mt-3">
+            <a href={`tel:${config.phoneTel}`} class="hover:text-cream transition-colors">{config.phone}</a>
+          </p>
+          <p>
+            <a href={`mailto:${config.email}`} class="hover:text-cream transition-colors">{config.email}</a>
+          </p>
+        </address>
+
+        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mt-12 mb-6">{t(lang, 'footer.followUs')}</h3>
+        <SocialLinks lang={lang} variant="light" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative floating coffee cup -->
+  <div class="absolute bottom-12 right-12 w-24 h-24 opacity-[0.06] animate-float hidden lg:block">
+    <img src="/images/hero/coffee-cup.svg" alt="" class="w-full h-full" aria-hidden="true" />
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-cream/5 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-cream/40 text-xs font-body font-light">
+        &copy; {new Date().getFullYear()} {config.legalName} (CVR: {config.cvr}). {lang === 'da' ? 'Alle rettigheder forbeholdes.' : 'All rights reserved.'}
+      </p>
+      <p class="text-cream/30 text-xs font-body font-light italic">
+        {lang === 'da' ? 'Specialkaffe & Håndværk i Aarhus C' : 'Specialty Coffee & Crafts in Aarhus C'}
+      </p>
+    </div>
+  </div>
+</footer>

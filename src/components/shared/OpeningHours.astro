@@ -1,0 +1,31 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { hours, getHoursSummary } from '../../data/hours';
+
+interface Props {
+  lang: Lang;
+  compact?: boolean;
+}
+
+const { lang, compact = false } = Astro.props;
+const summary = getHoursSummary(lang);
+---
+
+{compact ? (
+  <p class="font-body text-sm">
+    {summary.join(' | ')}
+  </p>
+) : (
+  <div class="font-body text-sm">
+    <h3 class="font-display text-lg text-deep-red mb-3">{t(lang, 'hours.title')}</h3>
+    <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5">
+      {hours.map((h) => (
+        <>
+          <dt class="font-medium">{h.day[lang]}</dt>
+          <dd class="text-ink-light">{h.open}&ndash;{h.close}</dd>
+        </>
+      ))}
+    </dl>
+  </div>
+)}

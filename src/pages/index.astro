@@ -1,0 +1,22 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { t } from '../i18n/ui';
+import { cafeSchema } from '../utils/jsonld';
+import Hero from '../components/home/Hero.astro';
+import FeaturedBeans from '../components/home/FeaturedBeans.astro';
+import LocationPreview from '../components/home/LocationPreview.astro';
+
+const lang = 'da';
+---
+
+<PageLayout
+  title={t(lang, 'seo.home.title')}
+  description={t(lang, 'seo.home.description')}
+  lang={lang}
+  canonicalPath="/"
+  jsonLd={cafeSchema(lang)}
+>
+  <Hero lang={lang} />
+  <FeaturedBeans lang={lang} />
+  <LocationPreview lang={lang} />
+</PageLayout>

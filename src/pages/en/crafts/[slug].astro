@@ -1,0 +1,97 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { t } from '../../../i18n/ui';
+import { config } from '../../../config';
+import { productCategories } from '../../../data/products';
+import { breadcrumbSchema } from '../../../utils/jsonld';
+import Container from '../../../components/shared/Container.astro';
+
+const lang = 'en';
+
+export function getStaticPaths() {
+  return productCategories.map((cat) => ({
+    params: { slug: cat.slug.en },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+
+const jsonLd = breadcrumbSchema([
+  { name: config.name, url: `${config.siteUrl}/en/` },
+  { name: t(lang, 'products.title'), url: `${config.siteUrl}/en/crafts` },
+  { name: category.name.en, url: `${config.siteUrl}/en/crafts/${category.slug.en}` },
+]);
+---
+
+<PageLayout
+  title={`${category.name.en} — ${t(lang, 'products.title')} — Mors`}
+  description={`${category.name.en}: ${t(lang, 'products.description')}`}
+  lang={lang}
+  canonicalPath={`/en/crafts/${category.slug.en}`}
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section class="bg-cream py-32 md:py-48">
+    <Container>
+      <div class="animate-on-scroll">
+        <a href="/en/crafts" class="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.2em] text-ink/40 hover:text-deep-red transition-colors mb-8">
+          &larr; {t(lang, 'products.title')}
+        </a>
+        <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red">
+          {category.name.en}
+        </h1>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Products grid -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+        {category.products.map((product, i) => (
+          <div class:list={['animate-on-scroll hover-lift hover-zoom group', `stagger-${(i % 4) + 1}`]}>
+            <!-- Image -->
+            <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+              <img
+                src={category.heroImage}
+                alt={product.name.en}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-4">
+                <h2 class="font-display font-bold text-2xl text-deep-red">
+                  {product.name.en}
+                </h2>
+                <span class="font-display font-bold text-xl text-ink whitespace-nowrap">
+                  {product.price} DKK
+                </span>
+              </div>
+
+              <p class="font-body font-light text-ink-light leading-relaxed">
+                {product.description.en}
+              </p>
+
+              {product.maker && (
+                <p class="font-body font-light text-xs text-ink/40 uppercase tracking-[0.15em]">
+                  {product.maker}
+                </p>
+              )}
+
+              <span class:list={[
+                'inline-block text-xs font-body font-light uppercase tracking-[0.15em]',
+                product.inStock ? 'text-sage' : 'text-ink/30',
+              ]}>
+                {product.inStock ? t(lang, 'common.inStock') : t(lang, 'common.outOfStock')}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </section>
+</PageLayout>

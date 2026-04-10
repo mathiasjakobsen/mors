@@ -1,0 +1,80 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { t } from '../i18n/ui';
+import Container from '../components/shared/Container.astro';
+
+const lang = 'da';
+---
+
+<PageLayout
+  title={t(lang, 'seo.about.title')}
+  description={t(lang, 'seo.about.description')}
+  lang={lang}
+  canonicalPath="/om"
+>
+  <!-- Hero -->
+  <section class="bg-cream py-32 md:py-48">
+    <Container>
+      <div class="text-center animate-on-scroll">
+        <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red">
+          Om Mors
+        </h1>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Content -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="max-w-3xl mx-auto space-y-24">
+        <div class="animate-on-scroll">
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-8">
+            Vores historie
+          </h2>
+          <div class="font-body font-light text-ink-light leading-loose space-y-6 text-lg">
+            <p>
+              Mors begyndte med en enkel idé: at skabe et sted, hvor håndværk og fællesskab
+              mødes over en kop kaffe. Navnet er en hyldest til de værdier, vi har arvet fra
+              vores mødre &mdash; omhu, tålmodighed og kærlighed til det vellavede.
+            </p>
+            <p>
+              Vi er Mathias og Johanne, og vi åbnede dørene på Klostergade 58 i hjertet af
+              Aarhus C i 2026. Fra første dag har vi brygget specialkaffe fra nøje udvalgte
+              farme og fyldt vores hylder med håndlavede ting fra lokale keramikere og snedkere.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pull quote -->
+        <div class="animate-on-scroll py-8">
+          <blockquote class="font-display italic text-3xl md:text-4xl text-deep-red/80 text-center leading-snug max-w-2xl mx-auto">
+            &ldquo;Omhu, tålmodighed og kærlighed til det vellavede&rdquo;
+          </blockquote>
+        </div>
+
+        <div class="animate-on-scroll">
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-8">
+            Vores værdier
+          </h2>
+          <div class="font-body font-light text-ink-light leading-loose space-y-6 text-lg">
+            <p>
+              <strong class="text-ink font-normal">Specialkaffe med sjæl.</strong> Vi sourcer bønnerne
+              direkte og rister dem med respekt for deres oprindelse. Hver kop fortæller en
+              historie om jord, klima og håndværk.
+            </p>
+            <p>
+              <strong class="text-ink font-normal">Lokalt håndværk.</strong> Vi tror på at støtte dem,
+              der skaber med hænderne. Vores keramik, træarbejde og tekstiler kommer fra
+              værksteder i og omkring Aarhus.
+            </p>
+            <p>
+              <strong class="text-ink font-normal">Fællesskab først.</strong> Mors er mere end en café.
+              Det er et sted, hvor naboer mødes, idéer deles, og hverdagen får lidt mere
+              varme.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+</PageLayout>

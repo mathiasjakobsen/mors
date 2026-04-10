@@ -1,0 +1,123 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { t } from '../../i18n/ui';
+import { beans } from '../../data/beans';
+import Container from '../../components/shared/Container.astro';
+
+const lang = 'en';
+
+const roastLabels: Record<string, string> = {
+  light: t(lang, 'beans.roast.light'),
+  medium: t(lang, 'beans.roast.medium'),
+  'medium-dark': t(lang, 'beans.roast.medium-dark'),
+  dark: t(lang, 'beans.roast.dark'),
+};
+
+const roastLevelNum: Record<string, number> = {
+  light: 1,
+  medium: 2,
+  'medium-dark': 3,
+  dark: 4,
+};
+---
+
+<PageLayout
+  title={t(lang, 'seo.beans.title')}
+  description={t(lang, 'seo.beans.description')}
+  lang={lang}
+  canonicalPath="/en/coffee"
+>
+  <!-- Hero -->
+  <section class="bg-cream py-24 md:py-40">
+    <Container>
+      <div class="text-center max-w-2xl mx-auto animate-on-scroll">
+        <h1 class="font-display font-bold text-4xl md:text-6xl text-deep-red mb-6">
+          {t(lang, 'beans.title')}
+        </h1>
+        <p class="font-body font-light text-lg text-ink-light leading-relaxed">
+          {t(lang, 'beans.description')}
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Bean grid -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+        {beans.map((bean, i) => (
+          <div class:list={['animate-on-scroll hover-lift hover-zoom group', `stagger-${(i % 4) + 1}`]}>
+            <!-- Image -->
+            <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+              <img
+                src={bean.image || '/images/beans/bean-default.svg'}
+                alt={bean.name}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-4">
+                <h2 class="font-display font-bold text-2xl text-deep-red group-hover:text-deep-red-dark transition-colors">
+                  {bean.name}
+                </h2>
+                <span class="font-display font-bold text-xl text-ink whitespace-nowrap">
+                  {bean.price} DKK
+                </span>
+              </div>
+
+              <p class="font-body font-light text-ink-light">
+                {bean.origin.country}, {bean.origin.region}
+                {bean.origin.farm && <span class="text-ink/30 mx-2">|</span>}
+                {bean.origin.farm && <span>{bean.origin.farm}</span>}
+              </p>
+
+              <!-- Roast indicator -->
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1">
+                  {[1, 2, 3, 4].map((level) => (
+                    <span
+                      class:list={[
+                        'w-2.5 h-2.5 rounded-full',
+                        level <= roastLevelNum[bean.roastLevel] ? 'bg-deep-red' : 'bg-deep-red/15',
+                      ]}
+                    />
+                  ))}
+                </div>
+                <span class="font-body font-light text-sm text-ink-light">
+                  {roastLabels[bean.roastLevel]}
+                </span>
+                <span class="text-ink/20 mx-1">|</span>
+                <span class="font-body font-light text-sm text-ink-light">{bean.process}</span>
+              </div>
+
+              <!-- Flavor notes -->
+              <div class="flex flex-wrap gap-2 pt-1">
+                {bean.flavorNotes.map((note) => (
+                  <span class="px-3 py-1 text-xs font-body font-light bg-cream text-ink-light rounded-full">
+                    {note}
+                  </span>
+                ))}
+              </div>
+
+              <p class="font-body font-light text-sm text-ink-light leading-relaxed pt-1">
+                {bean.description[lang]}
+              </p>
+
+              <div class="flex items-center justify-between pt-2">
+                <span class="font-body font-light text-xs text-ink/40">
+                  {bean.weight}g
+                </span>
+                <span class="text-xs font-body font-light uppercase tracking-[0.15em] text-gold">
+                  {t(lang, 'beans.inStoreOnly')}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </section>
+</PageLayout>

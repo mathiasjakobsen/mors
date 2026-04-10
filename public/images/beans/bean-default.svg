@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#F5F0E8"/>
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Coffee bag body -->
+    <path d="M175 180 C170 180, 155 185, 150 200 L130 480 C128 500, 140 520, 165 525 L435 525 C460 520, 472 500, 470 480 L450 200 C445 185, 430 180, 425 180 Z"/>
+    <!-- Bag top fold/crimp -->
+    <path d="M175 180 C175 155, 185 140, 220 135 L380 135 C415 140, 425 155, 425 180"/>
+    <!-- Bag fold lines -->
+    <path d="M200 135 L210 105 C215 95, 240 88, 300 85 C360 88, 385 95, 390 105 L400 135"/>
+    <!-- Bag tie -->
+    <path d="M270 105 C275 90, 285 82, 300 80 C315 82, 325 90, 330 105"/>
+    <!-- Stamp circle for M -->
+    <circle cx="300" cy="350" r="70" stroke-width="3"/>
+    <circle cx="300" cy="350" r="62" stroke-width="2"/>
+    <!-- M letter -->
+    <path d="M265 385 L265 320 L300 355 L335 320 L335 385" stroke-width="5"/>
+
+    <!-- Coffee beans scattered -->
+    <g transform="translate(100, 450) rotate(-25)">
+      <ellipse cx="0" cy="0" rx="24" ry="15"/>
+      <path d="M-14 -8 C-4 0, 6 0, 16 -8"/>
+    </g>
+    <g transform="translate(480, 420) rotate(30)">
+      <ellipse cx="0" cy="0" rx="24" ry="15"/>
+      <path d="M-14 -8 C-4 0, 6 0, 16 -8"/>
+    </g>
+    <g transform="translate(500, 480) rotate(-10)">
+      <ellipse cx="0" cy="0" rx="20" ry="12"/>
+      <path d="M-12 -6 C-3 0, 5 0, 13 -6"/>
+    </g>
+    <g transform="translate(120, 530) rotate(15)">
+      <ellipse cx="0" cy="0" rx="20" ry="12"/>
+      <path d="M-12 -6 C-3 0, 5 0, 13 -6"/>
+    </g>
+  </g>
+</svg>

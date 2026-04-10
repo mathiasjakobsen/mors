@@ -1,0 +1,86 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { getNavItems, getLocalizedPath } from '../../i18n/ui';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import MobileMenu from './MobileMenu.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const navItems = getNavItems(lang);
+const homePath = getLocalizedPath(lang, '/');
+const currentPath = Astro.url.pathname;
+---
+
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo -->
+      <a href={homePath} class="flex items-baseline gap-3 group">
+        <span class="font-display font-black text-3xl text-deep-red tracking-wide group-hover:text-deep-red-dark transition-colors">
+          MORS
+        </span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'font-body text-xs font-medium uppercase tracking-[0.2em] text-ink/70 hover:text-deep-red transition-colors',
+              { 'text-deep-red': currentPath === item.href },
+            ]}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Right side -->
+      <div class="flex items-center gap-5">
+        <LanguageSwitcher lang={lang} currentPath={currentPath} />
+
+        <!-- Mobile menu toggle -->
+        <button
+          type="button"
+          id="mobile-menu-toggle"
+          class="md:hidden flex items-center justify-center w-10 h-10 text-ink hover:text-deep-red transition-colors"
+          aria-label={lang === 'da' ? 'Abn menu' : 'Open menu'}
+          aria-expanded="false"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<MobileMenu lang={lang} />
+
+<script>
+  const header = document.getElementById('site-header');
+  const toggle = document.getElementById('mobile-menu-toggle');
+
+  toggle?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('mobile-menu:toggle'));
+  });
+
+  function updateHeader() {
+    if (!header) return;
+    if (window.scrollY > 40) {
+      header.classList.remove('bg-transparent');
+      header.classList.add('bg-cream/95', 'backdrop-blur-sm', 'shadow-sm');
+    } else {
+      header.classList.add('bg-transparent');
+      header.classList.remove('bg-cream/95', 'backdrop-blur-sm', 'shadow-sm');
+    }
+  }
+
+  window.addEventListener('scroll', updateHeader, { passive: true });
+  updateHeader();
+</script>

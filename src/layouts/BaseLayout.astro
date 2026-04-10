@@ -1,0 +1,99 @@
+---
+import type { Lang } from '../i18n/ui';
+import { getAlternatePath } from '../i18n/ui';
+import { config } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  canonicalPath: string;
+  ogImage?: string;
+  jsonLd?: object;
+}
+
+const { title, description, lang, canonicalPath, ogImage, jsonLd } = Astro.props;
+
+const siteUrl = config.siteUrl;
+const canonicalUrl = `${siteUrl}${canonicalPath}`;
+const ogImageUrl = ogImage ? `${siteUrl}${ogImage}` : `${siteUrl}/og-default.jpg`;
+const ogLocale = lang === 'da' ? 'da_DK' : 'en_US';
+const altLang = lang === 'da' ? 'en' : 'da';
+const altPath = getAlternatePath(altLang as Lang, canonicalPath);
+const altUrl = `${siteUrl}${altPath}`;
+const daPath = lang === 'da' ? canonicalPath : altPath;
+const enPath = lang === 'en' ? canonicalPath : altPath;
+---
+
+<!DOCTYPE html>
+<html lang={lang} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F5F0E8" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Geo tags -->
+    <meta name="geo.region" content={config.geo.region} />
+    <meta name="geo.placename" content="Aarhus" />
+    <meta name="geo.position" content={`${config.geo.lat};${config.geo.lng}`} />
+    <meta name="ICBM" content={`${config.geo.lat}, ${config.geo.lng}`} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:site_name" content={config.name} />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="da" href={`${siteUrl}${daPath}`} />
+    <link rel="alternate" hreflang="en" href={`${siteUrl}${enPath}`} />
+    <link rel="alternate" hreflang="x-default" href={`${siteUrl}${daPath}`} />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- JSON-LD -->
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body class="bg-cream text-ink font-body min-h-screen flex flex-col antialiased">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-deep-red focus:text-cream focus:px-4 focus:py-2 focus:rounded-full focus:font-semibold"
+    >
+      {lang === 'da' ? 'Spring til indhold' : 'Skip to content'}
+    </a>
+    <slot />
+
+    <script is:inline>
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#F5F0E8"/>
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Coffee cup -->
+    <!-- Cup body - slightly tapered, organic shape -->
+    <path d="M180 280 C175 280, 165 290, 162 310 L150 420 C148 440, 160 455, 185 460 L335 460 C360 455, 372 440, 370 420 L358 310 C355 290, 345 280, 340 280 Z"/>
+    <!-- Cup rim -->
+    <ellipse cx="260" cy="280" rx="82" ry="12"/>
+    <!-- Handle -->
+    <path d="M358 320 C390 315, 405 340, 400 370 C395 395, 380 410, 360 405"/>
+    <!-- Steam -->
+    <path d="M230 265 C225 240, 240 230, 235 205"/>
+    <path d="M260 262 C262 235, 275 225, 270 200"/>
+    <path d="M290 265 C295 238, 282 228, 288 202"/>
+
+    <!-- Bowl -->
+    <path d="M320 480 C315 480, 300 485, 295 495 L280 540 C278 555, 290 570, 320 575 L460 575 C490 570, 502 555, 500 540 L485 495 C480 485, 465 480, 460 480 Z"/>
+    <!-- Bowl rim -->
+    <ellipse cx="390" cy="480" rx="72" ry="10"/>
+    <!-- Bowl inner line for depth -->
+    <ellipse cx="390" cy="485" rx="55" ry="7" stroke-width="2"/>
+
+    <!-- Small decorative dot pattern on cup -->
+    <circle cx="230" cy="360" r="4" stroke-width="2.5"/>
+    <circle cx="255" cy="365" r="4" stroke-width="2.5"/>
+    <circle cx="280" cy="360" r="4" stroke-width="2.5"/>
+    <circle cx="305" cy="355" r="4" stroke-width="2.5"/>
+  </g>
+</svg>

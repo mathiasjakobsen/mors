@@ -1,0 +1,96 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import Container from '../../components/shared/Container.astro';
+import OpeningHours from '../../components/shared/OpeningHours.astro';
+import SocialLinks from '../../components/shared/SocialLinks.astro';
+
+const lang = 'en';
+---
+
+<PageLayout
+  title={t(lang, 'seo.contact.title')}
+  description={t(lang, 'seo.contact.description')}
+  lang={lang}
+  canonicalPath="/en/contact"
+>
+  <!-- Hero -->
+  <section class="bg-cream py-32 md:py-48">
+    <Container>
+      <div class="text-center animate-on-scroll">
+        <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red mb-6">
+          {t(lang, 'contact.title')}
+        </h1>
+        <p class="font-body font-light text-lg text-ink-light">
+          {t(lang, 'contact.getInTouch')}
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Contact info -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
+          <div class="animate-on-scroll stagger-1 text-center md:text-left">
+            <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink/40 mb-4">
+              {t(lang, 'contact.address')}
+            </h3>
+            <p class="font-body font-light text-ink-light leading-relaxed text-lg">
+              {config.address.street}<br />
+              {config.address.zip} {config.address.city}<br />
+              {config.address.country[lang]}
+            </p>
+          </div>
+
+          <div class="animate-on-scroll stagger-2 text-center md:text-left">
+            <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink/40 mb-4">
+              {t(lang, 'contact.phone')}
+            </h3>
+            <p class="font-body font-light text-lg">
+              <a href={`tel:${config.phoneTel}`} class="text-ink-light hover:text-deep-red transition-colors">
+                {config.phone}
+              </a>
+            </p>
+
+            <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink/40 mb-4 mt-8">
+              {t(lang, 'contact.email')}
+            </h3>
+            <p class="font-body font-light text-lg">
+              <a href={`mailto:${config.email}`} class="text-ink-light hover:text-deep-red transition-colors">
+                {config.email}
+              </a>
+            </p>
+          </div>
+
+          <div class="animate-on-scroll stagger-3 text-center md:text-left">
+            <OpeningHours lang={lang} />
+
+            <div class="mt-8">
+              <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink/40 mb-4">
+                {t(lang, 'footer.followUs')}
+              </h3>
+              <SocialLinks lang={lang} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
+
+    <!-- Full-width map -->
+    <div class="animate-on-scroll w-full h-[400px] md:h-[500px]">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2222.5!2d10.2107!3d56.1572!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sKlostergade+58%2C+8000+Aarhus+C!5e0!3m2!1sen!2sdk!4v1700000000000"
+        width="100%"
+        height="100%"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title={`Map of ${config.name}, ${config.address.street}`}
+      ></iframe>
+    </div>
+  </section>
+</PageLayout>

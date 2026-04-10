@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <g stroke="#8B1A1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Saucer -->
+    <ellipse cx="200" cy="345" rx="120" ry="20"/>
+    <ellipse cx="200" cy="340" rx="90" ry="14" stroke-width="3"/>
+
+    <!-- Cup body - wide, bouncy, organic -->
+    <path d="M115 190 C110 190, 100 200, 97 215 L85 310 C83 328, 95 340, 120 342 L280 342 C305 340, 317 328, 315 310 L303 215 C300 200, 290 190, 285 190 Z"/>
+
+    <!-- Cup rim - slight wobble for hand-drawn feel -->
+    <path d="M115 190 C115 178, 135 168, 200 166 C265 168, 285 178, 285 190"/>
+    <path d="M120 190 C120 182, 140 175, 200 173 C260 175, 280 182, 280 190" stroke-width="3"/>
+
+    <!-- Handle - rubber-hose bouncy style -->
+    <path d="M303 225 C340 218, 360 240, 355 270 C350 300, 330 318, 305 312" stroke-width="5"/>
+    <!-- Handle inner -->
+    <path d="M308 240 C330 236, 342 250, 338 270 C335 290, 320 300, 308 296" stroke-width="3"/>
+
+    <!-- Steam - bouncy, playful curves -->
+    <path d="M165 160 C158 130, 175 115, 168 85 C162 60, 178 45, 172 20" stroke-width="3.5"/>
+    <path d="M200 155 C205 120, 190 105, 198 70 C205 42, 192 28, 200 5" stroke-width="3.5"/>
+    <path d="M235 160 C242 128, 225 112, 234 80 C242 55, 228 40, 236 18" stroke-width="3.5"/>
+
+    <!-- Small decorative line on cup -->
+    <path d="M145 270 C170 275, 200 278, 230 275 C255 272, 270 268, 280 265" stroke-width="2.5"/>
+  </g>
+</svg>

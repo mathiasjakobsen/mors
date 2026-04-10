@@ -1,0 +1,32 @@
+---
+import type { Lang } from '../i18n/ui';
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/global/Header.astro';
+import Footer from '../components/global/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  canonicalPath: string;
+  ogImage?: string;
+  jsonLd?: object;
+}
+
+const { title, description, lang, canonicalPath, ogImage, jsonLd } = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  lang={lang}
+  canonicalPath={canonicalPath}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+>
+  <Header lang={lang} />
+  <main id="main-content" class="flex-1 pt-20 md:pt-20">
+    <slot />
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>

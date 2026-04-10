@@ -1,0 +1,81 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { t } from '../../i18n/ui';
+import Container from '../../components/shared/Container.astro';
+
+const lang = 'en';
+---
+
+<PageLayout
+  title={t(lang, 'seo.about.title')}
+  description={t(lang, 'seo.about.description')}
+  lang={lang}
+  canonicalPath="/en/about"
+>
+  <!-- Hero -->
+  <section class="bg-cream py-32 md:py-48">
+    <Container>
+      <div class="text-center animate-on-scroll">
+        <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red">
+          About Mors
+        </h1>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Content -->
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <div class="max-w-3xl mx-auto space-y-24">
+        <div class="animate-on-scroll">
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-8">
+            Our story
+          </h2>
+          <div class="font-body font-light text-ink-light leading-loose space-y-6 text-lg">
+            <p>
+              Mors started with a simple idea: to create a place where craftsmanship and
+              community meet over a cup of coffee. The name is a tribute to the values we
+              inherited from our mothers &mdash; care, patience, and love for things well made.
+            </p>
+            <p>
+              We are Mathias and Johanne, and we opened the doors at Klostergade 58 in the
+              heart of Aarhus C in 2026. From day one, we have been brewing specialty coffee
+              from carefully selected farms and filling our shelves with handmade goods from
+              local ceramicists and carpenters.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pull quote -->
+        <div class="animate-on-scroll py-8">
+          <blockquote class="font-display italic text-3xl md:text-4xl text-deep-red/80 text-center leading-snug max-w-2xl mx-auto">
+            &ldquo;Care, patience, and love for things well made&rdquo;
+          </blockquote>
+        </div>
+
+        <div class="animate-on-scroll">
+          <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-8">
+            Our values
+          </h2>
+          <div class="font-body font-light text-ink-light leading-loose space-y-6 text-lg">
+            <p>
+              <strong class="text-ink font-normal">Specialty coffee with soul.</strong> We source our beans
+              directly and roast them with respect for their origin. Every cup tells a story of
+              soil, climate and craft.
+            </p>
+            <p>
+              <strong class="text-ink font-normal">Local craftsmanship.</strong> We believe in supporting
+              those who create with their hands. Our ceramics, woodwork and textiles come from
+              workshops in and around Aarhus.
+            </p>
+            <p>
+              <strong class="text-ink font-normal">Community first.</strong> Mors is more than a café. It
+              is a place where neighbours meet, ideas are shared, and everyday life gets a
+              little more warmth.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+</PageLayout>

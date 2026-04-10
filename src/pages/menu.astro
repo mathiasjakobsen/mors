@@ -1,0 +1,73 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { t } from '../i18n/ui';
+import { menuCategories } from '../data/menu';
+import { menuSchema } from '../utils/jsonld';
+import Container from '../components/shared/Container.astro';
+import SectionHeading from '../components/shared/SectionHeading.astro';
+
+const lang = 'da';
+
+const tagLabels: Record<string, string> = {
+  oeko: 'Øko',
+  vegan: 'Vegan',
+  glutenfri: 'Glutenfri',
+  seasonal: 'Sæson',
+};
+---
+
+<PageLayout
+  title={t(lang, 'seo.menu.title')}
+  description={t(lang, 'seo.menu.description')}
+  lang={lang}
+  canonicalPath="/menu"
+  jsonLd={menuSchema(menuCategories, lang)}
+>
+  <section class="bg-warm-white py-24 md:py-40">
+    <Container>
+      <SectionHeading title={t(lang, 'menu.title')} subtitle={t(lang, 'menu.description')} />
+
+      <div class="max-w-2xl mx-auto space-y-20">
+        {menuCategories.map((category) => (
+          <div class="animate-on-scroll">
+            <h2 class="font-display font-bold text-3xl text-deep-red mb-8 text-center">
+              {category.name[lang]}
+            </h2>
+
+            <div class="space-y-5">
+              {category.items.map((item) => (
+                <div>
+                  <div class="flex items-baseline gap-3">
+                    <span class="font-body font-normal text-ink">
+                      {item.name[lang]}
+                    </span>
+                    {item.tags && item.tags.length > 0 && (
+                      <span class="flex gap-1.5">
+                        {item.tags.map((tag) => (
+                          <span class="text-[10px] uppercase tracking-[0.15em] font-body text-sage font-normal">
+                            {tagLabels[tag]}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                    <span class="flex-1 border-b border-dotted border-ink/10 translate-y-[-4px]" />
+                    <span class="font-body font-normal text-ink whitespace-nowrap">
+                      {item.price} kr.
+                    </span>
+                  </div>
+                  {item.description && (
+                    <p class="font-body font-light text-sm text-ink-light mt-1">
+                      {item.description[lang]}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-12 w-16 h-px bg-deep-red/10 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </section>
+</PageLayout>

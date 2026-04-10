@@ -1,0 +1,82 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { beans } from '../../data/beans';
+import Container from '../shared/Container.astro';
+import SectionHeading from '../shared/SectionHeading.astro';
+import CTAButton from '../shared/CTAButton.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const featured = beans.filter((b) => b.featured);
+const beansHref = lang === 'da' ? '/kaffe' : '/en/coffee';
+
+const roastLabels: Record<string, string> = {
+  light: t(lang, 'beans.roast.light'),
+  medium: t(lang, 'beans.roast.medium'),
+  'medium-dark': t(lang, 'beans.roast.medium-dark'),
+  dark: t(lang, 'beans.roast.dark'),
+};
+---
+
+<section class="bg-warm-white py-24 md:py-40">
+  <Container>
+    <SectionHeading
+      title={t(lang, 'home.beans.title')}
+      subtitle={t(lang, 'home.beans.subtitle')}
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+      {featured.map((bean, i) => (
+        <div class:list={['animate-on-scroll hover-lift hover-zoom group', `stagger-${i + 1}`]}>
+          <!-- Image -->
+          <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+            <img
+              src={bean.image || '/images/beans/bean-default.svg'}
+              alt={bean.name}
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+
+          <!-- Content -->
+          <div class="space-y-3">
+            <div class="flex items-baseline justify-between">
+              <h3 class="font-display font-bold text-xl text-deep-red group-hover:text-deep-red-dark transition-colors">
+                {bean.name}
+              </h3>
+              <span class="font-display font-bold text-lg text-ink">
+                {bean.price} {t(lang, 'common.price')}
+              </span>
+            </div>
+
+            <p class="font-body font-light text-sm text-ink-light">
+              {bean.origin.country}, {bean.origin.region}
+              <span class="mx-2 text-ink/20">|</span>
+              {roastLabels[bean.roastLevel]}
+            </p>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              {bean.flavorNotes.map((note) => (
+                <span class="px-3 py-1 text-xs font-body font-light bg-cream text-ink-light rounded-full">
+                  {note}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-16 text-center animate-on-scroll">
+      <CTAButton
+        href={beansHref}
+        variant="outline"
+        label={t(lang, 'home.beans.cta')}
+      />
+    </div>
+  </Container>
+</section>
