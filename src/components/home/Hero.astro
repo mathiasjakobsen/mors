@@ -2,6 +2,7 @@
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
+import { hours } from '../../data/hours';
 import CTAButton from '../shared/CTAButton.astro';
 
 interface Props {
@@ -15,6 +16,14 @@ const openLabel = lang === 'da' ? 'Åbent nu' : 'Open now';
 const closedLabel = lang === 'da' ? 'Lukket nu' : 'Closed now';
 const opensAtLabel = lang === 'da' ? 'Åbner kl.' : 'Opens at';
 const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
+
+// Build JS-day-indexed schedule (0=Sun..6=Sat) from hours data for the client script
+const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
+const schedule: Record<number, [string, string]> = {};
+for (const h of hours) {
+  schedule[dayMap[h.dayOfWeek[0]]] = [h.open, h.close];
+}
+const scheduleJson = JSON.stringify(schedule);
 ---
 
 <section class="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden">
@@ -36,11 +45,32 @@ const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
     data-closed-label={closedLabel}
     data-opens-at-label={opensAtLabel}
     data-closes-at-label={closesAtLabel}
+    data-schedule={scheduleJson}
   >
-    <div class="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-warm-white/80 backdrop-blur-sm border border-ink/5">
-      <span id="open-dot" class="relative flex h-2.5 w-2.5">
-        <span class="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping bg-sage"></span>
-        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sage"></span>
+    <div class="flex items-center gap-3 px-5 py-2.5 rounded-full bg-warm-white/80 backdrop-blur-sm border border-ink/5">
+      <!-- Coffee cup icon -->
+      <span id="open-icon" class="relative w-5 h-5 flex-shrink-0">
+        <!-- Filled cup (open) -->
+        <svg id="cup-open" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Steam wisps -->
+          <path class="steam-wisp" d="M9 2c0 1.5-1 2.5-1 4s1 2.5 1 4" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          <path class="steam-wisp" d="M13 3c0 1-0.7 1.8-0.7 2.8s0.7 1.8 0.7 2.8" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round" opacity="0.35" style="animation-delay: 0.3s"/>
+          <!-- Cup body filled -->
+          <rect x="4" y="11" width="12" height="9" rx="2" fill="#8B1A1A"/>
+          <!-- Handle -->
+          <path d="M16 13h1.5a2 2 0 0 1 0 4H16" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Saucer -->
+          <path d="M2 21h20" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <!-- Empty cup (closed) -->
+        <svg id="cup-closed" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cup body empty -->
+          <rect x="4" y="11" width="12" height="9" rx="2" stroke="#8B1A1A" stroke-width="1.5" fill="none"/>
+          <!-- Handle -->
+          <path d="M16 13h1.5a2 2 0 0 1 0 4H16" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Saucer -->
+          <path d="M2 21h20" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </span>
       <span id="open-text" class="font-body text-xs font-medium uppercase tracking-[0.15em] text-ink/60"></span>
       <span id="open-detail" class="font-body text-xs font-light text-ink/40 hidden"></span>
@@ -94,16 +124,9 @@ const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
 
 <script is:inline>
   (function() {
-    // Opening hours: [open, close] in "HH:MM" for each day (0=Sun, 1=Mon, ..., 6=Sat)
-    var schedule = {
-      0: ['09:00', '16:00'], // Sunday
-      1: ['07:30', '17:00'], // Monday
-      2: ['07:30', '17:00'], // Tuesday
-      3: ['07:30', '17:00'], // Wednesday
-      4: ['07:30', '17:00'], // Thursday
-      5: ['07:30', '17:00'], // Friday
-      6: ['09:00', '17:00'], // Saturday
-    };
+    var indicator = document.getElementById('open-indicator');
+    if (!indicator) return;
+    var schedule = JSON.parse(indicator.getAttribute('data-schedule') || '{}');
 
     function toMinutes(hhmm) {
       var parts = hhmm.split(':');
@@ -115,14 +138,13 @@ const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
     }
 
     function update() {
-      var indicator = document.getElementById('open-indicator');
-      var dot = document.getElementById('open-dot');
+      var cupOpen = document.getElementById('cup-open');
+      var cupClosed = document.getElementById('cup-closed');
       var text = document.getElementById('open-text');
       var detail = document.getElementById('open-detail');
-      if (!indicator || !dot || !text || !detail) return;
+      if (!indicator || !cupOpen || !cupClosed || !text || !detail) return;
 
       var now = new Date();
-      // Convert to Copenhagen time
       var cph = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }));
       var day = cph.getDay();
       var nowMinutes = cph.getHours() * 60 + cph.getMinutes();
@@ -141,27 +163,20 @@ const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
         text.textContent = openLabel;
         detail.textContent = closesAtLabel + ' ' + formatTime(hours[1]);
         detail.classList.remove('hidden');
-        dot.querySelectorAll('span').forEach(function(s) {
-          s.classList.remove('bg-deep-red');
-          s.classList.add('bg-sage');
-        });
+        cupOpen.classList.remove('hidden');
+        cupClosed.classList.add('hidden');
       } else {
         text.textContent = closedLabel;
-        // Show when we next open
         var nextDay = day;
         var nextHours = hours;
-        // If past closing today or before opening, show today's or tomorrow's open
         if (nowMinutes >= closeMin) {
           nextDay = (day + 1) % 7;
           nextHours = schedule[nextDay];
         }
         detail.textContent = opensAtLabel + ' ' + formatTime(nextHours[0]);
         detail.classList.remove('hidden');
-        dot.querySelector('.animate-ping').classList.add('hidden');
-        dot.querySelectorAll('span:not(.animate-ping)').forEach(function(s) {
-          s.classList.remove('bg-sage');
-          s.classList.add('bg-deep-red');
-        });
+        cupOpen.classList.add('hidden');
+        cupClosed.classList.remove('hidden');
       }
 
       indicator.classList.remove('opacity-0');
@@ -171,3 +186,15 @@ const closesAtLabel = lang === 'da' ? 'Lukker kl.' : 'Closes at';
     setInterval(update, 60000);
   })();
 </script>
+
+<style is:global>
+  .steam-wisp {
+    animation: steam 2s ease-in-out infinite;
+  }
+  @keyframes steam {
+    0%, 100% { opacity: 0; transform: translateY(0); }
+    30% { opacity: 0.5; }
+    60% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-4px); }
+  }
+</style>
