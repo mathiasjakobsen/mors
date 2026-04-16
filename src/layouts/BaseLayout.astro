@@ -77,6 +77,156 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
     )}
   </head>
   <body class="bg-cream text-ink font-body min-h-screen flex flex-col antialiased">
+    <!-- Password gate -->
+    <style is:inline>
+      #password-gate {
+        --grid-color: rgba(139, 26, 26, 0.04);
+        background:
+          linear-gradient(var(--grid-color) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+          #F5F0E8;
+        background-size: 40px 40px;
+      }
+      #password-gate .gate-scanline {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 26, 26, 0.015) 2px,
+          rgba(139, 26, 26, 0.015) 4px
+        );
+        pointer-events: none;
+      }
+      #password-gate .gate-corner {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-color: rgba(139, 26, 26, 0.2);
+      }
+      #password-gate .gate-corner-tl { top: 24px; left: 24px; border-top: 1px solid; border-left: 1px solid; }
+      #password-gate .gate-corner-tr { top: 24px; right: 24px; border-top: 1px solid; border-right: 1px solid; }
+      #password-gate .gate-corner-bl { bottom: 24px; left: 24px; border-bottom: 1px solid; border-left: 1px solid; }
+      #password-gate .gate-corner-br { bottom: 24px; right: 24px; border-bottom: 1px solid; border-right: 1px solid; }
+      #password-gate input::placeholder { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace; }
+      #password-gate .gate-blink { animation: gate-blink 1s step-end infinite; }
+      @keyframes gate-blink { 50% { opacity: 0; } }
+      #password-gate .gate-status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgba(139, 26, 26, 0.3);
+        animation: gate-pulse 2s ease-in-out infinite;
+      }
+      @keyframes gate-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    </style>
+
+    <div id="password-gate" class="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden">
+      <div class="gate-scanline"></div>
+
+      <!-- Corner brackets -->
+      <div class="gate-corner gate-corner-tl"></div>
+      <div class="gate-corner gate-corner-tr"></div>
+      <div class="gate-corner gate-corner-bl"></div>
+      <div class="gate-corner gate-corner-br"></div>
+
+      <!-- Top-left system info -->
+      <div class="absolute top-8 left-12 hidden sm:block" style="font-family: 'SF Mono', 'Fira Code', monospace;">
+        <p class="text-[10px] text-ink/20 tracking-widest uppercase">SYS.MORS.DK</p>
+        <p class="text-[10px] text-ink/15 tracking-widest uppercase mt-1" id="gate-timestamp"></p>
+      </div>
+
+      <!-- Top-right status -->
+      <div class="absolute top-8 right-12 flex items-center gap-2 hidden sm:flex">
+        <div class="gate-status-dot"></div>
+        <span class="text-[10px] text-ink/20 tracking-widest uppercase" style="font-family: 'SF Mono', 'Fira Code', monospace;">STANDBY</span>
+      </div>
+
+      <!-- Bottom-left build info -->
+      <div class="absolute bottom-8 left-12 hidden sm:block" style="font-family: 'SF Mono', 'Fira Code', monospace;">
+        <p class="text-[10px] text-ink/15 tracking-widest">BUILD 2026.04 // PREVIEW</p>
+      </div>
+
+      <!-- Center content -->
+      <div class="text-center px-6 max-w-sm w-full relative">
+        <!-- Logo -->
+        <span class="font-display font-black text-5xl text-deep-red tracking-wide">MORS</span>
+
+        <!-- Divider line -->
+        <div class="mt-6 mb-8 mx-auto w-16 h-px bg-deep-red/15"></div>
+
+        <!-- Access prompt -->
+        <p class="text-[10px] text-ink/30 tracking-[0.35em] uppercase mb-6" style="font-family: 'SF Mono', 'Fira Code', monospace;">
+          Authentication required
+        </p>
+
+        <form id="password-form" class="relative">
+          <div class="flex items-center border border-ink/10 bg-cream/50 px-4">
+            <span class="text-deep-red/30 text-xs mr-3 select-none" style="font-family: 'SF Mono', 'Fira Code', monospace;">&gt;</span>
+            <input
+              id="password-input"
+              type="password"
+              placeholder="enter access key"
+              autocomplete="off"
+              class="w-full bg-transparent text-ink/80 text-sm py-3.5 outline-none tracking-wider"
+              style="font-family: 'SF Mono', 'Fira Code', monospace;"
+            />
+            <span class="gate-blink text-deep-red/40 text-sm select-none" style="font-family: 'SF Mono', 'Fira Code', monospace;">_</span>
+          </div>
+
+          <p id="password-error" class="mt-4 text-deep-red text-[10px] tracking-[0.3em] uppercase opacity-0 transition-opacity" style="font-family: 'SF Mono', 'Fira Code', monospace;">
+            ERR: ACCESS DENIED
+          </p>
+        </form>
+
+        <!-- Subtle hint -->
+        <p class="mt-10 text-[10px] text-ink/15 tracking-[0.2em] uppercase" style="font-family: 'SF Mono', 'Fira Code', monospace;">
+          Press enter to submit
+        </p>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function() {
+        var HASH = '8f14e45fceea167a5a36dedd4bea2543';
+        var gate = document.getElementById('password-gate');
+        if (sessionStorage.getItem('mors-auth') === HASH) {
+          gate.remove();
+        } else {
+          document.body.style.overflow = 'hidden';
+          var form = document.getElementById('password-form');
+          var input = document.getElementById('password-input');
+          var error = document.getElementById('password-error');
+          var ts = document.getElementById('gate-timestamp');
+
+          // Live clock
+          function updateTime() {
+            var d = new Date();
+            if (ts) ts.textContent = d.toISOString().slice(0, 19).replace('T', ' ');
+          }
+          updateTime();
+          setInterval(updateTime, 1000);
+
+          input.focus();
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var val = input.value;
+            if (val === atob('bXVzc2Vibw==')) {
+              sessionStorage.setItem('mors-auth', HASH);
+              gate.style.opacity = '0';
+              gate.style.transition = 'opacity 0.4s ease';
+              document.body.style.overflow = '';
+              setTimeout(function() { gate.remove(); }, 400);
+            } else {
+              error.style.opacity = '1';
+              input.value = '';
+              input.focus();
+              setTimeout(function() { error.style.opacity = '0'; }, 2000);
+            }
+          });
+        }
+      })();
+    </script>
+
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-deep-red focus:text-cream focus:px-4 focus:py-2 focus:rounded-full focus:font-semibold"
