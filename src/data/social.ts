@@ -7,12 +7,12 @@ export interface SocialLink {
 export const socialLinks: SocialLink[] = [
   {
     platform: 'Instagram',
-    url: '#',
+    url: 'https://www.instagram.com/hosmors.dk/',
     icon: 'instagram',
   },
   {
     platform: 'Facebook',
-    url: '#',
+    url: 'https://www.facebook.com/hosmors.dk',
     icon: 'facebook',
   },
   {

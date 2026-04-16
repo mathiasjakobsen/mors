@@ -85,6 +85,10 @@ export default {
   'common.inStock': 'In stock',
   'common.outOfStock': 'Sold out',
 
+  // Brand assets
+  'brand.title': 'Brand Assets',
+  'brand.downloadAll': 'Download all as ZIP',
+
   // SEO
   'seo.home.title': 'Mors — Specialty Coffee & Crafts in Aarhus',
   'seo.home.description': 'Mors is a specialty coffee cafe and shop at Klostergade 58 in Aarhus C, Denmark. We serve hand-brewed coffee and sell ceramics, carpentry and coffee beans.',

@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /
+Disallow: /
 
-Sitemap: https://morscoffee.dk/sitemap-index.xml
+Sitemap: https://hosmors.dk/sitemap-index.xml

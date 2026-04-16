@@ -13,6 +13,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# generated brand assets (built from SVGs via prebuild)
+public/brand/*.png
+public/brand/*.jpg
+
 # environment variables
 .env
 .env.production

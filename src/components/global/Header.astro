@@ -3,6 +3,7 @@ import type { Lang } from '../../i18n/ui';
 import { getNavItems, getLocalizedPath } from '../../i18n/ui';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import MobileMenu from './MobileMenu.astro';
+import BrandContextMenu from './BrandContextMenu.astro';
 
 interface Props {
   lang: Lang;
@@ -18,7 +19,7 @@ const currentPath = Astro.url.pathname;
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href={homePath} class="flex items-baseline gap-3 group">
+      <a href={homePath} class="flex items-baseline gap-3 group" data-brand-logo>
         <span class="font-display font-black text-3xl text-deep-red tracking-wide group-hover:text-deep-red-dark transition-colors">
           MORS
         </span>
@@ -61,6 +62,7 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <MobileMenu lang={lang} />
+<BrandContextMenu lang={lang} />
 
 <script>
   const header = document.getElementById('site-header');

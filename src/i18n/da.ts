@@ -85,6 +85,10 @@ export default {
   'common.inStock': 'På lager',
   'common.outOfStock': 'Udsolgt',
 
+  // Brand assets
+  'brand.title': 'Brand Assets',
+  'brand.downloadAll': 'Download alle som ZIP',
+
   // SEO
   'seo.home.title': 'Mors — Specialkaffe & Håndværk i Aarhus C',
   'seo.home.description': 'Mors er en specialkaffe-café og butik på Klostergade 58 i Aarhus C. Vi serverer håndbrygget kaffe og sælger keramik, snedkeri og kaffebønner.',
