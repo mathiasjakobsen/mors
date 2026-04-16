@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://morscoffee.dk',
+  site: 'https://hosmors.dk',
   integrations: [tailwind(), sitemap()],
   i18n: {
     locales: ['da', 'en'],
