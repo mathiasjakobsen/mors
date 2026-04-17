@@ -4,7 +4,7 @@ export default {
   'nav.menu': 'Menu',
   'nav.beans': 'Kaffe',
   'nav.products': 'Håndværk',
-  'nav.about': 'Om Mors',
+  'nav.about': 'Om MORs',
   'nav.contact': 'Kontakt',
 
   // Hero
@@ -49,8 +49,8 @@ export default {
   'products.viewCategory': 'Se udvalg',
 
   // About page
-  'about.title': 'Om Mors',
-  'about.description': 'Historien bag Mors — specialkaffe og håndværk i Aarhus C',
+  'about.title': 'Om MORs',
+  'about.description': 'Historien bag MORs — specialkaffe og håndværk i Aarhus C',
 
   // Contact page
   'contact.title': 'Kontakt',
@@ -90,16 +90,16 @@ export default {
   'brand.downloadAll': 'Download alle som ZIP',
 
   // SEO
-  'seo.home.title': 'Mors — Specialkaffe & Håndværk i Aarhus C',
-  'seo.home.description': 'Mors er en specialkaffe-café og butik på Klostergade 58 i Aarhus C. Vi serverer håndbrygget kaffe og sælger keramik, snedkeri og kaffebønner.',
-  'seo.menu.title': 'Menu — Mors Kaffe',
-  'seo.menu.description': 'Se vores menu med specialkaffe, kolde drikke, bagværk og lette retter. Mors på Klostergade 58, Aarhus C.',
-  'seo.beans.title': 'Kaffebønner — Mors Kaffe',
+  'seo.home.title': 'MORs — Specialkaffe & Håndværk i Aarhus C',
+  'seo.home.description': 'MORs er en specialkaffe-café og butik på Klostergade 58 i Aarhus C. Vi serverer håndbrygget kaffe og sælger keramik, snedkeri og kaffebønner.',
+  'seo.menu.title': 'Menu — MORs Kaffe',
+  'seo.menu.description': 'Se vores menu med specialkaffe, kolde drikke, bagværk og lette retter. MORs på Klostergade 58, Aarhus C.',
+  'seo.beans.title': 'Kaffebønner — MORs Kaffe',
   'seo.beans.description': 'Udforsk vores udvalg af specialkaffebønner fra verdens bedste farme. Single origin og blends. Kun i butikken på Klostergade 58, Aarhus C.',
-  'seo.products.title': 'Håndværk — Mors',
+  'seo.products.title': 'Håndværk — MORs',
   'seo.products.description': 'Keramik, snedkeri og udvalgt håndværk fra lokale kunstnere. Besøg vores butik på Klostergade 58, Aarhus C.',
-  'seo.about.title': 'Om Mors — Vores historie',
-  'seo.about.description': 'Mors er inspireret af håndværk og værdier arvet fra vores mødre. Lær os at kende og historien bag caféen på Klostergade i Aarhus.',
-  'seo.contact.title': 'Kontakt — Mors Kaffe',
-  'seo.contact.description': 'Find Mors på Klostergade 58, 8000 Aarhus C. Se åbningstider, telefonnummer og hvordan du finder os.',
+  'seo.about.title': 'Om MORs — Vores historie',
+  'seo.about.description': 'MORs er inspireret af håndværk og værdier arvet fra vores mødre. Lær os at kende og historien bag caféen på Klostergade i Aarhus.',
+  'seo.contact.title': 'Kontakt — MORs Kaffe',
+  'seo.contact.description': 'Find MORs på Klostergade 58, 8000 Aarhus C. Se åbningstider, telefonnummer og hvordan du finder os.',
 } as const;

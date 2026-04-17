@@ -80,109 +80,93 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
     <!-- Password gate -->
     <style is:inline>
       #password-gate {
-        --grid-color: rgba(139, 26, 26, 0.04);
-        background:
-          linear-gradient(var(--grid-color) 1px, transparent 1px),
-          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
-          #F5F0E8;
-        background-size: 40px 40px;
-      }
-      #password-gate .gate-scanline {
-        position: absolute;
+        position: fixed;
         inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(139, 26, 26, 0.015) 2px,
-          rgba(139, 26, 26, 0.015) 4px
-        );
-        pointer-events: none;
+        z-index: 200;
+        background: #ffffff;
+        color: #000000;
+        overflow: auto;
+        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.45;
+        padding: 24px;
       }
-      #password-gate .gate-corner {
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        border-color: rgba(139, 26, 26, 0.2);
+      #password-gate h1 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
       }
-      #password-gate .gate-corner-tl { top: 24px; left: 24px; border-top: 1px solid; border-left: 1px solid; }
-      #password-gate .gate-corner-tr { top: 24px; right: 24px; border-top: 1px solid; border-right: 1px solid; }
-      #password-gate .gate-corner-bl { bottom: 24px; left: 24px; border-bottom: 1px solid; border-left: 1px solid; }
-      #password-gate .gate-corner-br { bottom: 24px; right: 24px; border-bottom: 1px solid; border-right: 1px solid; }
-      #password-gate input::placeholder { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace; }
-      #password-gate .gate-blink { animation: gate-blink 1s step-end infinite; }
-      @keyframes gate-blink { 50% { opacity: 0; } }
-      #password-gate .gate-status-dot {
-        width: 6px; height: 6px; border-radius: 50%;
-        background: rgba(139, 26, 26, 0.3);
-        animation: gate-pulse 2s ease-in-out infinite;
+      #password-gate hr {
+        border: 0;
+        border-top: 1px solid #000;
+        margin: 16px 0;
       }
-      @keyframes gate-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+      #password-gate pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font: inherit;
+      }
+      #password-gate form { margin: 16px 0; }
+      #password-gate label { display: inline-block; margin-right: 8px; }
+      #password-gate input[type=password] {
+        font: inherit;
+        color: #000;
+        background: #fff;
+        border: 1px solid #000;
+        padding: 2px 6px;
+        width: 220px;
+        border-radius: 0;
+        outline: none;
+      }
+      #password-gate input[type=password]:focus { background: #ffffe0; }
+      #password-gate button {
+        font: inherit;
+        color: #000;
+        background: #eee;
+        border: 1px solid #000;
+        padding: 2px 10px;
+        margin-left: 6px;
+        border-radius: 0;
+        cursor: pointer;
+      }
+      #password-gate button:hover { background: #ddd; }
+      #password-gate .err { color: #b00020; display: none; margin-top: 8px; }
+      #password-gate .muted { color: #555; }
+      #password-gate footer {
+        border-top: 1px solid #000;
+        margin-top: 24px;
+        padding-top: 8px;
+        color: #555;
+        font-size: 12px;
+      }
     </style>
 
-    <div id="password-gate" class="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden">
-      <div class="gate-scanline"></div>
+    <div id="password-gate">
+      <h1>401 Unauthorized</h1>
+      <pre>Authentication is required to access this resource.
 
-      <!-- Corner brackets -->
-      <div class="gate-corner gate-corner-tl"></div>
-      <div class="gate-corner gate-corner-tr"></div>
-      <div class="gate-corner gate-corner-bl"></div>
-      <div class="gate-corner gate-corner-br"></div>
+Host:        hosmors.dk
+Path:        /
+Environment: preview
+Build:       2026.04
+Session:     anonymous
+Status:      401 Unauthorized</pre>
 
-      <!-- Top-left system info -->
-      <div class="absolute top-8 left-12 hidden sm:block" style="font-family: 'SF Mono', 'Fira Code', monospace;">
-        <p class="text-[10px] text-ink/20 tracking-widest uppercase">SYS.MORS.DK</p>
-        <p class="text-[10px] text-ink/15 tracking-widest uppercase mt-1" id="gate-timestamp"></p>
-      </div>
+      <hr />
 
-      <!-- Top-right status -->
-      <div class="absolute top-8 right-12 flex items-center gap-2 hidden sm:flex">
-        <div class="gate-status-dot"></div>
-        <span class="text-[10px] text-ink/20 tracking-widest uppercase" style="font-family: 'SF Mono', 'Fira Code', monospace;">STANDBY</span>
-      </div>
+      <form id="password-form" autocomplete="off">
+        <label for="password-input">Password:</label>
+        <input id="password-input" type="password" autocomplete="off" spellcheck="false" />
+        <button type="submit">Submit</button>
+        <div id="password-error" class="err">Invalid password. Please try again.</div>
+      </form>
 
-      <!-- Bottom-left build info -->
-      <div class="absolute bottom-8 left-12 hidden sm:block" style="font-family: 'SF Mono', 'Fira Code', monospace;">
-        <p class="text-[10px] text-ink/15 tracking-widest">BUILD 2026.04 // PREVIEW</p>
-      </div>
+      <p class="muted">If you believe you are receiving this message in error, contact the site administrator.</p>
 
-      <!-- Center content -->
-      <div class="text-center px-6 max-w-sm w-full relative">
-        <!-- Logo -->
-        <span class="font-display font-black text-5xl text-deep-red tracking-wide">MORS</span>
-
-        <!-- Divider line -->
-        <div class="mt-6 mb-8 mx-auto w-16 h-px bg-deep-red/15"></div>
-
-        <!-- Access prompt -->
-        <p class="text-[10px] text-ink/30 tracking-[0.35em] uppercase mb-6" style="font-family: 'SF Mono', 'Fira Code', monospace;">
-          Authentication required
-        </p>
-
-        <form id="password-form" class="relative">
-          <div class="flex items-center border border-ink/10 bg-cream/50 px-4">
-            <span class="text-deep-red/30 text-xs mr-3 select-none" style="font-family: 'SF Mono', 'Fira Code', monospace;">&gt;</span>
-            <input
-              id="password-input"
-              type="password"
-              placeholder="enter access key"
-              autocomplete="off"
-              class="w-full bg-transparent text-ink/80 text-sm py-3.5 outline-none tracking-wider"
-              style="font-family: 'SF Mono', 'Fira Code', monospace;"
-            />
-            <span class="gate-blink text-deep-red/40 text-sm select-none" style="font-family: 'SF Mono', 'Fira Code', monospace;">_</span>
-          </div>
-
-          <p id="password-error" class="mt-4 text-deep-red text-[10px] tracking-[0.3em] uppercase opacity-0 transition-opacity" style="font-family: 'SF Mono', 'Fira Code', monospace;">
-            ERR: ACCESS DENIED
-          </p>
-        </form>
-
-        <!-- Subtle hint -->
-        <p class="mt-10 text-[10px] text-ink/15 tracking-[0.2em] uppercase" style="font-family: 'SF Mono', 'Fira Code', monospace;">
-          Press enter to submit
-        </p>
-      </div>
+      <footer>
+        MORs/1.0 (preview) &mdash; hosmors.dk
+      </footer>
     </div>
 
     <script is:inline>
@@ -196,15 +180,6 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
           var form = document.getElementById('password-form');
           var input = document.getElementById('password-input');
           var error = document.getElementById('password-error');
-          var ts = document.getElementById('gate-timestamp');
-
-          // Live clock
-          function updateTime() {
-            var d = new Date();
-            if (ts) ts.textContent = d.toISOString().slice(0, 19).replace('T', ' ');
-          }
-          updateTime();
-          setInterval(updateTime, 1000);
 
           input.focus();
           form.addEventListener('submit', function(e) {
@@ -212,15 +187,12 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
             var val = input.value;
             if (val === atob('bXVzc2Vibw==')) {
               sessionStorage.setItem('mors-auth', HASH);
-              gate.style.opacity = '0';
-              gate.style.transition = 'opacity 0.4s ease';
               document.body.style.overflow = '';
-              setTimeout(function() { gate.remove(); }, 400);
+              gate.remove();
             } else {
-              error.style.opacity = '1';
+              error.style.display = 'block';
               input.value = '';
               input.focus();
-              setTimeout(function() { error.style.opacity = '0'; }, 2000);
             }
           });
         }
