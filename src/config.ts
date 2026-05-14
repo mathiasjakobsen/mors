@@ -1,6 +1,6 @@
 export const config = {
-  name: 'MORs',
-  legalName: 'MORs ApS',
+  name: 'morˢ',
+  legalName: 'Mors ApS',
   cvr: 'DK12345678',
   siteUrl: 'https://hosmors.dk',
   phone: '+45 93 96 76 88',

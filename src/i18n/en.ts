@@ -49,8 +49,8 @@ export default {
   'products.viewCategory': 'View selection',
 
   // About page
-  'about.title': 'About MORs',
-  'about.description': 'The story behind MORs — specialty coffee and craftsmanship in Aarhus',
+  'about.title': 'About morˢ',
+  'about.description': 'The story behind morˢ — specialty coffee and craftsmanship in Aarhus',
 
   // Contact page
   'contact.title': 'Contact',
@@ -90,16 +90,16 @@ export default {
   'brand.downloadAll': 'Download all as ZIP',
 
   // SEO
-  'seo.home.title': 'MORs — Specialty Coffee & Crafts in Aarhus',
-  'seo.home.description': 'MORs is a specialty coffee cafe and shop at Klostergade 58 in Aarhus C, Denmark. We serve hand-brewed coffee and sell ceramics, carpentry and coffee beans.',
-  'seo.menu.title': 'Menu — MORs Coffee',
-  'seo.menu.description': 'See our menu of specialty coffee, cold drinks, pastries and light bites. MORs at Klostergade 58, Aarhus C.',
-  'seo.beans.title': 'Coffee Beans — MORs Coffee',
+  'seo.home.title': 'morˢ — Specialty Coffee & Crafts in Aarhus',
+  'seo.home.description': 'morˢ is a specialty coffee cafe and shop at Klostergade 58 in Aarhus C, Denmark. We serve hand-brewed coffee and sell ceramics, carpentry and coffee beans.',
+  'seo.menu.title': 'Menu — morˢ Coffee',
+  'seo.menu.description': 'See our menu of specialty coffee, cold drinks, pastries and light bites. morˢ at Klostergade 58, Aarhus C.',
+  'seo.beans.title': 'Coffee Beans — morˢ Coffee',
   'seo.beans.description': 'Explore our selection of specialty coffee beans from the world\'s finest farms. Single origin and blends. In-store only at Klostergade 58, Aarhus C.',
-  'seo.products.title': 'Crafts — MORs',
+  'seo.products.title': 'Crafts — morˢ',
   'seo.products.description': 'Ceramics, carpentry and curated crafts from local artisans. Visit our shop at Klostergade 58, Aarhus C.',
-  'seo.about.title': 'About MORs — Our Story',
-  'seo.about.description': 'MORs is inspired by craftsmanship and values inherited from our mothers. Get to know us and the story behind the cafe at Klostergade in Aarhus.',
-  'seo.contact.title': 'Contact — MORs Coffee',
-  'seo.contact.description': 'Find MORs at Klostergade 58, 8000 Aarhus C. See opening hours, phone number and how to find us.',
+  'seo.about.title': 'About morˢ — Our Story',
+  'seo.about.description': 'morˢ is inspired by craftsmanship and values inherited from our mothers. Get to know us and the story behind the cafe at Klostergade in Aarhus.',
+  'seo.contact.title': 'Contact — morˢ Coffee',
+  'seo.contact.description': 'Find morˢ at Klostergade 58, 8000 Aarhus C. See opening hours, phone number and how to find us.',
 } as const;

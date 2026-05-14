@@ -130,8 +130,8 @@ export const productCategories: ProductCategory[] = [
         slug: 'stofpose',
         name: { da: 'Stofpose', en: 'Tote bag' },
         description: {
-          da: 'Kraftig bomuldspose med MORs-logo i serigrafi.',
-          en: 'Heavy-duty cotton tote bag with screen-printed MORs logo.',
+          da: 'Kraftig bomuldspose med morˢ-logo i serigrafi.',
+          en: 'Heavy-duty cotton tote bag with screen-printed morˢ logo.',
         },
         price: 95,
         inStock: true,
