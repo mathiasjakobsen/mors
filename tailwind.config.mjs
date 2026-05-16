@@ -9,8 +9,8 @@ export default {
           dark: '#EDE6D6',
         },
         'deep-red': {
-          DEFAULT: '#8B1A1A',
-          dark: '#6B1010',
+          DEFAULT: '#713B2A',
+          dark: '#713B2A',
         },
         ink: {
           DEFAULT: '#1A1A1A',
