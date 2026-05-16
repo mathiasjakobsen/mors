@@ -7,7 +7,7 @@ interface Props {
 const { title, subtitle } = Astro.props;
 ---
 
-<div class="text-center mb-16 md:mb-20 animate-on-scroll">
+<div data-animate-on-scroll class="text-center mb-16 md:mb-20 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
   <h2 class="font-display font-bold text-4xl md:text-5xl text-deep-red mb-4">
     {title}
   </h2>
