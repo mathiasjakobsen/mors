@@ -1,12 +1,13 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import { t } from '../../i18n/ui';
-import { menuCategories } from '../../data/menu';
+import { getMenuCategories } from '../../lib/api';
 import { menuSchema } from '../../utils/jsonld';
 import Container from '../../components/shared/Container.astro';
 import SectionHeading from '../../components/shared/SectionHeading.astro';
 
 const lang = 'en';
+const menuCategories = await getMenuCategories();
 
 const tagLabels: Record<string, string> = {
   oeko: 'Organic',

@@ -1,7 +1,7 @@
 ---
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
-import { beans } from '../../data/beans';
+import { getBeans } from '../../lib/api';
 import Container from '../shared/Container.astro';
 import SectionHeading from '../shared/SectionHeading.astro';
 import CTAButton from '../shared/CTAButton.astro';
@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+const beans = await getBeans();
 const featured = beans.filter((b) => b.featured);
 const beansHref = lang === 'da' ? '/kaffe' : '/en/coffee';
 
@@ -20,6 +21,13 @@ const roastLabels: Record<string, string> = {
   'medium-dark': t(lang, 'beans.roast.medium-dark'),
   dark: t(lang, 'beans.roast.dark'),
 };
+
+const staggerDelays = [
+  '[transition-delay:0.1s]',
+  '[transition-delay:0.2s]',
+  '[transition-delay:0.3s]',
+  '[transition-delay:0.4s]',
+];
 ---
 
 <section class="bg-warm-white py-24 md:py-40">
@@ -31,13 +39,19 @@ const roastLabels: Record<string, string> = {
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
       {featured.map((bean, i) => (
-        <div class:list={['animate-on-scroll hover-lift hover-zoom group', `stagger-${i + 1}`]}>
+        <div
+          data-animate-on-scroll
+          class:list={[
+            'group opacity-0 translate-y-[30px] transition-all duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2',
+            staggerDelays[i] ?? '',
+          ]}
+        >
           <!-- Image -->
           <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
             <img
               src={bean.image || '/images/beans/bean-default.svg'}
               alt={bean.name}
-              class="w-full h-full object-cover"
+              class="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-105"
               loading="lazy"
             />
           </div>
@@ -71,7 +85,7 @@ const roastLabels: Record<string, string> = {
       ))}
     </div>
 
-    <div class="mt-16 text-center animate-on-scroll">
+    <div data-animate-on-scroll class="mt-16 text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
       <CTAButton
         href={beansHref}
         variant="outline"

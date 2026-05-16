@@ -2,17 +2,25 @@
 import PageLayout from '../../layouts/PageLayout.astro';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
-import { productCategories } from '../../data/products';
+import { getProductCategories } from '../../lib/api';
 import { breadcrumbSchema } from '../../utils/jsonld';
 import Container from '../../components/shared/Container.astro';
 import CTAButton from '../../components/shared/CTAButton.astro';
 
 const lang = 'da';
+const productCategories = await getProductCategories();
 
 const jsonLd = breadcrumbSchema([
   { name: config.name, url: `${config.siteUrl}/` },
   { name: t(lang, 'products.title'), url: `${config.siteUrl}/haandvaerk` },
 ]);
+
+const staggerDelays = [
+  '[transition-delay:0.1s]',
+  '[transition-delay:0.2s]',
+  '[transition-delay:0.3s]',
+  '[transition-delay:0.4s]',
+];
 ---
 
 <PageLayout
@@ -25,7 +33,7 @@ const jsonLd = breadcrumbSchema([
   <!-- Hero -->
   <section class="bg-cream py-32 md:py-48">
     <Container>
-      <div class="text-center animate-on-scroll">
+      <div data-animate-on-scroll class="text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
         <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red mb-6">
           {t(lang, 'products.title')}
         </h1>
@@ -43,14 +51,18 @@ const jsonLd = breadcrumbSchema([
         {productCategories.map((cat, i) => (
           <a
             href={`/haandvaerk/${cat.slug.da}`}
-            class:list={['animate-on-scroll hover-lift hover-zoom group block', `stagger-${i + 1}`]}
+            data-animate-on-scroll
+            class:list={[
+              'group block opacity-0 translate-y-[30px] transition-all duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2',
+              staggerDelays[i % 4],
+            ]}
           >
             <!-- Image -->
             <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
               <img
                 src={cat.heroImage}
                 alt={cat.name.da}
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-105"
                 loading="lazy"
               />
             </div>

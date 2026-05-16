@@ -4,6 +4,11 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # Rebuild whenever the staff PWA at edb.mors.coffee dispatches a
+  # `mors-data-changed` event (menu / beans / craft products changed).
+  # See WebsitePublisher in the mit.mors.coffee Rails app.
+  repository_dispatch:
+    types: [mors-data-changed]
 
 permissions:
   contents: read
@@ -13,6 +18,11 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: false
+
+env:
+  # Where the staff PWA exposes the public catalog data. Override via a
+  # repo variable to point at staging if one ever exists.
+  MORS_API_URL: ${{ vars.MORS_API_URL || 'https://edb.mors.coffee/api/v1' }}
 
 jobs:
   build:
