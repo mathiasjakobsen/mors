@@ -4,10 +4,10 @@ set -euo pipefail
 # ─────────────────────────────────────────────────────────
 # Mors domain redirect setup
 # Creates a Hetzner VPS running nginx that 301-redirects
-# all secondary domains to https://hosmors.dk
+# all secondary domains to https://mors.coffee
 # ─────────────────────────────────────────────────────────
 
-PRIMARY="hosmors.dk"
+PRIMARY="mors.coffee"
 SERVER_NAME="mors-redirect"
 SERVER_TYPE="cpx11"
 IMAGE="ubuntu-24.04"
@@ -15,6 +15,7 @@ LOCATION="fsn1"
 EMAIL="mathias@notrocketscience.dk"
 
 REDIRECT_DOMAINS=(
+  hosmors.dk
   hosmors.com
   cafemors.dk
   cafemors.com
@@ -22,7 +23,6 @@ REDIRECT_DOMAINS=(
   morscafe.com
   morskaffe.dk
   morskaffebar.dk
-  mors.coffee
 )
 
 # Build full server_names list (bare + www)

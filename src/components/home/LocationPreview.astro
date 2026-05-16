@@ -15,7 +15,7 @@ const { lang } = Astro.props;
 const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
 ---
 
-<section id="hours" class="bg-cream py-24 md:py-40">
+<section id="hours" class="bg-cream pt-24 md:pt-40">
   <Container>
     <SectionHeading title={t(lang, 'home.location.title')} />
 
@@ -46,6 +46,32 @@ const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
         </div>
       </div>
     </div>
+
+    <a
+      data-animate-on-scroll
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group flex items-center justify-between gap-4 max-w-sm mx-auto mb-16 px-5 py-3.5 rounded-mors bg-[#1c0fb9] opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out hover:bg-[#1709a3] hover:-translate-y-[1px] hover:shadow-lg"
+    >
+      <img
+        src="/brand/partners/ect-logo.png"
+        alt="European Coffee Trip"
+        width="276"
+        height="82"
+        class="h-6 w-auto"
+        loading="lazy"
+      />
+      <span class="inline-flex items-center gap-2.5">
+        <span class="font-body text-[10px] uppercase tracking-[0.22em] text-white/70">
+          {lang === 'da' ? 'Anbefalet på' : 'Featured on'}
+        </span>
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-4 h-4 text-white/70 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white">
+          <line x1="2" y1="7" x2="12" y2="7" />
+          <polyline points="8,3 12,7 8,11" />
+        </svg>
+      </span>
+    </a>
   </Container>
 
   <!-- Full-width map -->

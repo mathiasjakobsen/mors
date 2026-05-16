@@ -7,27 +7,12 @@ export interface SocialLink {
 export const socialLinks: SocialLink[] = [
   {
     platform: 'Instagram',
-    url: 'https://www.instagram.com/hosmors.dk/',
+    url: 'https://www.instagram.com/_mors.coffee',
     icon: 'instagram',
   },
   {
     platform: 'Facebook',
-    url: 'https://www.facebook.com/hosmors.dk',
+    url: 'https://www.facebook.com/www.mors.coffee',
     icon: 'facebook',
-  },
-  {
-    platform: 'TripAdvisor',
-    url: '#',
-    icon: 'tripadvisor',
-  },
-  {
-    platform: 'Trustpilot',
-    url: '#',
-    icon: 'trustpilot',
-  },
-  {
-    platform: 'Google Maps',
-    url: '#',
-    icon: 'google-maps',
   },
 ];

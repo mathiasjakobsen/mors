@@ -2,10 +2,10 @@ export const config = {
   name: 'morˢ',
   legalName: 'Mors ApS',
   cvr: 'DK12345678',
-  siteUrl: 'https://hosmors.dk',
+  siteUrl: 'https://mors.coffee',
   phone: '+45 93 96 76 88',
   phoneTel: '+4593967688',
-  email: 'hej@hosmors.dk',
+  email: 'hej@mors.coffee',
   address: {
     street: 'Klostergade 58',
     city: 'Aarhus C',

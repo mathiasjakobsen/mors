@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /
 
-Sitemap: https://hosmors.dk/sitemap-index.xml
+Sitemap: https://mors.coffee/sitemap-index.xml

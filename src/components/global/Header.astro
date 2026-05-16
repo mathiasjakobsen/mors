@@ -19,10 +19,14 @@ const currentPath = Astro.url.pathname;
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href={homePath} class="flex items-baseline gap-3 group" data-brand-logo>
-        <span class="font-display font-black text-3xl text-deep-red tracking-wide group-hover:text-deep-red-dark transition-colors">
-          morˢ
-        </span>
+      <a href={homePath} class="flex items-center group" data-brand-logo aria-label="morˢ">
+        <img
+          src="/brand/mors-wordmark.svg"
+          alt="morˢ"
+          class="h-8 w-auto transition-opacity group-hover:opacity-80"
+          width="115"
+          height="32"
+        />
       </a>
 
       <!-- Desktop nav -->
