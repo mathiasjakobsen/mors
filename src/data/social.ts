@@ -12,7 +12,7 @@ export const socialLinks: SocialLink[] = [
   },
   {
     platform: 'Facebook',
-    url: 'https://www.facebook.com/www.mors.coffee',
+    url: 'https://www.facebook.com/morscoffee.dk',
     icon: 'facebook',
   },
 ];
