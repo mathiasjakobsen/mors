@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "build:font": "node scripts/font/slice-source.mjs && node scripts/font/trace-glyphs.mjs && node scripts/font/build-font.mjs",
     "prebuild": "node scripts/generate-brand-assets.mjs",
     "build": "astro build",
     "preview": "astro preview",
@@ -16,6 +17,9 @@
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
-    "tailwindcss": "^3.4.18"
+    "opentype.js": "^2.0.0",
+    "potrace": "^2.1.8",
+    "tailwindcss": "^3.4.18",
+    "wawoff2": "^2.0.1"
   }
 }

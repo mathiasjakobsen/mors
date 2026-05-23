@@ -23,6 +23,7 @@ export default {
       fontFamily: {
         display: ['Playfair Display', 'Georgia', 'serif'],
         body: ['DM Sans', 'system-ui', 'sans-serif'],
+        mors: ['Mors Display', 'Playfair Display', 'Georgia', 'serif'],
       },
       borderRadius: {
         mors: '8px',
