@@ -31,12 +31,14 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/haandvaerk': { da: '/haandvaerk', en: '/en/crafts' },
     '/om': { da: '/om', en: '/en/about' },
     '/kontakt': { da: '/kontakt', en: '/en/contact' },
+    '/brand': { da: '/brand', en: '/en/brand' },
     '/en/': { da: '/', en: '/en/' },
     '/en/menu': { da: '/menu', en: '/en/menu' },
     '/en/coffee': { da: '/kaffe', en: '/en/coffee' },
     '/en/crafts': { da: '/haandvaerk', en: '/en/crafts' },
     '/en/about': { da: '/om', en: '/en/about' },
     '/en/contact': { da: '/kontakt', en: '/en/contact' },
+    '/en/brand': { da: '/brand', en: '/en/brand' },
   };
 
   const cleanPath = currentPath.replace(/\/$/, '') || '/';

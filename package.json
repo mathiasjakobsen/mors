@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build:font": "node scripts/font/slice-source.mjs && node scripts/font/trace-glyphs.mjs && node scripts/font/build-font.mjs",
+    "build:font": "npm run build:font:regular && npm run build:font:light",
+    "build:font:regular": "node scripts/font/slice-source.mjs && node scripts/font/trace-glyphs.mjs && node scripts/font/build-font.mjs",
+    "build:font:light": "node scripts/font/slice-source.mjs && WEIGHT=light node scripts/font/trace-glyphs.mjs && WEIGHT=light node scripts/font/build-font.mjs",
     "prebuild": "node scripts/generate-brand-assets.mjs",
     "build": "astro build",
     "preview": "astro preview",

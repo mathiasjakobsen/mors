@@ -1,0 +1,92 @@
+export interface BrandFontFile {
+  format: 'OTF' | 'WOFF2' | 'TTF';
+  path: string;
+  filename: string;
+}
+
+export interface BrandFont {
+  id: string;
+  family: string;
+  /** CSS font-family value used to render the preview. */
+  cssFamily: string;
+  /** CSS font-weight used in the preview. */
+  cssWeight: 300 | 400 | 500 | 600 | 700 | 900;
+  /** Label shown next to the family name. */
+  styleLabel: string;
+  /** Where to get it (download files or external link). */
+  source:
+    | { kind: 'download'; files: BrandFontFile[] }
+    | { kind: 'external'; url: string; provider: string };
+  role: { da: string; en: string };
+}
+
+export const brandFonts: BrandFont[] = [
+  {
+    id: 'mors-display-regular',
+    family: 'Mors Display',
+    cssFamily: "'Mors Display', 'Playfair Display', Georgia, serif",
+    cssWeight: 400,
+    styleLabel: 'Regular',
+    source: {
+      kind: 'download',
+      files: [
+        { format: 'WOFF2', path: '/fonts/mors-display.woff2', filename: 'mors-display.woff2' },
+        { format: 'OTF', path: '/fonts/mors-display.otf', filename: 'mors-display.otf' },
+      ],
+    },
+    role: {
+      da: 'Husfont — afledt af ordmærket. Til display og accenter.',
+      en: 'House display face — derived from the wordmark. For display and accents.',
+    },
+  },
+  {
+    id: 'mors-display-light',
+    family: 'Mors Display',
+    cssFamily: "'Mors Display', 'Playfair Display', Georgia, serif",
+    cssWeight: 300,
+    styleLabel: 'Light',
+    source: {
+      kind: 'download',
+      files: [
+        { format: 'WOFF2', path: '/fonts/mors-display-light.woff2', filename: 'mors-display-light.woff2' },
+        { format: 'OTF', path: '/fonts/mors-display-light.otf', filename: 'mors-display-light.otf' },
+      ],
+    },
+    role: {
+      da: 'Tyndere variant til større overskrifter, hvor regular bliver for tung.',
+      en: 'Thinner cut for larger headlines where Regular feels too heavy.',
+    },
+  },
+  {
+    id: 'playfair-display',
+    family: 'Playfair Display',
+    cssFamily: "'Playfair Display', Georgia, serif",
+    cssWeight: 700,
+    styleLabel: 'Bold · Black · Bold Italic',
+    source: {
+      kind: 'external',
+      url: 'https://fonts.google.com/specimen/Playfair+Display',
+      provider: 'Google Fonts',
+    },
+    role: {
+      da: 'Display-serif til overskrifter og pull quotes.',
+      en: 'Display serif for headings and pull quotes.',
+    },
+  },
+  {
+    id: 'dm-sans',
+    family: 'DM Sans',
+    cssFamily: "'DM Sans', system-ui, sans-serif",
+    cssWeight: 400,
+    styleLabel: 'Light · Regular · Medium · SemiBold · Bold',
+    source: {
+      kind: 'external',
+      url: 'https://fonts.google.com/specimen/DM+Sans',
+      provider: 'Google Fonts',
+    },
+    role: {
+      da: 'Brødtekst og UI. Bruges på alt løbende tekst.',
+      en: 'Body copy and UI. Used on all running text.',
+    },
+  },
+];

@@ -1,11 +1,13 @@
 // Trace per-glyph bitmaps into SVG path data via potrace.
-//   node scripts/font/trace-glyphs.mjs
+//   node scripts/font/trace-glyphs.mjs                  → regular weight
+//   WEIGHT=light node scripts/font/trace-glyphs.mjs     → erode strokes first
 //
 // Reads:  scripts/font/glyphs/<name>.png + _mapping.json
-// Writes: scripts/font/glyphs/_traced.json
-//          { name, char, codepoint, bbox, row, commands: [{op, args}, ...] }
+// Writes: scripts/font/glyphs/_traced.json        (regular)
+//      or scripts/font/glyphs/_traced-light.json  (light: bitmap eroded 1px before tracing)
 
 import potrace from 'potrace';
+import sharp from 'sharp';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -13,7 +15,14 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GLYPHS_DIR = join(__dirname, 'glyphs');
 const MAPPING_PATH = join(GLYPHS_DIR, '_mapping.json');
-const OUT_PATH = join(GLYPHS_DIR, '_traced.json');
+
+const WEIGHT = process.env.WEIGHT === 'light' ? 'light' : 'regular';
+const EROSION_PX = WEIGHT === 'light' ? 1 : 0; // 1 iter ≈ 2 px off each stroke
+const OUT_PATH = WEIGHT === 'light'
+  ? join(GLYPHS_DIR, '_traced-light.json')
+  : join(GLYPHS_DIR, '_traced.json');
+
+console.log(`weight=${WEIGHT}  erosion=${EROSION_PX}px  out=${OUT_PATH.split('/').pop()}`);
 
 const POTRACE_OPTS = {
   threshold: 128,        // already binarized 0/255
@@ -24,13 +33,42 @@ const POTRACE_OPTS = {
   turnPolicy: potrace.Potrace.TURNPOLICY_MINORITY,
 };
 
-function traceFile(path) {
+function traceInput(input) {
+  // input can be a file path or a Buffer.
   return new Promise((resolve, reject) => {
-    potrace.trace(path, POTRACE_OPTS, (err, svg) => {
+    potrace.trace(input, POTRACE_OPTS, (err, svg) => {
       if (err) reject(err);
       else resolve(svg);
     });
   });
+}
+
+// Morphological erosion of the BLACK regions (= dilation of white background).
+// Each iteration peels 1px off the boundary of every black blob using
+// 4-connectivity, which thins strokes by ~2px (one from each side).
+async function erodeBitmapToBuffer(pngPath, iterations) {
+  const { data, info } = await sharp(pngPath).raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+  let curr = new Uint8Array(width * height);
+  for (let i = 0; i < curr.length; i++) curr[i] = data[i * channels];
+
+  for (let it = 0; it < iterations; it++) {
+    const next = new Uint8Array(curr);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const i = y * width + x;
+        if (curr[i] !== 0) continue; // not ink
+        const up = y > 0 ? curr[i - width] : 255;
+        const dn = y < height - 1 ? curr[i + width] : 255;
+        const lt = x > 0 ? curr[i - 1] : 255;
+        const rt = x < width - 1 ? curr[i + 1] : 255;
+        if (up !== 0 || dn !== 0 || lt !== 0 || rt !== 0) next[i] = 255;
+      }
+    }
+    curr = next;
+  }
+
+  return sharp(curr, { raw: { width, height, channels: 1 } }).png().toBuffer();
 }
 
 function extractPathD(svg) {
@@ -174,7 +212,11 @@ const traced = [];
 for (const g of mapping) {
   try {
     const filename = g.filename ?? `${g.name}.png`;
-    const svg = await traceFile(join(GLYPHS_DIR, filename));
+    const pngPath = join(GLYPHS_DIR, filename);
+    const input = EROSION_PX > 0
+      ? await erodeBitmapToBuffer(pngPath, EROSION_PX)
+      : pngPath;
+    const svg = await traceInput(input);
     const d = extractPathD(svg);
     if (!d) {
       console.warn(`✗ ${g.name} (${g.char}): no path in SVG output`);

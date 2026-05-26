@@ -11,9 +11,10 @@ interface Props {
   canonicalPath: string;
   ogImage?: string;
   jsonLd?: object;
+  noindex?: boolean;
 }
 
-const { title, description, lang, canonicalPath, ogImage, jsonLd } = Astro.props;
+const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex } = Astro.props;
 ---
 
 <BaseLayout
@@ -23,6 +24,7 @@ const { title, description, lang, canonicalPath, ogImage, jsonLd } = Astro.props
   canonicalPath={canonicalPath}
   ogImage={ogImage}
   jsonLd={jsonLd}
+  noindex={noindex}
 >
   <Header lang={lang} />
   <main id="main-content" class="flex-1 pt-20 md:pt-20">

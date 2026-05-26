@@ -1,0 +1,296 @@
+---
+import type { Lang } from '../../i18n/ui';
+import Container from '../shared/Container.astro';
+import { brandAssets } from '../../data/brand-assets';
+import { brandFonts } from '../../data/brand-fonts';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  da: {
+    hero: { eyebrow: 'Press kit', title: 'Brand', subtitle: 'Logoer, typografi og hvordan vi gerne ses.' },
+    logos: {
+      title: 'Logoer',
+      lead: 'Brug SVG hvor du kan. PNG og JPG ligger klar til de steder, der ikke understøtter vektor.',
+      logo: { name: 'Logo', desc: 'Mærket. Brug det hvor pladsen er smal — favicon, social og kompakte beholdere.' },
+      wordmark: { name: 'Ordmærke', desc: 'Skriften morˢ. Brug det som primær identitet på alt fra menuer til skilte.' },
+      downloadAll: 'Download alle som ZIP',
+      downloadAriaLogo: 'Download logo som',
+      downloadAriaWordmark: 'Download ordmærke som',
+    },
+    fonts: {
+      title: 'Typografi',
+      lead: 'Tre familier holder hele paletten — én ny og to klassikere fra Google Fonts.',
+      downloadAll: 'Download begge vægte af Mors Display',
+      downloadFile: 'Download',
+      seeOn: 'Hentes hos',
+      sampleAlphabet: 'AaBbCcDdEe · 0123456789 · ÆØÅ',
+      pangram: 'Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon.',
+    },
+  },
+  en: {
+    hero: { eyebrow: 'Press kit', title: 'Brand', subtitle: 'Logos, typography, and how we like to be shown.' },
+    logos: {
+      title: 'Logos',
+      lead: 'Use SVG wherever you can. PNG and JPG are there for tools that don\'t support vectors.',
+      logo: { name: 'Logo', desc: 'The mark. Use it where space is tight — favicons, social, compact containers.' },
+      wordmark: { name: 'Wordmark', desc: 'The morˢ lettering. Use as the primary identity on menus, signage, and headers.' },
+      downloadAll: 'Download all as ZIP',
+      downloadAriaLogo: 'Download logo as',
+      downloadAriaWordmark: 'Download wordmark as',
+    },
+    fonts: {
+      title: 'Typography',
+      lead: 'Three families carry the whole palette — one in-house face and two classics from Google Fonts.',
+      downloadAll: 'Download both Mors Display weights',
+      downloadFile: 'Download',
+      seeOn: 'Get it from',
+      sampleAlphabet: 'AaBbCcDdEe · 0123456789 · ÆØÅ',
+      pangram: 'The quick brown fox jumps over the lazy dog.',
+    },
+  },
+}[lang];
+
+const logoAssets = brandAssets.filter((a) => a.id.startsWith('logo-'));
+const wordmarkAssets = brandAssets.filter((a) => a.id.startsWith('wordmark-'));
+
+const logoCards = [
+  {
+    key: 'logo',
+    name: copy.logos.logo.name,
+    desc: copy.logos.logo.desc,
+    previewSrc: '/brand/mors-logo.svg',
+    previewAria: 'morˢ logo',
+    aspect: 'aspect-square',
+    assets: logoAssets,
+    ariaPrefix: copy.logos.downloadAriaLogo,
+  },
+  {
+    key: 'wordmark',
+    name: copy.logos.wordmark.name,
+    desc: copy.logos.wordmark.desc,
+    previewSrc: '/brand/mors-wordmark.svg',
+    previewAria: 'morˢ wordmark',
+    aspect: 'aspect-[4/3]',
+    assets: wordmarkAssets,
+    ariaPrefix: copy.logos.downloadAriaWordmark,
+  },
+];
+
+const formatLabel = (id: string) => id.split('-')[1].toUpperCase();
+---
+
+<!-- Hero -->
+<section class="bg-cream py-32 md:py-48">
+  <Container>
+    <div data-animate-on-scroll class="max-w-3xl opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <p class="font-body text-xs uppercase tracking-[0.3em] text-deep-red mb-6">{copy.hero.eyebrow}</p>
+      <h1 class="font-display font-bold text-5xl md:text-7xl text-deep-red mb-8">{copy.hero.title}</h1>
+      <p class="font-body font-light text-xl text-ink-light leading-relaxed">{copy.hero.subtitle}</p>
+    </div>
+  </Container>
+</section>
+
+<!-- Logos -->
+<section class="bg-warm-white py-24 md:py-40">
+  <Container>
+    <div data-animate-on-scroll class="max-w-3xl mb-20 md:mb-28 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-6">{copy.logos.title}</h2>
+      <p class="font-body font-light text-lg text-ink-light leading-relaxed">{copy.logos.lead}</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+      {logoCards.map((card) => (
+        <article data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+          <div class={`${card.aspect} bg-cream rounded-mors border border-ink/5 flex items-center justify-center p-12 md:p-16`}>
+            <img
+              src={card.previewSrc}
+              alt={card.previewAria}
+              class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain"
+              loading="lazy"
+            />
+          </div>
+          <div class="mt-8">
+            <h3 class="font-display font-bold text-2xl text-ink mb-2">{card.name}</h3>
+            <p class="font-body font-light text-ink-light leading-relaxed mb-6">{card.desc}</p>
+            <div class="flex flex-wrap gap-2">
+              {card.assets.map((asset) => (
+                <a
+                  href={asset.path}
+                  download={asset.filename}
+                  data-brand-page-path={asset.path}
+                  data-brand-page-filename={asset.filename}
+                  aria-label={`${card.ariaPrefix} ${formatLabel(asset.id)}`}
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-ink/15 rounded-mors font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/70 hover:text-deep-red hover:border-deep-red/40 hover:bg-deep-red/5 transition-colors"
+                >
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-60">
+                    <path d="M7 2v8" />
+                    <path d="M3.5 7L7 10.5 10.5 7" />
+                    <path d="M2.5 12h9" />
+                  </svg>
+                  {formatLabel(asset.id)}
+                </a>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div data-animate-on-scroll class="mt-16 md:mt-20 flex justify-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <button
+        type="button"
+        id="brand-page-download-all"
+        class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-deep-red text-cream font-body text-sm font-medium tracking-[0.05em] hover:bg-ink transition-colors"
+      >
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-4 h-4">
+          <path d="M8 2v9" />
+          <path d="M4 7l4 4 4-4" />
+          <path d="M3 14h10" />
+        </svg>
+        {copy.logos.downloadAll}
+      </button>
+    </div>
+  </Container>
+</section>
+
+<!-- Typography -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <div data-animate-on-scroll class="max-w-3xl mb-20 md:mb-28 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <h2 class="font-display font-bold text-3xl md:text-4xl text-deep-red mb-6">{copy.fonts.title}</h2>
+      <p class="font-body font-light text-lg text-ink-light leading-relaxed">{copy.fonts.lead}</p>
+    </div>
+
+    <div class="space-y-10 md:space-y-14">
+      {brandFonts.map((font) => (
+        <article
+          data-animate-on-scroll
+          class="bg-warm-white rounded-mors border border-ink/5 p-8 md:p-14 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+        >
+          <header class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-8 md:mb-10">
+            <div>
+              <h3 class="font-display font-bold text-2xl md:text-3xl text-ink">{font.family}</h3>
+              <p class="font-body text-xs uppercase tracking-[0.22em] text-ink/40 mt-2">{font.styleLabel}</p>
+            </div>
+            <p class="font-body font-light text-ink-light max-w-md md:text-right">{font.role[lang]}</p>
+          </header>
+
+          <div
+            class="text-deep-red leading-none mb-8 md:mb-10 text-6xl md:text-8xl"
+            style={`font-family: ${font.cssFamily}; font-weight: ${font.cssWeight};`}
+            aria-hidden="true"
+          >
+            morˢ
+          </div>
+
+          <div
+            class="font-body text-ink-light text-base md:text-lg tracking-wide mb-4"
+            style={`font-family: ${font.cssFamily}; font-weight: ${font.cssWeight};`}
+          >
+            {copy.fonts.sampleAlphabet}
+          </div>
+
+          <p
+            class="text-ink-light text-xl md:text-2xl leading-snug mb-10 max-w-3xl"
+            style={`font-family: ${font.cssFamily}; font-weight: ${font.cssWeight};`}
+          >
+            {copy.fonts.pangram}
+          </p>
+
+          <div class="flex flex-wrap gap-2 pt-6 border-t border-ink/5">
+            {font.source.kind === 'download' ? (
+              font.source.files.map((f) => (
+                <a
+                  href={f.path}
+                  download={f.filename}
+                  data-brand-page-path={f.path}
+                  data-brand-page-filename={f.filename}
+                  data-mors-font
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-ink/15 rounded-mors font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/70 hover:text-deep-red hover:border-deep-red/40 hover:bg-deep-red/5 transition-colors"
+                >
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-60">
+                    <path d="M7 2v8" />
+                    <path d="M3.5 7L7 10.5 10.5 7" />
+                    <path d="M2.5 12h9" />
+                  </svg>
+                  {copy.fonts.downloadFile} {f.format}
+                </a>
+              ))
+            ) : (
+              <a
+                href={font.source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-ink/15 rounded-mors font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/70 hover:text-deep-red hover:border-deep-red/40 hover:bg-deep-red/5 transition-colors"
+              >
+                {copy.fonts.seeOn} {font.source.provider}
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-60">
+                  <path d="M3 11l8-8" />
+                  <path d="M5 3h6v6" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div data-animate-on-scroll class="mt-16 md:mt-20 flex justify-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <button
+        type="button"
+        id="brand-page-download-fonts"
+        class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-deep-red text-cream font-body text-sm font-medium tracking-[0.05em] hover:bg-ink transition-colors"
+      >
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-4 h-4">
+          <path d="M8 2v9" />
+          <path d="M4 7l4 4 4-4" />
+          <path d="M3 14h10" />
+        </svg>
+        {copy.fonts.downloadAll}
+      </button>
+    </div>
+  </Container>
+</section>
+
+<script>
+  async function zipAndDownload(selector: string, zipName: string) {
+    const elements = document.querySelectorAll<HTMLElement>(selector);
+    if (elements.length === 0) return;
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
+    await Promise.all(
+      Array.from(elements).map(async (el) => {
+        const path = el.dataset.brandPagePath;
+        const filename = el.dataset.brandPageFilename;
+        if (!path || !filename) return;
+        const response = await fetch(path);
+        const blob = await response.blob();
+        zip.file(filename, blob);
+      })
+    );
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = zipName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document
+    .getElementById('brand-page-download-all')
+    ?.addEventListener('click', () =>
+      zipAndDownload('[data-brand-page-path]:not([data-mors-font])', 'mors-brand-logos.zip'),
+    );
+
+  document
+    .getElementById('brand-page-download-fonts')
+    ?.addEventListener('click', () =>
+      zipAndDownload('[data-mors-font]', 'mors-display-fonts.zip'),
+    );
+</script>

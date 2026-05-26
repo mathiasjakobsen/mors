@@ -1,12 +1,13 @@
 // Build the Mors Display font from potrace'd source bitmaps.
-//   node scripts/font/build-font.mjs
+//   node scripts/font/build-font.mjs                → Regular (weight 400)
+//   WEIGHT=light node scripts/font/build-font.mjs   → Light   (weight 300)
 //
 // Inputs:
-//   scripts/font/glyphs/_traced.json  (from trace-glyphs.mjs)
+//   scripts/font/glyphs/_traced.json        (from trace-glyphs.mjs, regular)
+//   scripts/font/glyphs/_traced-light.json  (from trace-glyphs.mjs WEIGHT=light)
 // Outputs:
-//   public/fonts/mors-display.otf
-//   public/fonts/mors-display.woff2
-//   scripts/font/_sample.svg / _sample.png
+//   public/fonts/mors-display{,-light}.otf / .woff2
+//   scripts/font/_sample{,-light}.svg / .png
 
 import opentype from 'opentype.js';
 import wawoff2 from 'wawoff2';
@@ -18,7 +19,14 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..', '..');
 const FONT_OUT_DIR = join(ROOT, 'public', 'fonts');
-const TRACED_PATH = join(__dirname, 'glyphs', '_traced.json');
+
+const WEIGHT = process.env.WEIGHT === 'light' ? 'light' : 'regular';
+const STYLE_NAME = WEIGHT === 'light' ? 'Light' : 'Regular';
+const WEIGHT_CLASS = WEIGHT === 'light' ? 300 : 400;
+const FONT_BASENAME = WEIGHT === 'light' ? 'mors-display-light' : 'mors-display';
+const TRACED_PATH = join(__dirname, 'glyphs', WEIGHT === 'light' ? '_traced-light.json' : '_traced.json');
+const SAMPLE_BASENAME = WEIGHT === 'light' ? '_sample-light' : '_sample';
+console.log(`weight=${WEIGHT}  style=${STYLE_NAME}  weightClass=${WEIGHT_CLASS}`);
 
 await mkdir(FONT_OUT_DIR, { recursive: true });
 
@@ -170,10 +178,11 @@ console.log(`assembled ${glyphList.length} glyphs (incl. .notdef + space)`);
 
 const font = new opentype.Font({
   familyName: 'Mors Display',
-  styleName: 'Regular',
+  styleName: STYLE_NAME,
   unitsPerEm: UPEM,
   ascender: ASCENDER,
   descender: DESCENDER,
+  weightClass: WEIGHT_CLASS,
   glyphs: glyphList,
 });
 
@@ -189,8 +198,9 @@ try {
     const mid = (lo + hi) >> 1;
     const sub = glyphList.slice(0, mid + 1);
     const f = new opentype.Font({
-      familyName: 'Mors Display', styleName: 'Regular',
+      familyName: 'Mors Display', styleName: STYLE_NAME,
       unitsPerEm: UPEM, ascender: ASCENDER, descender: DESCENDER,
+      weightClass: WEIGHT_CLASS,
       glyphs: sub,
     });
     try { f.toArrayBuffer(); lo = mid + 1; }
@@ -201,12 +211,12 @@ try {
   console.error('first 3 path commands:', JSON.stringify(bad.path.commands.slice(0, 3)));
   throw err;
 }
-await writeFile(join(FONT_OUT_DIR, 'mors-display.otf'), otfBuffer);
-console.log(`✓ wrote mors-display.otf  (${otfBuffer.length} bytes)`);
+await writeFile(join(FONT_OUT_DIR, `${FONT_BASENAME}.otf`), otfBuffer);
+console.log(`✓ wrote ${FONT_BASENAME}.otf  (${otfBuffer.length} bytes)`);
 
 const woff2 = await wawoff2.compress(otfBuffer);
-await writeFile(join(FONT_OUT_DIR, 'mors-display.woff2'), Buffer.from(woff2));
-console.log(`✓ wrote mors-display.woff2 (${woff2.length} bytes)`);
+await writeFile(join(FONT_OUT_DIR, `${FONT_BASENAME}.woff2`), Buffer.from(woff2));
+console.log(`✓ wrote ${FONT_BASENAME}.woff2 (${woff2.length} bytes)`);
 
 // ── Render visual QA sample ────────────────────────────────────────────────
 const SAMPLE_LINES = [
@@ -285,6 +295,6 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${hei
   <g fill="#713B2A" fill-rule="evenodd">${lineSvgs}</g>
 </svg>`;
 
-await writeFile(join(__dirname, '_sample.svg'), svg);
-await sharp(Buffer.from(svg)).png().toFile(join(__dirname, '_sample.png'));
-console.log(`✓ wrote scripts/font/_sample.png (${SAMPLE_LINES.length} lines)`);
+await writeFile(join(__dirname, `${SAMPLE_BASENAME}.svg`), svg);
+await sharp(Buffer.from(svg)).png().toFile(join(__dirname, `${SAMPLE_BASENAME}.png`));
+console.log(`✓ wrote scripts/font/${SAMPLE_BASENAME}.png (${SAMPLE_LINES.length} lines)`);

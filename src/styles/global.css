@@ -86,6 +86,14 @@
 @font-face {
   font-family: 'Mors Display';
   font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/mors-display-light.woff2') format('woff2'),
+       url('/fonts/mors-display-light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Mors Display';
+  font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url('/fonts/mors-display.woff2') format('woff2'),

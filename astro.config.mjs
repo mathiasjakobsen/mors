@@ -5,7 +5,12 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://mors.coffee',
-  integrations: [tailwind(), sitemap()],
+  integrations: [
+    tailwind(),
+    sitemap({
+      filter: (page) => !/\/brand\/?$/.test(page),
+    }),
+  ],
   i18n: {
     locales: ['da', 'en'],
     defaultLocale: 'da',

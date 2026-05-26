@@ -11,9 +11,10 @@ interface Props {
   canonicalPath: string;
   ogImage?: string;
   jsonLd?: object;
+  noindex?: boolean;
 }
 
-const { title, description, lang, canonicalPath, ogImage, jsonLd } = Astro.props;
+const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex = true } = Astro.props;
 
 const siteUrl = config.siteUrl;
 const canonicalUrl = `${siteUrl}${canonicalPath}`;
@@ -31,7 +32,7 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#F5F0E8" />
 
     <title>{title}</title>
