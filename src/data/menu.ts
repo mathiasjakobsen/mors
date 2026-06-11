@@ -117,7 +117,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Lightly sparkling organic kombucha with elderflower — pleasantly tart with a mild sweetness. Converts any booch skeptic.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/raw-culture-hyldeblomst.png',
       },
       {
         id: 'raw-culture-rabarber',
@@ -128,7 +127,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Refreshing organic kombucha brewed in Denmark with the taste of classic Danish rhubarb.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/raw-culture-rabarber.png',
       },
       {
         id: 'raw-culture-hindbaer',
@@ -139,7 +137,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Aromatic organic kombucha with raspberry — nostalgic like classic raspberry soda and wonderfully refreshing.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/raw-culture-hindbaer.png',
       },
       {
         id: 'raw-culture-solbaer',
@@ -150,7 +147,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Refreshing organic kombucha brewed in Denmark with the taste of Danish blackcurrants.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/raw-culture-solbaer.png',
       },
       {
         id: 'moster-rabarber',
@@ -161,7 +157,6 @@ export const menuCategories: MenuCategory[] = [
           en: "Delicious organic rhubarb juice — fresh and not too tart, sweetened with apple instead of sugar and rounded off with a pleasant dryness.",
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-rabarber.jpg',
       },
       {
         id: 'moster-hyldeblomst',
@@ -172,7 +167,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'A round, full-bodied organic elderflower juice that tastes like traditional homemade Danish cordial. Sweetened with apple.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-hyldeblomst.jpg',
       },
       {
         id: 'moster-appelsin',
@@ -183,7 +177,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Refreshing organic orange juice made purely from organic oranges. Best enjoyed ice-cold!',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-appelsin.jpg',
       },
       {
         id: 'moster-aeble',
@@ -194,7 +187,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Organic apple juice with no added sugar or additives — soft and round with a mild acidity.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-aeble.jpg',
       },
       {
         id: 'moster-ingefaer-lemon',
@@ -205,7 +197,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Sharp, refreshing organic juice with fresh citrus and a spicy ginger finish. Sweetened with apple.',
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-ingefaer-lemon.jpg',
       },
       {
         id: 'moster-tranebaer',
@@ -216,7 +207,6 @@ export const menuCategories: MenuCategory[] = [
           en: "Delicious organic cranberry juice — the berries' light bitterness rounded off with apple, with dryness and a bit of edge.",
         },
         tags: ['oeko', 'vegan'],
-        image: '/images/products/moster-tranebaer.jpg',
       },
       {
         id: 'nonnen-pale-ale-non-alc',
@@ -227,7 +217,6 @@ export const menuCategories: MenuCategory[] = [
           en: 'Alcohol-free organic pale ale full of flavour — extra hops and dry-hopped with Citra for freshness.',
         },
         tags: ['oeko'],
-        image: '/images/products/nonnen-pale-ale-non-alc.jpg',
       },
     ],
   },
