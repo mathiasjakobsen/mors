@@ -152,6 +152,83 @@ export const menuCategories: MenuCategory[] = [
         tags: ['oeko', 'vegan'],
         image: '/images/products/raw-culture-solbaer.png',
       },
+      {
+        id: 'moster-rabarber',
+        name: { da: 'Mosters Rabarber', en: 'Mosters Rhubarb' },
+        price: 34,
+        description: {
+          da: 'Lækker økologisk rabarbersaft, der smager friskt af rabarber uden at være for syrlig. Sødet med æble i stedet for sukker og afrundet med en dejlig tørhed.',
+          en: "Delicious organic rhubarb juice — fresh and not too tart, sweetened with apple instead of sugar and rounded off with a pleasant dryness.",
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-rabarber.jpg',
+      },
+      {
+        id: 'moster-hyldeblomst',
+        name: { da: 'Mosters Hyldeblomst', en: 'Mosters Elderflower' },
+        price: 34,
+        description: {
+          da: 'Rund og fyldig økologisk hyldeblomstsaft, der smager som traditionel hjemmelavet dansk saft. Sødet med æble.',
+          en: 'A round, full-bodied organic elderflower juice that tastes like traditional homemade Danish cordial. Sweetened with apple.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-hyldeblomst.jpg',
+      },
+      {
+        id: 'moster-appelsin',
+        name: { da: 'Mosters Appelsin', en: 'Mosters Orange' },
+        price: 34,
+        description: {
+          da: 'Læskende økologisk appelsinsaft lavet på rendyrkede økologiske appelsiner. Skal nydes iskold!',
+          en: 'Refreshing organic orange juice made purely from organic oranges. Best enjoyed ice-cold!',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-appelsin.jpg',
+      },
+      {
+        id: 'moster-aeble',
+        name: { da: 'Mosters Æble', en: 'Mosters Apple' },
+        price: 34,
+        description: {
+          da: 'Økologisk æblesaft uden tilsat sukker eller tilsætningsstoffer — blød og rund med en mild syrlighed.',
+          en: 'Organic apple juice with no added sugar or additives — soft and round with a mild acidity.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-aeble.jpg',
+      },
+      {
+        id: 'moster-ingefaer-lemon',
+        name: { da: 'Mosters Ingefær-Lemon', en: 'Mosters Ginger Lemon' },
+        price: 34,
+        description: {
+          da: 'Skarp og forfriskende økologisk saft med frisk citrus og en krydret eftersmag af ingefær. Sødet med æble.',
+          en: 'Sharp, refreshing organic juice with fresh citrus and a spicy ginger finish. Sweetened with apple.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-ingefaer-lemon.jpg',
+      },
+      {
+        id: 'moster-tranebaer',
+        name: { da: 'Mosters Tranebær', en: 'Mosters Cranberry' },
+        price: 34,
+        description: {
+          da: 'Lækker økologisk tranebærsaft, hvor bærrenes lette bitterhed er afrundet med æble — med tørhed og lidt kant.',
+          en: "Delicious organic cranberry juice — the berries' light bitterness rounded off with apple, with dryness and a bit of edge.",
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/moster-tranebaer.jpg',
+      },
+      {
+        id: 'nonnen-pale-ale-non-alc',
+        name: { da: 'Nonnen Pale Ale (alkoholfri)', en: 'Nonnen Pale Ale (alcohol-free)' },
+        price: 34,
+        description: {
+          da: 'Alkoholfri økologisk Pale Ale med masser af smag — ekstra humle og tørhumlet med Citra for friskhed.',
+          en: 'Alcohol-free organic pale ale full of flavour — extra hops and dry-hopped with Citra for freshness.',
+        },
+        tags: ['oeko'],
+        image: '/images/products/nonnen-pale-ale-non-alc.jpg',
+      },
     ],
   },
   {
