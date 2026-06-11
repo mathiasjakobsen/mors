@@ -8,6 +8,8 @@ export interface MenuItem {
   price: number;
   description?: Record<Lang, string>;
   tags?: MenuTag[];
+  /** When set, the item renders as an image card instead of a text row. */
+  image?: string;
 }
 
 export interface MenuCategory {
@@ -106,6 +108,50 @@ export const menuCategories: MenuCategory[] = [
       { id: 'juice', name: { da: 'Juice', en: 'Juice' }, price: 45 },
       { id: 'soda', name: { da: 'Sodavand', en: 'Soda' }, price: 30 },
       { id: 'sparkling-water', name: { da: 'Danskvand', en: 'Sparkling water' }, price: 20 },
+      {
+        id: 'raw-culture-hyldeblomst',
+        name: { da: 'Hyldeblomst', en: 'Elderflower' },
+        price: 35,
+        description: {
+          da: 'Letboblende økologisk kombucha med smag af hyldeblomst — lækker syrlighed og mild sødme. Omvender enhver booch-kritiker.',
+          en: 'Lightly sparkling organic kombucha with elderflower — pleasantly tart with a mild sweetness. Converts any booch skeptic.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/raw-culture-hyldeblomst.png',
+      },
+      {
+        id: 'raw-culture-rabarber',
+        name: { da: 'Rabarber', en: 'Rhubarb' },
+        price: 35,
+        description: {
+          da: 'Forfriskende økologisk kombucha brygget i Danmark med smag af klassisk dansk rabarber.',
+          en: 'Refreshing organic kombucha brewed in Denmark with the taste of classic Danish rhubarb.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/raw-culture-rabarber.png',
+      },
+      {
+        id: 'raw-culture-hindbaer',
+        name: { da: 'Hindbær', en: 'Raspberry' },
+        price: 35,
+        description: {
+          da: 'Aromatisk økologisk kombucha med smag af hindbær — nostalgisk som den velkendte hindbærbrus og dejligt forfriskende.',
+          en: 'Aromatic organic kombucha with raspberry — nostalgic like classic raspberry soda and wonderfully refreshing.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/raw-culture-hindbaer.png',
+      },
+      {
+        id: 'raw-culture-solbaer',
+        name: { da: 'Solbær', en: 'Blackcurrant' },
+        price: 35,
+        description: {
+          da: 'Forfriskende økologisk kombucha brygget i Danmark med smag af danske solbær.',
+          en: 'Refreshing organic kombucha brewed in Denmark with the taste of Danish blackcurrants.',
+        },
+        tags: ['oeko', 'vegan'],
+        image: '/images/products/raw-culture-solbaer.png',
+      },
     ],
   },
   {

@@ -36,7 +36,7 @@ const tagLabels: Record<string, string> = {
             </h2>
 
             <div class="space-y-5">
-              {category.items.map((item) => (
+              {category.items.filter((item) => !item.image).map((item) => (
                 <div>
                   <div class="flex items-baseline gap-3">
                     <span class="font-body font-normal text-ink">
@@ -64,6 +64,41 @@ const tagLabels: Record<string, string> = {
                 </div>
               ))}
             </div>
+
+            {category.items.some((item) => item.image) && (
+              <div class="grid grid-cols-2 gap-6 mt-10">
+                {category.items.filter((item) => item.image).map((item) => (
+                  <div class="group text-center">
+                    <div class="aspect-[3/4] overflow-hidden rounded-lg bg-white border border-ink/5 mb-4 flex items-center justify-center p-5">
+                      <img
+                        src={item.image}
+                        alt={item.name[lang]}
+                        loading="lazy"
+                        class="max-h-full w-auto object-contain transition-transform duration-[600ms] ease-out group-hover:scale-105"
+                      />
+                    </div>
+                    <div class="flex items-baseline justify-center gap-2">
+                      <span class="font-body font-normal text-ink">{item.name[lang]}</span>
+                      <span class="font-body font-normal text-ink-light whitespace-nowrap">{item.price} DKK</span>
+                    </div>
+                    {item.tags && item.tags.length > 0 && (
+                      <div class="flex justify-center gap-1.5 mt-1">
+                        {item.tags.map((tag) => (
+                          <span class="text-[10px] uppercase tracking-[0.15em] font-body text-sage font-normal">
+                            {tagLabels[tag]}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {item.description && (
+                      <p class="font-body font-light text-sm text-ink-light mt-2 max-w-[28ch] mx-auto">
+                        {item.description[lang]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div class="mt-12 w-16 h-px bg-deep-red/10 mx-auto"></div>
           </div>

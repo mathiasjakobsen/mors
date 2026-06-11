@@ -53,6 +53,7 @@ interface ApiProduct {
   description?: string;
   image_url?: string;
   price_kr: number | null;
+  tax_rate?: number;
   currency: string;
   in_stock: boolean;
   featured: boolean;
@@ -155,9 +156,11 @@ function toMenuCategory(c: ApiCategory): MenuCategory {
     items: c.products.map((p) => ({
       id:    p.slug || String(p.id),
       name:  (p.translations.name as MenuCategory['items'][number]['name']) || { da: p.name, en: p.name },
-      price: p.price_kr ?? 0,
+      // The API serves ex-VAT price_kr; the menu shows customer (incl-VAT) prices.
+      price: Math.round((p.price_kr ?? 0) * (1 + (p.tax_rate ?? 25) / 100)),
       description: p.translations.description as MenuCategory['items'][number]['description'],
       tags: p.properties?.tags as MenuCategory['items'][number]['tags'],
+      image: p.image_url || undefined,
     })),
   };
 }
