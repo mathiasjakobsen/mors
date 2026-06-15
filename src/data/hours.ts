@@ -40,13 +40,13 @@ export const hours: OpeningHours[] = [
   },
   {
     day: { da: 'Lørdag', en: 'Saturday' },
-    open: '09:00',
+    open: '08:30',
     close: '16:00',
     dayOfWeek: ['Saturday'],
   },
   {
     day: { da: 'Søndag', en: 'Sunday' },
-    open: '09:00',
+    open: '08:30',
     close: '16:00',
     dayOfWeek: ['Sunday'],
   },
@@ -56,7 +56,7 @@ export const hours: OpeningHours[] = [
 export function getHoursSummary(lang: Lang): string[] {
   return [
     `${lang === 'da' ? 'Man-Fre' : 'Mon-Fri'}: 7:30-18:00`,
-    `${lang === 'da' ? 'Lørdag' : 'Saturday'}: 9:00-16:00`,
-    `${lang === 'da' ? 'Søndag' : 'Sunday'}: 9:00-16:00`,
+    `${lang === 'da' ? 'Lørdag' : 'Saturday'}: 8:30-16:00`,
+    `${lang === 'da' ? 'Søndag' : 'Sunday'}: 8:30-16:00`,
   ];
 }

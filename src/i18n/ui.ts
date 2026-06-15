@@ -59,7 +59,7 @@ export function getNavItems(lang: Lang) {
   return [
     { label: t(lang, 'nav.menu'), href: lang === 'da' ? '/menu' : '/en/menu' },
     { label: t(lang, 'nav.beans'), href: lang === 'da' ? '/kaffe' : '/en/coffee' },
-    { label: t(lang, 'nav.products'), href: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
+    { label: t(lang, 'nav.products'), href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/' },
     { label: t(lang, 'nav.about'), href: lang === 'da' ? '/om' : '/en/about' },
     { label: t(lang, 'nav.contact'), href: lang === 'da' ? '/kontakt' : '/en/contact' },
   ];

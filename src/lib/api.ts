@@ -33,7 +33,7 @@ const API_ROOT = (
 const FETCH_TIMEOUT_MS = 8_000;
 
 const BEANS_CATEGORY_SLUG  = 'kaffebonner';
-const MENU_CATEGORY_SLUGS  = ['hot-drinks', 'cold-drinks', 'pastries', 'food'];
+const MENU_CATEGORY_SLUGS  = ['hot-drinks', 'pastries', 'food', 'cold-drinks'];
 const CRAFT_CATEGORY_SLUGS = ['ceramics', 'carpentry', 'other'];
 
 interface ApiOrigin   { country?: string; region?: string; farm?: string }
@@ -141,8 +141,13 @@ function toCoffeeBean(p: ApiProduct): CoffeeBean {
 export async function getMenuCategories(): Promise<MenuCategory[]> {
   const categories = await getCatalog();
   const menu = categories?.filter((c) => MENU_CATEGORY_SLUGS.includes(c.slug)) ?? [];
-  if (!menu.length) return menuFallback;
-  // Preserve the order declared by MENU_CATEGORY_SLUGS.
+  // Preserve the order declared by MENU_CATEGORY_SLUGS (applies to the
+  // offline fallback too, so cold drinks land at the bottom either way).
+  if (!menu.length) {
+    return MENU_CATEGORY_SLUGS
+      .map((slug) => menuFallback.find((c) => c.id === slug))
+      .filter((c): c is MenuCategory => !!c);
+  }
   const ordered = MENU_CATEGORY_SLUGS
     .map((slug) => menu.find((c) => c.slug === slug))
     .filter((c): c is ApiCategory => !!c);
