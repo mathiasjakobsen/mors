@@ -24,7 +24,7 @@ export const brandFonts: BrandFont[] = [
   {
     id: 'mors-display-regular',
     family: 'Mors Display',
-    cssFamily: "'Mors Display', 'Playfair Display', Georgia, serif",
+    cssFamily: "'Mors Display', 'Roboto', system-ui, sans-serif",
     cssWeight: 400,
     styleLabel: 'Regular',
     source: {
@@ -42,7 +42,7 @@ export const brandFonts: BrandFont[] = [
   {
     id: 'mors-display-light',
     family: 'Mors Display',
-    cssFamily: "'Mors Display', 'Playfair Display', Georgia, serif",
+    cssFamily: "'Mors Display', 'Roboto', system-ui, sans-serif",
     cssWeight: 300,
     styleLabel: 'Light',
     source: {
@@ -55,24 +55,6 @@ export const brandFonts: BrandFont[] = [
     role: {
       da: 'Tyndere variant til større overskrifter, hvor regular bliver for tung.',
       en: 'Thinner cut for larger headlines where Regular feels too heavy.',
-    },
-  },
-  {
-    id: 'playfair-display',
-    family: 'Playfair Display',
-    cssFamily: "'Playfair Display', Georgia, serif",
-    cssWeight: 700,
-    styleLabel: 'Bold · Black · Bold Italic',
-    source: {
-      kind: 'download',
-      files: [
-        { format: 'WOFF2', path: '/fonts/playfair-display-latin.woff2', filename: 'playfair-display-latin.woff2' },
-        { format: 'WOFF2', path: '/fonts/playfair-display-latin-italic.woff2', filename: 'playfair-display-latin-italic.woff2' },
-      ],
-    },
-    role: {
-      da: 'Display-serif til overskrifter og pull quotes.',
-      en: 'Display serif for headings and pull quotes.',
     },
   },
   {
@@ -89,8 +71,8 @@ export const brandFonts: BrandFont[] = [
       ],
     },
     role: {
-      da: 'Brødtekst og UI. Bruges på alt løbende tekst.',
-      en: 'Body copy and UI. Used on all running text.',
+      da: 'Vores hovedskrift. Bruges til alt — overskrifter, brødtekst og UI.',
+      en: 'Our primary typeface. Used for everything — headings, body copy and UI.',
     },
   },
 ];

@@ -21,9 +21,9 @@ export default {
         'warm-white': '#FDFBF7',
       },
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Roboto', 'system-ui', 'sans-serif'],
         body: ['Roboto', 'system-ui', 'sans-serif'],
-        mors: ['Mors Display', 'Playfair Display', 'Georgia', 'serif'],
+        mors: ['Mors Display', 'Roboto', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         mors: '8px',
