@@ -94,6 +94,12 @@ async function fetchCatalog(): Promise<ApiCategory[] | null> {
   }
 }
 
+// The API serves ex-VAT `price_kr`; every customer-facing page (menu,
+// beans, crafts) shows incl-VAT prices. Danish default rate is 25%.
+function priceInclVat(p: ApiProduct): number {
+  return Math.round((p.price_kr ?? 0) * (1 + (p.tax_rate ?? 25) / 100));
+}
+
 // Memoise the single round-trip so each page doesn't re-fetch.
 let cached: Promise<ApiCategory[] | null> | null = null;
 function getCatalog(): Promise<ApiCategory[] | null> {
@@ -125,7 +131,7 @@ function toCoffeeBean(p: ApiProduct): CoffeeBean {
     process:     props.process     || '',
     flavorNotes: props.flavor_notes || [],
     weight:      props.weight_g    || 250,
-    price:       p.price_kr ?? 0,
+    price:       priceInclVat(p),
     description: (p.translations.description as CoffeeBean['description']) || {
       da: p.description || '',
       en: p.description || '',
@@ -161,8 +167,7 @@ function toMenuCategory(c: ApiCategory): MenuCategory {
     items: c.products.map((p) => ({
       id:    p.slug || String(p.id),
       name:  (p.translations.name as MenuCategory['items'][number]['name']) || { da: p.name, en: p.name },
-      // The API serves ex-VAT price_kr; the menu shows customer (incl-VAT) prices.
-      price: Math.round((p.price_kr ?? 0) * (1 + (p.tax_rate ?? 25) / 100)),
+      price: priceInclVat(p),
       description: p.translations.description as MenuCategory['items'][number]['description'],
       tags: p.properties?.tags as MenuCategory['items'][number]['tags'],
       image: p.image_url || undefined,
@@ -214,7 +219,7 @@ function toProductCategory(c: ApiCategory): ProductCategory {
         da: p.description || '',
         en: p.description || '',
       },
-      price:   p.price_kr ?? 0,
+      price:   priceInclVat(p),
       inStock: p.in_stock,
       maker:   p.maker,
     })),

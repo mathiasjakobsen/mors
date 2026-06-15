@@ -74,15 +74,17 @@ export const brandFonts: BrandFont[] = [
     },
   },
   {
-    id: 'dm-sans',
-    family: 'DM Sans',
-    cssFamily: "'DM Sans', system-ui, sans-serif",
+    id: 'roboto',
+    family: 'Roboto',
+    cssFamily: "'Roboto', system-ui, sans-serif",
     cssWeight: 400,
-    styleLabel: 'Light · Regular · Medium · SemiBold · Bold',
+    styleLabel: 'Light · Regular · Medium · Bold',
     source: {
-      kind: 'external',
-      url: 'https://fonts.google.com/specimen/DM+Sans',
-      provider: 'Google Fonts',
+      kind: 'download',
+      files: [
+        { format: 'WOFF2', path: '/fonts/roboto-latin.woff2', filename: 'roboto-latin.woff2' },
+        { format: 'WOFF2', path: '/fonts/roboto-latin-italic.woff2', filename: 'roboto-latin-italic.woff2' },
+      ],
     },
     role: {
       da: 'Brødtekst og UI. Bruges på alt løbende tekst.',

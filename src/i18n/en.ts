@@ -8,7 +8,7 @@ export default {
   'nav.contact': 'Contact',
 
   // Hero
-  'hero.tagline': 'Specialty coffee with soul',
+  'hero.tagline': 'Speciality coffee and baked goods',
   'hero.subtitle': 'Craftsmanship and values inherited from our mothers',
   'hero.cta.visit': 'Find us',
   'hero.cta.hours': 'Opening hours',
@@ -72,7 +72,7 @@ export default {
   'hours.closed': 'Closed',
 
   // Footer
-  'footer.tagline': 'Specialty coffee & craftsmanship in the heart of Aarhus',
+  'footer.tagline': 'Speciality coffee and baked goods',
   'footer.navigation': 'Navigation',
   'footer.followUs': 'Follow us',
   'footer.est': 'Est. 2026',

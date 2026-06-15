@@ -8,7 +8,7 @@ export default {
   'nav.contact': 'Kontakt',
 
   // Hero
-  'hero.tagline': 'Specialkaffe med sjæl',
+  'hero.tagline': 'Usæriøst god kaffe og sprødt bagværk',
   'hero.subtitle': 'Håndværk og værdier arvet fra vores mødre',
   'hero.cta.visit': 'Find os',
   'hero.cta.hours': 'Åbningstider',
@@ -72,7 +72,7 @@ export default {
   'hours.closed': 'Lukket',
 
   // Footer
-  'footer.tagline': 'Specialkaffe & håndværk i hjertet af Aarhus',
+  'footer.tagline': 'Usæriøst god kaffe og sprødt bagværk',
   'footer.navigation': 'Navigation',
   'footer.followUs': 'Følg os',
   'footer.est': 'Est. 2026',
