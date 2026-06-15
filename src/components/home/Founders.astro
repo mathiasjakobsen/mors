@@ -8,43 +8,35 @@ interface Props {
 const { lang } = Astro.props;
 
 const aboutHref = lang === 'da' ? '/om' : '/en/about';
-const eyebrow = lang === 'da' ? 'Bag baren' : 'Behind the bar';
-const names = 'Johanne & Mathias';
-const blurb = lang === 'da'
-  ? 'Kæresteparret bag morˢ — et hjerteprojekt skabt med familie og venner.'
-  : 'The couple behind morˢ — a labour of love built with family and friends.';
-const readMore = lang === 'da' ? 'Læs vores historie' : 'Read our story';
+const heading = lang === 'da'
+  ? 'Kaffebar i Aarhus hyggeligste bindingsværkshus.'
+  : "A coffee bar in Aarhus' coziest half-timbered house.";
+const cta = lang === 'da' ? 'Kig indenfor' : 'Step inside';
 const alt = lang === 'da'
-  ? 'Mathias og Johanne, grundlæggerne af morˢ'
-  : 'Mathias and Johanne, founders of morˢ';
+  ? 'morˢ kaffebar i det farverige bindingsværkshus på Klostergade, Aarhus'
+  : 'morˢ coffee bar in the colourful half-timbered house on Klostergade, Aarhus';
 ---
 
 <section class="relative w-full">
   <a href={aboutHref} class="group block relative overflow-hidden">
-    <div class="relative h-[60vh] md:h-[80vh] min-h-[420px]">
+    <div class="relative h-[42vh] md:h-[56vh] min-h-[300px]">
       <img
-        src="/images/mors-founders.jpg"
+        src="/images/mors-facade.jpg"
         alt={alt}
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+        class="absolute inset-0 w-full h-full object-cover object-bottom transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
 
       <div class="absolute inset-x-0 bottom-0">
-        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-12 md:pb-20">
-          <div data-animate-on-scroll class="max-w-xl opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-            <p class="font-body text-xs uppercase tracking-[0.3em] text-cream/70 mb-4">
-              {eyebrow}
-            </p>
-            <h2 class="font-display font-bold text-4xl md:text-6xl text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
-              {names}
+        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-12 md:pb-16">
+          <div data-animate-on-scroll class="max-w-2xl opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+            <h2 class="font-mors font-bold text-3xl md:text-5xl text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
+              {heading}
             </h2>
-            <p class="font-body font-light text-lg text-cream/85 mt-4 leading-relaxed">
-              {blurb}
-            </p>
             <span class="inline-flex items-center gap-2 mt-6 font-body text-xs font-medium uppercase tracking-[0.2em] text-cream">
-              {readMore}
+              {cta}
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1">
                 <line x1="2" y1="7" x2="12" y2="7" />
                 <polyline points="8,3 12,7 8,11" />

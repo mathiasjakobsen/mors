@@ -4,6 +4,15 @@ import { t } from '../i18n/ui';
 import Container from '../components/shared/Container.astro';
 
 const lang = 'da';
+
+const gallery = [
+  { src: '/images/mors-bindingsvaerk.jpg', title: 'Fredet bindingsværk fra 1600-tallet' },
+  { src: '/images/mors-bag-baren.jpg',     title: 'Bag baren' },
+  { src: '/images/mors-morgenmad.jpg',     title: 'Morgenmad i solen' },
+  { src: '/images/mors-doer.jpg',          title: 'Døren står åben' },
+  { src: '/images/mors-baren.jpg',         title: 'Mens vi brygger' },
+  { src: '/images/mors-cafe.jpg',          title: 'Plads til en snak' },
+];
 ---
 
 <PageLayout
@@ -35,27 +44,26 @@ const lang = 'da';
     </Container>
   </section>
 
-  <!-- Content — placeholder, awaiting the real story -->
+  <!-- Gallery -->
   <section class="bg-warm-white py-24 md:py-40">
     <Container>
-      <div data-animate-on-scroll class="max-w-2xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <p class="font-body text-xs uppercase tracking-[0.3em] text-gold mb-6">Under opbygning ☕</p>
-        <h2 class="font-display font-bold text-3xl md:text-5xl text-deep-red mb-8">
-          Her skulle der stå noget klogt om os
-        </h2>
-        <div class="font-body font-light text-ink-light leading-loose space-y-6 text-lg">
-          <p>
-            Men så blev kaffen vigtigere. Vores historie er stadig ved at trække &mdash; den er
-            klar, så snart vi har drukket espresso nok til at skrive den ned.
-          </p>
-          <p>
-            Indtil da: kig forbi på Klostergade 58, så fortæller vi den hellere end gerne over en
-            voldsomt god islatte.
-          </p>
-        </div>
-        <p class="mt-12 font-display italic text-2xl text-deep-red/70">
-          Knus, morˢ &mdash; et sted, der stadig leder efter de helt rigtige ord
-        </p>
+      <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 md:gap-8">
+        {gallery.map((item) => (
+          <figure data-animate-on-scroll class="mb-6 md:mb-8 break-inside-avoid opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+            <div class="overflow-hidden rounded-mors bg-cream">
+              <img
+                src={item.src}
+                alt={item.title}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-auto object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
+              />
+            </div>
+            <figcaption class="mt-3 font-body text-xs uppercase tracking-[0.2em] text-ink/50">
+              {item.title}
+            </figcaption>
+          </figure>
+        ))}
       </div>
     </Container>
   </section>
