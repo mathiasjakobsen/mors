@@ -64,9 +64,11 @@ export const brandFonts: BrandFont[] = [
     cssWeight: 700,
     styleLabel: 'Bold · Black · Bold Italic',
     source: {
-      kind: 'external',
-      url: 'https://fonts.google.com/specimen/Playfair+Display',
-      provider: 'Google Fonts',
+      kind: 'download',
+      files: [
+        { format: 'WOFF2', path: '/fonts/playfair-display-latin.woff2', filename: 'playfair-display-latin.woff2' },
+        { format: 'WOFF2', path: '/fonts/playfair-display-latin-italic.woff2', filename: 'playfair-display-latin-italic.woff2' },
+      ],
     },
     role: {
       da: 'Display-serif til overskrifter og pull quotes.',
