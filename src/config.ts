@@ -21,7 +21,7 @@ export const config = {
   foundersEn: 'Mathias and Johanne',
   foundingYear: 2026,
   findsmiley: {
-    url: 'https://www.findsmiley.dk/xxxxxx',
+    url: 'https://www.findsmiley.dk/1580970',
     image: 'https://www.findsmiley.dk/PublishingImages/1Smiley.png',
   },
 } as const;
