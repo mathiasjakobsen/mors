@@ -1,16 +1,21 @@
 // Trace per-glyph bitmaps into SVG path data via potrace.
-//   node scripts/font/trace-glyphs.mjs                  → regular weight
-//   WEIGHT=light node scripts/font/trace-glyphs.mjs     → erode strokes first
+//   node scripts/font/trace-glyphs.mjs                  → regular weight (strokes thinned 0.7px/side)
+//   WEIGHT=light node scripts/font/trace-glyphs.mjs     → light weight   (thinned 1.5px/side)
+//   THIN=<px> …                                         → override the per-side thinning
 //
-// Reads:  scripts/font/glyphs/<name>.png + _mapping.json
-// Writes: scripts/font/glyphs/_traced.json        (regular)
-//      or scripts/font/glyphs/_traced-light.json  (light: bitmap eroded 1px before tracing)
+// Strokes are thinned by smoothly shrinking the ink (blur-then-threshold on an
+// 8x supersample). The signature 'r' is rendered from public/brand/mors-logo.svg
+// and run through the same pipeline so it picks up each weight automatically.
+//
+// Reads:  scripts/font/glyphs/<name>.png + _mapping.json + public/brand/mors-logo.svg
+// Writes: scripts/font/glyphs/_traced.json  (regular)  or  _traced-light.json  (light)
 
 import potrace from 'potrace';
 import sharp from 'sharp';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { extractPathD, parsePathD, normalize, bboxOfCommands } from './svg-path.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GLYPHS_DIR = join(__dirname, 'glyphs');
@@ -39,9 +44,9 @@ console.log(`weight=${WEIGHT}  erosion=${ERODE_PER_SIDE_PX}px/side  upscale=${UP
 const POTRACE_OPTS = {
   threshold: 128,        // already binarized 0/255
   turdSize: 0,           // already clean — keep every shape
-  alphaMax: 1.0,         // smoothness threshold
+  alphaMax: 1.334,       // corner threshold — max value rounds nearly every vertex (silky curves)
   optCurve: true,
-  optTolerance: 0.4,     // lower = closer to bitmap, higher = smoother
+  optTolerance: 0.8,     // higher = fewer, smoother bezier segments
   turnPolicy: potrace.Potrace.TURNPOLICY_MINORITY,
 };
 
@@ -77,19 +82,20 @@ function normCdf(z) {
 // The bitmap is supersampled by `upscale` first so the shifted boundary lands on
 // a fine grid; tracing then happens at that resolution and the caller scales the
 // path coords back to native units.
-async function shrinkInkToBuffer(pngPath, perSideNativePx, upscale) {
-  const meta = await sharp(pngPath).metadata();
+async function shrinkInkToBuffer(input, perSideNativePx, upscale) {
+  // `input` may be a PNG path or a raw PNG Buffer.
+  const meta = await sharp(input).metadata();
   const W = meta.width * upscale;
   const H = meta.height * upscale;
   const d = perSideNativePx * upscale;               // erosion distance, upscaled px
   // Blur radius must exceed one native pixel (= `upscale` px) or the source's
   // per-pixel blockiness survives thresholding as lumpy "scalloped" edges.
-  const sigma = Math.max(d, upscale * 1.5);          // ≥1.5 native px: dissolves the pixel grid, keeps curves smooth
+  const sigma = Math.max(d, upscale * 1.7);          // ≥1.7 native px: dissolves the pixel grid, keeps curves silky
   const L = 255 * normCdf(d / sigma);                // threshold that shifts the edge inward by d
   const margin = Math.ceil(sigma * 3);               // white pad so blur near real edges stays correct
 
   // ink→255, bg→0, with a white border added before blurring, then blur.
-  const { data, info } = await sharp(pngPath)
+  const { data, info } = await sharp(input)
     .resize(W, H, { kernel: 'nearest' })
     .greyscale()
     .extend({ top: margin, bottom: margin, left: margin, right: margin, background: '#ffffff' })
@@ -110,154 +116,64 @@ async function shrinkInkToBuffer(pngPath, perSideNativePx, upscale) {
   return sharp(out, { raw: { width: W, height: H, channels: 1 } }).png().toBuffer();
 }
 
-function extractPathD(svg) {
-  const m = svg.match(/d="([^"]+)"/);
-  return m ? m[1] : null;
-}
-
-// Parse an SVG path "d" string into command tokens.
-// Supports: M m L l H h V v C c S s Q q T t Z z
-function parsePathD(d) {
-  const tokens = [];
-  const re = /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]*)/g;
-  let match;
-  while ((match = re.exec(d))) {
-    const op = match[1];
-    const args = match[2].trim()
-      ? match[2].trim().split(/[\s,]+/).map(Number)
-      : [];
-    tokens.push({ op, args });
-  }
-  return tokens;
-}
-
-// Normalize tokens into absolute M/L/C/Z primitives only.
-// (No Q, S, T, H, V, A, or relative variants downstream.)
-function normalize(tokens) {
-  const out = [];
-  let cx = 0, cy = 0;       // current point
-  let startX = 0, startY = 0; // subpath start
-  let prevCtrl = null;       // previous control point for S/T smoothing
-
-  for (const { op, args } of tokens) {
-    const isRel = op === op.toLowerCase();
-    const O = op.toUpperCase();
-
-    switch (O) {
-      case 'M': {
-        // First M is moveto; subsequent pairs are implicit L.
-        for (let i = 0; i < args.length; i += 2) {
-          let x = args[i], y = args[i + 1];
-          if (isRel && (i > 0 || out.length > 0)) { x += cx; y += cy; }
-          if (i === 0) {
-            out.push({ op: 'M', args: [x, y] });
-            startX = x; startY = y;
-          } else {
-            out.push({ op: 'L', args: [x, y] });
-          }
-          cx = x; cy = y;
-          prevCtrl = null;
-        }
-        break;
-      }
-      case 'L': {
-        for (let i = 0; i < args.length; i += 2) {
-          let x = args[i], y = args[i + 1];
-          if (isRel) { x += cx; y += cy; }
-          out.push({ op: 'L', args: [x, y] });
-          cx = x; cy = y;
-          prevCtrl = null;
-        }
-        break;
-      }
-      case 'H': {
-        for (const a of args) {
-          let x = a;
-          if (isRel) x += cx;
-          out.push({ op: 'L', args: [x, cy] });
-          cx = x;
-          prevCtrl = null;
-        }
-        break;
-      }
-      case 'V': {
-        for (const a of args) {
-          let y = a;
-          if (isRel) y += cy;
-          out.push({ op: 'L', args: [cx, y] });
-          cy = y;
-          prevCtrl = null;
-        }
-        break;
-      }
-      case 'C': {
-        for (let i = 0; i < args.length; i += 6) {
-          let x1 = args[i], y1 = args[i + 1];
-          let x2 = args[i + 2], y2 = args[i + 3];
-          let x = args[i + 4], y = args[i + 5];
-          if (isRel) { x1 += cx; y1 += cy; x2 += cx; y2 += cy; x += cx; y += cy; }
-          out.push({ op: 'C', args: [x1, y1, x2, y2, x, y] });
-          cx = x; cy = y;
-          prevCtrl = [x2, y2];
-        }
-        break;
-      }
-      case 'S': {
-        for (let i = 0; i < args.length; i += 4) {
-          let x2 = args[i], y2 = args[i + 1];
-          let x = args[i + 2], y = args[i + 3];
-          if (isRel) { x2 += cx; y2 += cy; x += cx; y += cy; }
-          const x1 = prevCtrl ? 2 * cx - prevCtrl[0] : cx;
-          const y1 = prevCtrl ? 2 * cy - prevCtrl[1] : cy;
-          out.push({ op: 'C', args: [x1, y1, x2, y2, x, y] });
-          cx = x; cy = y;
-          prevCtrl = [x2, y2];
-        }
-        break;
-      }
-      case 'Q': {
-        // Convert quadratic to cubic.
-        for (let i = 0; i < args.length; i += 4) {
-          let qx = args[i], qy = args[i + 1];
-          let x = args[i + 2], y = args[i + 3];
-          if (isRel) { qx += cx; qy += cy; x += cx; y += cy; }
-          const x1 = cx + (2 / 3) * (qx - cx);
-          const y1 = cy + (2 / 3) * (qy - cy);
-          const x2 = x + (2 / 3) * (qx - x);
-          const y2 = y + (2 / 3) * (qy - y);
-          out.push({ op: 'C', args: [x1, y1, x2, y2, x, y] });
-          cx = x; cy = y;
-          prevCtrl = [qx, qy];
-        }
-        break;
-      }
-      case 'Z': {
-        out.push({ op: 'Z', args: [] });
-        cx = startX; cy = startY;
-        prevCtrl = null;
-        break;
-      }
-      default:
-        console.warn(`unhandled SVG path op: ${op}`);
-    }
-  }
-  return out;
-}
-
 // ── Main ───────────────────────────────────────────────────────────────────
 const mapping = JSON.parse(await readFile(MAPPING_PATH, 'utf8'));
+
+// The brand's signature 'r' is a tall brush shape (rounded top hook, stem
+// sweeping into a curled foot). Rather than the plain sliced 'r', we render that
+// exact vector from the logo into a bitmap at the SAME native resolution as the
+// other glyphs, so it flows through the identical thinning + trace pipeline and
+// picks up each weight's stroke weight automatically. Returns a PNG buffer plus
+// a sheet-coordinate bbox that sits its foot on the row-0 baseline.
+async function renderLogoR() {
+  const LOGO_PATH = join(__dirname, '..', '..', 'public', 'brand', 'mors-logo.svg');
+  const svg = await readFile(LOGO_PATH, 'utf8');
+  const paths = [...svg.matchAll(/<path\s+d="([^"]+)"/g)].map((m) => m[1]);
+  const rCmds = normalize(parsePathD(paths[2])); // [0]=m [1]=o [2]=r [3]=sup-s
+  const rBox = bboxOfCommands(rCmds);
+  const oBox = bboxOfCommands(normalize(parsePathD(paths[1])));
+
+  // Scale so the logo 'o' counter-height equals the sliced x-height; share the
+  // row-0 baseline (bottom of the sliced 'o').
+  const oGlyph = mapping.find((m) => m.char === 'o');
+  const pad = oGlyph.padding ?? 1;
+  const scale = oGlyph.bbox.h / oBox.h;
+  const baselinePx = oGlyph.bbox.y + oGlyph.bbox.h;
+  const w = Math.round(rBox.w * scale);
+  const h = Math.round(rBox.h * scale);
+
+  // Draw the r black-on-white at native size, r's bbox mapped into [pad..pad+w/h].
+  const cw = w + pad * 2;
+  const ch = h + pad * 2;
+  const glyphSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}">`
+    + `<rect width="100%" height="100%" fill="#fff"/>`
+    + `<g transform="translate(${pad} ${pad}) scale(${scale}) translate(${-rBox.x} ${-rBox.y})">`
+    + `<path d="${paths[2]}" fill="#000"/></g></svg>`;
+  const buffer = await sharp(Buffer.from(glyphSvg)).png().toBuffer();
+
+  return {
+    buffer,
+    bbox: { x: oGlyph.bbox.x, y: baselinePx - h, w, h }, // foot on baseline
+    padding: pad,
+  };
+}
+const logoR = await renderLogoR();
+
 const traced = [];
 
 for (const g of mapping) {
   try {
+    const isLogoR = g.char === 'r';
     const filename = g.filename ?? `${g.name}.png`;
-    const pngPath = join(GLYPHS_DIR, filename);
+    const source = isLogoR ? logoR.buffer : join(GLYPHS_DIR, filename);
+    const bbox = isLogoR ? logoR.bbox : g.bbox;
+    const padding = isLogoR ? logoR.padding : (g.padding ?? 0);
     // When thinning, we supersample by UPSCALE so path coords come back in the
     // enlarged space; scale them back to native px afterwards.
     const scaleBack = ERODE_PER_SIDE_PX > 0 ? UPSCALE : 1;
     const input = ERODE_PER_SIDE_PX > 0
-      ? await shrinkInkToBuffer(pngPath, ERODE_PER_SIDE_PX, UPSCALE)
-      : pngPath;
+      ? await shrinkInkToBuffer(source, ERODE_PER_SIDE_PX, UPSCALE)
+      : source;
     const svg = await traceInput(input, scaleBack);
     const d = extractPathD(svg);
     if (!d) {
@@ -274,8 +190,8 @@ for (const g of mapping) {
       name: g.name,
       char: g.char,
       codepoint: g.codepoint,
-      bbox: g.bbox,
-      padding: g.padding ?? 0,
+      bbox,
+      padding,
       row: g.row,
       indexInRow: g.indexInRow,
       commands,
