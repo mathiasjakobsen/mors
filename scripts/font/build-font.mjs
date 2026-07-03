@@ -174,6 +174,69 @@ for (const g of traced) {
   }));
 }
 
+// ── Superscript s (U+02E2) ─────────────────────────────────────────────────
+// Not in the source sheet — the brand uses "morˢ" constantly, so we synthesise
+// it from the lowercase 's': scale it down and raise it so its top sits at cap
+// height. Computed in font units and reused by the QA sample below.
+const SUP_SCALE = 0.62;   // size relative to the full lowercase 's'
+const SUP_TOP = TARGET_CAP_HEIGHT; // align the superscript's top with cap height
+
+function buildSuperscriptS() {
+  const sG = traced.find((t) => t.char === 's');
+  if (!sG) return null;
+  const baseline = rowBaselinePx[sG.row];
+  if (baseline == null) return null;
+  const pad = sG.padding ?? 0;
+  const actualBottom = sG.bbox.y + sG.bbox.h;
+  const baselineOffset = Math.abs(actualBottom - baseline) <= BASELINE_SNAP_PX
+    ? sG.bbox.h
+    : baseline - sG.bbox.y;
+  // Base 's' → font units (baseline-aligned), matching transformPath().
+  const bx = (px) => (px - pad) * SCALE + SIDE_BEARING;
+  const by = (py) => (baselineOffset - (py - pad)) * SCALE;
+
+  let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const { args } of sG.commands) {
+    for (let i = 0; i < args.length; i += 2) {
+      const X = bx(args[i]), Y = by(args[i + 1]);
+      if (X < minX) minX = X;
+      if (X > maxX) maxX = X;
+      if (Y > maxY) maxY = Y;
+    }
+  }
+  // Shrink around origin, shift left edge to the side bearing, raise to cap top.
+  const ox = SIDE_BEARING - minX * SUP_SCALE;
+  const oy = SUP_TOP - maxY * SUP_SCALE;
+  const TX = (px) => bx(px) * SUP_SCALE + ox;
+  const TY = (py) => by(py) * SUP_SCALE + oy;
+  const advance = Math.round((maxX - minX) * SUP_SCALE + SIDE_BEARING * 2);
+
+  return { commands: sG.commands, TX, TY, advance };
+}
+
+const supS = buildSuperscriptS();
+if (supS) {
+  const path = new opentype.Path();
+  for (const { op, args } of supS.commands) {
+    switch (op) {
+      case 'M': path.moveTo(Math.round(supS.TX(args[0])), Math.round(supS.TY(args[1]))); break;
+      case 'L': path.lineTo(Math.round(supS.TX(args[0])), Math.round(supS.TY(args[1]))); break;
+      case 'C': path.bezierCurveTo(
+        Math.round(supS.TX(args[0])), Math.round(supS.TY(args[1])),
+        Math.round(supS.TX(args[2])), Math.round(supS.TY(args[3])),
+        Math.round(supS.TX(args[4])), Math.round(supS.TY(args[5])),
+      ); break;
+      case 'Z': path.closePath(); break;
+    }
+  }
+  glyphList.push(new opentype.Glyph({
+    name: 'uni02E2',
+    unicode: 0x02E2,
+    advanceWidth: supS.advance,
+    path,
+  }));
+}
+
 console.log(`assembled ${glyphList.length} glyphs (incl. .notdef + space)`);
 
 const font = new opentype.Font({
@@ -234,6 +297,20 @@ const LINE_HEIGHT = SAMPLE_SIZE * 1.4;
 const PADDING = 40;
 
 function ringsForChar(ch) {
+  if (ch === 'ˢ' && supS) {
+    let svgPath = '';
+    for (const { op, args } of supS.commands) {
+      const px = (i) => supS.TX(args[i]).toFixed(2);
+      const py = (i) => supS.TY(args[i]).toFixed(2);
+      switch (op) {
+        case 'M': svgPath += `M ${px(0)} ${py(1)} `; break;
+        case 'L': svgPath += `L ${px(0)} ${py(1)} `; break;
+        case 'C': svgPath += `C ${px(0)} ${py(1)} ${px(2)} ${py(3)} ${px(4)} ${py(5)} `; break;
+        case 'Z': svgPath += 'Z '; break;
+      }
+    }
+    return { paths: svgPath, advance: supS.advance };
+  }
   const g = traced.find((t) => t.char === ch);
   if (!g) return { paths: '', advance: 500 };
   const baseline = rowBaselinePx[g.row];
@@ -261,6 +338,7 @@ function lineWidth(line) {
   let w = 0;
   for (const ch of line) {
     if (ch === ' ') { w += SPACE_ADVANCE; continue; }
+    if (ch === 'ˢ' && supS) { w += supS.advance; continue; }
     const g = traced.find((t) => t.char === ch);
     if (!g) { w += 500; continue; }
     w += g.bbox.w * SCALE + SIDE_BEARING * 2;

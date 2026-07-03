@@ -17,12 +17,24 @@ const GLYPHS_DIR = join(__dirname, 'glyphs');
 const MAPPING_PATH = join(GLYPHS_DIR, '_mapping.json');
 
 const WEIGHT = process.env.WEIGHT === 'light' ? 'light' : 'regular';
-const EROSION_PX = WEIGHT === 'light' ? 1 : 0; // 1 iter ≈ 2 px off each stroke
+
+// Stroke thinning, expressed in *native* pixels peeled off EACH side of every
+// stroke. Source strokes are ~7 px wide, so 0.7 px/side ≈ 20 % thinner (Regular).
+// Light starts from a ~5 px stroke (it used to erode a whole native px/side), so
+// 1.5 px/side keeps it ~20 % thinner than the old Light — and clearly lighter
+// than the new Regular. Values can be fractional: the bitmap is supersampled
+// (see UPSCALE) before erosion, giving sub-pixel control native integer erosion
+// can't. THIN env var overrides the per-weight default (in native px/side).
+const ERODE_PER_SIDE_PX = process.env.THIN != null
+  ? Number(process.env.THIN)
+  : (WEIGHT === 'light' ? 1.5 : 0.7);
+const UPSCALE = 8; // supersample factor for sub-pixel erosion
+
 const OUT_PATH = WEIGHT === 'light'
   ? join(GLYPHS_DIR, '_traced-light.json')
   : join(GLYPHS_DIR, '_traced.json');
 
-console.log(`weight=${WEIGHT}  erosion=${EROSION_PX}px  out=${OUT_PATH.split('/').pop()}`);
+console.log(`weight=${WEIGHT}  erosion=${ERODE_PER_SIDE_PX}px/side  upscale=${UPSCALE}x  out=${OUT_PATH.split('/').pop()}`);
 
 const POTRACE_OPTS = {
   threshold: 128,        // already binarized 0/255
@@ -33,42 +45,69 @@ const POTRACE_OPTS = {
   turnPolicy: potrace.Potrace.TURNPOLICY_MINORITY,
 };
 
-function traceInput(input) {
+function traceInput(input, upscale = 1) {
   // input can be a file path or a Buffer.
+  // optTolerance is in pixel units, so scale it with the supersample factor to
+  // keep curve smoothness equivalent to a native-resolution trace.
+  const opts = { ...POTRACE_OPTS, optTolerance: POTRACE_OPTS.optTolerance * upscale };
   return new Promise((resolve, reject) => {
-    potrace.trace(input, POTRACE_OPTS, (err, svg) => {
+    potrace.trace(input, opts, (err, svg) => {
       if (err) reject(err);
       else resolve(svg);
     });
   });
 }
 
-// Morphological erosion of the BLACK regions (= dilation of white background).
-// Each iteration peels 1px off the boundary of every black blob using
-// 4-connectivity, which thins strokes by ~2px (one from each side).
-async function erodeBitmapToBuffer(pngPath, iterations) {
-  const { data, info } = await sharp(pngPath).raw().toBuffer({ resolveWithObject: true });
-  const { width, height, channels } = info;
-  let curr = new Uint8Array(width * height);
-  for (let i = 0; i < curr.length; i++) curr[i] = data[i * channels];
+// Standard-normal CDF via a rational erf approximation (Abramowitz & Stegun 7.1.26).
+function normCdf(z) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989422804014327 * Math.exp(-z * z / 2);
+  const p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 +
+    t * (-1.821255978 + t * 1.330274429))));
+  return z >= 0 ? 1 - p : p;
+}
 
-  for (let it = 0; it < iterations; it++) {
-    const next = new Uint8Array(curr);
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const i = y * width + x;
-        if (curr[i] !== 0) continue; // not ink
-        const up = y > 0 ? curr[i - width] : 255;
-        const dn = y < height - 1 ? curr[i + width] : 255;
-        const lt = x > 0 ? curr[i - 1] : 255;
-        const rt = x < width - 1 ? curr[i + 1] : 255;
-        if (up !== 0 || dn !== 0 || lt !== 0 || rt !== 0) next[i] = 255;
-      }
+// Smoothly shrink the BLACK ink region by `perSideNativePx` (native px), pulling
+// every stroke edge inward isotropically. Uses the blur-then-threshold identity
+// for morphology: a Gaussian-blurred step edge has value 255·Φ(x/σ) at signed
+// distance x inside the ink, so thresholding at L = 255·Φ(d/σ) moves the boundary
+// inward by exactly d — with round, smooth corners (unlike diamond-shaped
+// 4-connectivity erosion, which facets curves).
+//
+// The bitmap is supersampled by `upscale` first so the shifted boundary lands on
+// a fine grid; tracing then happens at that resolution and the caller scales the
+// path coords back to native units.
+async function shrinkInkToBuffer(pngPath, perSideNativePx, upscale) {
+  const meta = await sharp(pngPath).metadata();
+  const W = meta.width * upscale;
+  const H = meta.height * upscale;
+  const d = perSideNativePx * upscale;               // erosion distance, upscaled px
+  // Blur radius must exceed one native pixel (= `upscale` px) or the source's
+  // per-pixel blockiness survives thresholding as lumpy "scalloped" edges.
+  const sigma = Math.max(d, upscale * 1.5);          // ≥1.5 native px: dissolves the pixel grid, keeps curves smooth
+  const L = 255 * normCdf(d / sigma);                // threshold that shifts the edge inward by d
+  const margin = Math.ceil(sigma * 3);               // white pad so blur near real edges stays correct
+
+  // ink→255, bg→0, with a white border added before blurring, then blur.
+  const { data, info } = await sharp(pngPath)
+    .resize(W, H, { kernel: 'nearest' })
+    .greyscale()
+    .extend({ top: margin, bottom: margin, left: margin, right: margin, background: '#ffffff' })
+    .negate()
+    .blur(sigma)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  // Threshold and crop back to the un-padded WxH so coords match the upscaled grid.
+  const ew = info.width;
+  const out = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const v = data[((y + margin) * ew + (x + margin)) * info.channels];
+      out[y * W + x] = v >= L ? 0 : 255; // 0 = ink (black) for potrace
     }
-    curr = next;
   }
-
-  return sharp(curr, { raw: { width, height, channels: 1 } }).png().toBuffer();
+  return sharp(out, { raw: { width: W, height: H, channels: 1 } }).png().toBuffer();
 }
 
 function extractPathD(svg) {
@@ -213,16 +252,24 @@ for (const g of mapping) {
   try {
     const filename = g.filename ?? `${g.name}.png`;
     const pngPath = join(GLYPHS_DIR, filename);
-    const input = EROSION_PX > 0
-      ? await erodeBitmapToBuffer(pngPath, EROSION_PX)
+    // When thinning, we supersample by UPSCALE so path coords come back in the
+    // enlarged space; scale them back to native px afterwards.
+    const scaleBack = ERODE_PER_SIDE_PX > 0 ? UPSCALE : 1;
+    const input = ERODE_PER_SIDE_PX > 0
+      ? await shrinkInkToBuffer(pngPath, ERODE_PER_SIDE_PX, UPSCALE)
       : pngPath;
-    const svg = await traceInput(input);
+    const svg = await traceInput(input, scaleBack);
     const d = extractPathD(svg);
     if (!d) {
       console.warn(`✗ ${g.name} (${g.char}): no path in SVG output`);
       continue;
     }
     const commands = normalize(parsePathD(d));
+    if (scaleBack !== 1) {
+      for (const cmd of commands) {
+        cmd.args = cmd.args.map((v) => v / scaleBack);
+      }
+    }
     traced.push({
       name: g.name,
       char: g.char,
