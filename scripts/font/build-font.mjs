@@ -178,7 +178,7 @@ for (const g of traced) {
 // Not in the source sheet — the brand uses "morˢ" constantly, so we synthesise
 // it from the lowercase 's': scale it down and raise it so its top sits at cap
 // height. Computed in font units and reused by the QA sample below.
-const SUP_SCALE = 0.62;   // size relative to the full lowercase 's'
+const SUP_SCALE = 0.465;  // size relative to the full lowercase 's'
 const SUP_TOP = TARGET_CAP_HEIGHT; // align the superscript's top with cap height
 
 function buildSuperscriptS() {

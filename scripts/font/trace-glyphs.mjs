@@ -35,6 +35,13 @@ const ERODE_PER_SIDE_PX = process.env.THIN != null
   : (WEIGHT === 'light' ? 1.5 : 0.7);
 const UPSCALE = 8; // supersample factor for sub-pixel erosion
 
+// Stroke-width equalisation. The source is hand-drawn, so strokes vary in width
+// like brush pressure. We skeletonise each glyph and rebuild its strokes at a
+// width blended toward the glyph's own median — pulling thick and thin parts
+// toward a common width. 0 = keep original contrast, 1 = fully monoline (risks
+// looking crooked). ~0.6 evens it out while staying organic. EQUALIZE overrides.
+const EQUALIZE_ALPHA = process.env.EQUALIZE != null ? Number(process.env.EQUALIZE) : 0.6;
+
 const OUT_PATH = WEIGHT === 'light'
   ? join(GLYPHS_DIR, '_traced-light.json')
   : join(GLYPHS_DIR, '_traced.json');
@@ -72,6 +79,89 @@ function normCdf(z) {
   return z >= 0 ? 1 - p : p;
 }
 
+// Chamfer (1, √2) distance transform: for every ink pixel, ~Euclidean distance
+// to the nearest non-ink pixel. At the medial axis this equals the stroke's
+// local half-width. Two passes (forward + backward).
+function distanceInside(ink, W, H) {
+  const INF = 1e9;
+  const d = new Float32Array(W * H);
+  for (let i = 0; i < d.length; i++) d[i] = ink[i] ? INF : 0;
+  const a = 1, b = Math.SQRT2;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x; if (!ink[i]) continue;
+    let m = d[i];
+    if (x > 0) m = Math.min(m, d[i - 1] + a);
+    if (y > 0) m = Math.min(m, d[i - W] + a);
+    if (x > 0 && y > 0) m = Math.min(m, d[i - W - 1] + b);
+    if (x < W - 1 && y > 0) m = Math.min(m, d[i - W + 1] + b);
+    d[i] = m;
+  }
+  for (let y = H - 1; y >= 0; y--) for (let x = W - 1; x >= 0; x--) {
+    const i = y * W + x; if (!ink[i]) continue;
+    let m = d[i];
+    if (x < W - 1) m = Math.min(m, d[i + 1] + a);
+    if (y < H - 1) m = Math.min(m, d[i + W] + a);
+    if (x < W - 1 && y < H - 1) m = Math.min(m, d[i + W + 1] + b);
+    if (x > 0 && y < H - 1) m = Math.min(m, d[i + W - 1] + b);
+    d[i] = m;
+  }
+  return d;
+}
+
+// Zhang–Suen thinning → a 1px-wide skeleton (centreline) of the ink.
+function skeletonize(ink, W, H) {
+  const P = Uint8Array.from(ink);
+  const at = (x, y) => P[y * W + x];
+  let changed = true;
+  const kill = [];
+  while (changed) {
+    changed = false;
+    for (let step = 0; step < 2; step++) {
+      kill.length = 0;
+      for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+        if (P[y * W + x] !== 1) continue;
+        const n = [at(x, y - 1), at(x + 1, y - 1), at(x + 1, y), at(x + 1, y + 1),
+                   at(x, y + 1), at(x - 1, y + 1), at(x - 1, y), at(x - 1, y - 1)];
+        let B = 0; for (let k = 0; k < 8; k++) B += n[k];
+        if (B < 2 || B > 6) continue;
+        let A = 0; for (let k = 0; k < 8; k++) if (n[k] === 0 && n[(k + 1) % 8] === 1) A++;
+        if (A !== 1) continue;
+        if (step === 0) { if (n[0] * n[2] * n[4] || n[2] * n[4] * n[6]) continue; }
+        else { if (n[0] * n[2] * n[6] || n[0] * n[4] * n[6]) continue; }
+        kill.push(y * W + x);
+      }
+      if (kill.length) { changed = true; for (const i of kill) P[i] = 0; }
+    }
+  }
+  return P;
+}
+
+// Rebuild strokes at a more uniform width: stamp a disk at every skeleton pixel,
+// its radius blended between the local half-width and the glyph's median.
+function equalizeStrokeMask(ink, W, H, alpha) {
+  const din = distanceInside(ink, W, H);
+  const skel = skeletonize(ink, W, H);
+  const radii = [];
+  for (let i = 0; i < skel.length; i++) if (skel[i]) radii.push(din[i]);
+  if (radii.length < 4) return ink; // too small to skeletonise meaningfully
+  radii.sort((p, q) => p - q);
+  const target = radii[Math.floor(radii.length / 2)]; // median half-width
+  const out = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!skel[y * W + x]) continue;
+    const R = din[y * W + x] * (1 - alpha) + target * alpha;
+    const R2 = R * R, ri = Math.ceil(R);
+    for (let dy = -ri; dy <= ri; dy++) {
+      const yy = y + dy; if (yy < 0 || yy >= H) continue;
+      for (let dx = -ri; dx <= ri; dx++) {
+        const xx = x + dx; if (xx < 0 || xx >= W) continue;
+        if (dx * dx + dy * dy <= R2) out[yy * W + xx] = 1;
+      }
+    }
+  }
+  return out;
+}
+
 // Smoothly shrink the BLACK ink region by `perSideNativePx` (native px), pulling
 // every stroke edge inward isotropically. Uses the blur-then-threshold identity
 // for morphology: a Gaussian-blurred step edge has value 255·Φ(x/σ) at signed
@@ -92,14 +182,25 @@ async function shrinkInkToBuffer(input, perSideNativePx, upscale) {
   // per-pixel blockiness survives thresholding as lumpy "scalloped" edges.
   const sigma = Math.max(d, upscale * 1.7);          // ≥1.7 native px: dissolves the pixel grid, keeps curves silky
   const L = 255 * normCdf(d / sigma);                // threshold that shifts the edge inward by d
-  const margin = Math.ceil(sigma * 3);               // white pad so blur near real edges stays correct
+  const margin = Math.ceil(sigma * 3);               // pad so blur near real edges stays correct
 
-  // ink→255, bg→0, with a white border added before blurring, then blur.
-  const { data, info } = await sharp(input)
+  // Upscaled binary ink mask (1 = ink).
+  const { data: g } = await sharp(input)
     .resize(W, H, { kernel: 'nearest' })
     .greyscale()
-    .extend({ top: margin, bottom: margin, left: margin, right: margin, background: '#ffffff' })
-    .negate()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let ink = new Uint8Array(W * H);
+  for (let i = 0; i < ink.length; i++) ink[i] = g[i] < 128 ? 1 : 0;
+
+  // Even out stroke widths before thinning/smoothing.
+  if (EQUALIZE_ALPHA > 0) ink = equalizeStrokeMask(ink, W, H, EQUALIZE_ALPHA);
+
+  // ink→255 image; a black (non-ink) border so the blur near real edges is correct.
+  const inkImg = new Uint8Array(W * H);
+  for (let i = 0; i < ink.length; i++) inkImg[i] = ink[i] ? 255 : 0;
+  const { data, info } = await sharp(inkImg, { raw: { width: W, height: H, channels: 1 } })
+    .extend({ top: margin, bottom: margin, left: margin, right: margin, background: '#000000' })
     .blur(sigma)
     .raw()
     .toBuffer({ resolveWithObject: true });
