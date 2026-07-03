@@ -39,8 +39,8 @@ const UPSCALE = 8; // supersample factor for sub-pixel erosion
 // like brush pressure. We skeletonise each glyph and rebuild its strokes at a
 // width blended toward the glyph's own median — pulling thick and thin parts
 // toward a common width. 0 = keep original contrast, 1 = fully monoline (risks
-// looking crooked). ~0.6 evens it out while staying organic. EQUALIZE overrides.
-const EQUALIZE_ALPHA = process.env.EQUALIZE != null ? Number(process.env.EQUALIZE) : 0.6;
+// looking crooked). ~0.2 gently evens it out while staying organic. EQUALIZE overrides.
+const EQUALIZE_ALPHA = process.env.EQUALIZE != null ? Number(process.env.EQUALIZE) : 0.2;
 
 const OUT_PATH = WEIGHT === 'light'
   ? join(GLYPHS_DIR, '_traced-light.json')
@@ -220,55 +220,62 @@ async function shrinkInkToBuffer(input, perSideNativePx, upscale) {
 // ── Main ───────────────────────────────────────────────────────────────────
 const mapping = JSON.parse(await readFile(MAPPING_PATH, 'utf8'));
 
-// The brand's signature 'r' is a tall brush shape (rounded top hook, stem
-// sweeping into a curled foot). Rather than the plain sliced 'r', we render that
-// exact vector from the logo into a bitmap at the SAME native resolution as the
-// other glyphs, so it flows through the identical thinning + trace pipeline and
-// picks up each weight's stroke weight automatically. Returns a PNG buffer plus
-// a sheet-coordinate bbox that sits its foot on the row-0 baseline.
-async function renderLogoR() {
+// The word "morˢ" IS the brand's identity, so its four letters are taken from
+// the logo rather than the separate sliced source drawing. We render each logo
+// glyph into a bitmap at the SAME native resolution as the other glyphs, so it
+// flows through the identical thinning + equalise + trace pipeline (matching the
+// brand shape while picking up each weight's stroke). Returns, per char, a PNG
+// buffer plus a sheet-coordinate bbox that sits the letter's foot on the row-0
+// baseline. Logo path order: [0]=m [1]=o [2]=r [3]=superscript-s.
+const LOGO_GLYPHS = { m: 0, o: 1, r: 2, s: 3 };
+async function renderLogoGlyphs() {
   const LOGO_PATH = join(__dirname, '..', '..', 'public', 'brand', 'mors-logo.svg');
   const svg = await readFile(LOGO_PATH, 'utf8');
   const paths = [...svg.matchAll(/<path\s+d="([^"]+)"/g)].map((m) => m[1]);
-  const rCmds = normalize(parsePathD(paths[2])); // [0]=m [1]=o [2]=r [3]=sup-s
-  const rBox = bboxOfCommands(rCmds);
   const oBox = bboxOfCommands(normalize(parsePathD(paths[1])));
 
-  // Scale so the logo 'o' counter-height equals the sliced x-height; share the
-  // row-0 baseline (bottom of the sliced 'o').
   const oGlyph = mapping.find((m) => m.char === 'o');
   const pad = oGlyph.padding ?? 1;
-  const scale = oGlyph.bbox.h / oBox.h;
-  const baselinePx = oGlyph.bbox.y + oGlyph.bbox.h;
-  const w = Math.round(rBox.w * scale);
-  const h = Math.round(rBox.h * scale);
+  const xHeightPx = oGlyph.bbox.h;
+  const sharedScale = xHeightPx / oBox.h;             // o-height → x-height, shared by m/o/r
+  const baselinePx = oGlyph.bbox.y + oGlyph.bbox.h;   // row-0 baseline
 
-  // Draw the r black-on-white at native size, r's bbox mapped into [pad..pad+w/h].
-  const cw = w + pad * 2;
-  const ch = h + pad * 2;
-  const glyphSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}">`
-    + `<rect width="100%" height="100%" fill="#fff"/>`
-    + `<g transform="translate(${pad} ${pad}) scale(${scale}) translate(${-rBox.x} ${-rBox.y})">`
-    + `<path d="${paths[2]}" fill="#000"/></g></svg>`;
-  const buffer = await sharp(Buffer.from(glyphSvg)).png().toBuffer();
-
-  return {
-    buffer,
-    bbox: { x: oGlyph.bbox.x, y: baselinePx - h, w, h }, // foot on baseline
-    padding: pad,
-  };
+  const out = {};
+  for (const [char, idx] of Object.entries(LOGO_GLYPHS)) {
+    const d = paths[idx];
+    const box = bboxOfCommands(normalize(parsePathD(d)));
+    // In the logo the 's' is the small raised superscript; scale it up to full
+    // x-height so it serves as a normal lowercase 's'. m/o/r share the o scale
+    // so their relative sizes (incl. the tall r) match the logo exactly.
+    const scale = char === 's' ? (xHeightPx / box.h) : sharedScale;
+    const w = Math.round(box.w * scale);
+    const h = Math.round(box.h * scale);
+    const cw = w + pad * 2, ch = h + pad * 2;
+    const glyphSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}">`
+      + `<rect width="100%" height="100%" fill="#fff"/>`
+      + `<g transform="translate(${pad} ${pad}) scale(${scale}) translate(${-box.x} ${-box.y})">`
+      + `<path d="${d}" fill="#000"/></g></svg>`;
+    const buffer = await sharp(Buffer.from(glyphSvg)).png().toBuffer();
+    const gMap = mapping.find((m) => m.char === char);
+    out[char] = {
+      buffer,
+      bbox: { x: gMap.bbox.x, y: baselinePx - h, w, h }, // foot on baseline
+      padding: pad,
+    };
+  }
+  return out;
 }
-const logoR = await renderLogoR();
+const logoGlyphs = await renderLogoGlyphs();
 
 const traced = [];
 
 for (const g of mapping) {
   try {
-    const isLogoR = g.char === 'r';
+    const logo = logoGlyphs[g.char];
     const filename = g.filename ?? `${g.name}.png`;
-    const source = isLogoR ? logoR.buffer : join(GLYPHS_DIR, filename);
-    const bbox = isLogoR ? logoR.bbox : g.bbox;
-    const padding = isLogoR ? logoR.padding : (g.padding ?? 0);
+    const source = logo ? logo.buffer : join(GLYPHS_DIR, filename);
+    const bbox = logo ? logo.bbox : g.bbox;
+    const padding = logo ? logo.padding : (g.padding ?? 0);
     // When thinning, we supersample by UPSCALE so path coords come back in the
     // enlarged space; scale them back to native px afterwards.
     const scaleBack = ERODE_PER_SIDE_PX > 0 ? UPSCALE : 1;
