@@ -20,11 +20,15 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* Mors Display — brush face derived from the wordmark. Draft quality, display-only. */
+/* Mors Display — brush face derived from the wordmark. Draft quality, display-only.
+   Only two real weights exist (Light 300, Regular 400). Headings use `font-bold`
+   (700), which has no matching face — so each @font-face claims a weight RANGE.
+   That makes a 700 request resolve to the Regular outline instead of the browser
+   synthesising a fake bold (which thickens strokes and roughens the curves). */
 @font-face {
   font-family: 'Mors Display';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 100 300;
   font-display: swap;
   src: url('/fonts/mors-display-light.woff2') format('woff2'),
        url('/fonts/mors-display-light.otf') format('opentype');
@@ -32,7 +36,7 @@
 @font-face {
   font-family: 'Mors Display';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 900;
   font-display: swap;
   src: url('/fonts/mors-display.woff2') format('woff2'),
        url('/fonts/mors-display.otf') format('opentype');
