@@ -40,6 +40,24 @@ export const brandFonts: BrandFont[] = [
     },
   },
   {
+    id: 'mors-display-medium',
+    family: 'Mors Display',
+    cssFamily: "'Mors Display', 'Roboto', system-ui, sans-serif",
+    cssWeight: 500,
+    styleLabel: 'Medium',
+    source: {
+      kind: 'download',
+      files: [
+        { format: 'WOFF2', path: '/fonts/mors-display-medium.woff2', filename: 'mors-display-medium.woff2' },
+        { format: 'OTF', path: '/fonts/mors-display-medium.otf', filename: 'mors-display-medium.otf' },
+      ],
+    },
+    role: {
+      da: 'Mellemvægt mellem Regular og Bold — til overskrifter med lidt ekstra tyngde.',
+      en: 'Mid weight between Regular and Bold — for headings that want a little more presence.',
+    },
+  },
+  {
     id: 'mors-display-bold',
     family: 'Mors Display',
     cssFamily: "'Mors Display', 'Roboto', system-ui, sans-serif",

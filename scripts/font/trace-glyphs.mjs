@@ -1,5 +1,6 @@
 // Trace per-glyph bitmaps into SVG path data via potrace.
 //   node scripts/font/trace-glyphs.mjs                  → regular weight (strokes thinned 0.7px/side)
+//   WEIGHT=medium node scripts/font/trace-glyphs.mjs    → medium weight  (strokes grown 0.275px/side)
 //   WEIGHT=bold node scripts/font/trace-glyphs.mjs      → bold weight    (strokes grown 1.25px/side)
 //   THIN=<px> …                                         → override per-side stroke change (negative = embolden)
 //
@@ -21,17 +22,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const GLYPHS_DIR = join(__dirname, 'glyphs');
 const MAPPING_PATH = join(GLYPHS_DIR, '_mapping.json');
 
-const WEIGHT = process.env.WEIGHT === 'bold' ? 'bold' : 'regular';
+const WEIGHT = ['bold', 'medium'].includes(process.env.WEIGHT) ? process.env.WEIGHT : 'regular';
 
 // Stroke weight, expressed in *native* pixels peeled off EACH side of every
 // stroke. Source strokes are ~7 px wide, so +0.7 px/side ≈ 20 % thinner (Regular).
-// A NEGATIVE value grows the stroke instead of shrinking it: Bold dilates
-// 1.25 px/side (~9.5 px stroke, ~1.7× Regular). Values can be fractional: the
-// bitmap is supersampled (see UPSCALE) so we get sub-pixel control. THIN
+// A NEGATIVE value grows the stroke instead of shrinking it. Stroke width is
+// linear in this value, so Medium sits at the exact midpoint of Regular & Bold:
+//   Regular +0.7 (~5.6 px) · Medium −0.275 (~7.55 px) · Bold −1.25 (~9.5 px).
+// Values can be fractional (the bitmap is supersampled — see UPSCALE). THIN
 // overrides the per-weight default (in native px/side; negative = embolden).
+const WEIGHT_ERODE = { regular: 0.7, medium: -0.275, bold: -1.25 };
 const ERODE_PER_SIDE_PX = process.env.THIN != null
   ? Number(process.env.THIN)
-  : (WEIGHT === 'bold' ? -1.25 : 0.7);
+  : WEIGHT_ERODE[WEIGHT];
 const UPSCALE = 8; // supersample factor for sub-pixel erosion
 // Bold grows the ink outward, so each glyph bitmap needs extra white margin or
 // the growth clips at the tight crop edge. Pad by the dilation depth + 1 px.
@@ -44,9 +47,7 @@ const DILATE_PAD = ERODE_PER_SIDE_PX < 0 ? Math.ceil(-ERODE_PER_SIDE_PX) + 1 : 0
 // looking crooked). ~0.2 gently evens it out while staying organic. EQUALIZE overrides.
 const EQUALIZE_ALPHA = process.env.EQUALIZE != null ? Number(process.env.EQUALIZE) : 0.2;
 
-const OUT_PATH = WEIGHT === 'bold'
-  ? join(GLYPHS_DIR, '_traced-bold.json')
-  : join(GLYPHS_DIR, '_traced.json');
+const OUT_PATH = join(GLYPHS_DIR, WEIGHT === 'regular' ? '_traced.json' : `_traced-${WEIGHT}.json`);
 
 console.log(`weight=${WEIGHT}  erosion=${ERODE_PER_SIDE_PX}px/side  upscale=${UPSCALE}x  out=${OUT_PATH.split('/').pop()}`);
 

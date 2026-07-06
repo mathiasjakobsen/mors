@@ -1,13 +1,13 @@
 // Build the Mors Display font from potrace'd source bitmaps.
-//   node scripts/font/build-font.mjs               → Regular (weight 400)
-//   WEIGHT=bold node scripts/font/build-font.mjs   → Bold    (weight 700)
+//   node scripts/font/build-font.mjs                 → Regular (weight 400)
+//   WEIGHT=medium node scripts/font/build-font.mjs   → Medium  (weight 500)
+//   WEIGHT=bold node scripts/font/build-font.mjs     → Bold    (weight 700)
 //
 // Inputs:
-//   scripts/font/glyphs/_traced.json       (from trace-glyphs.mjs, regular)
-//   scripts/font/glyphs/_traced-bold.json  (from trace-glyphs.mjs WEIGHT=bold)
+//   scripts/font/glyphs/_traced{,-medium,-bold}.json  (from trace-glyphs.mjs)
 // Outputs:
-//   public/fonts/mors-display{,-bold}.otf / .woff2
-//   scripts/font/_sample{,-bold}.svg / .png
+//   public/fonts/mors-display{,-medium,-bold}.otf / .woff2
+//   scripts/font/_sample{,-medium,-bold}.svg / .png
 
 import opentype from 'opentype.js';
 import wawoff2 from 'wawoff2';
@@ -20,12 +20,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..', '..');
 const FONT_OUT_DIR = join(ROOT, 'public', 'fonts');
 
-const WEIGHT = process.env.WEIGHT === 'bold' ? 'bold' : 'regular';
-const STYLE_NAME = WEIGHT === 'bold' ? 'Bold' : 'Regular';
-const WEIGHT_CLASS = WEIGHT === 'bold' ? 700 : 400;
-const FONT_BASENAME = WEIGHT === 'bold' ? 'mors-display-bold' : 'mors-display';
-const TRACED_PATH = join(__dirname, 'glyphs', WEIGHT === 'bold' ? '_traced-bold.json' : '_traced.json');
-const SAMPLE_BASENAME = WEIGHT === 'bold' ? '_sample-bold' : '_sample';
+const WEIGHTS = {
+  regular: { style: 'Regular', class: 400, base: 'mors-display',        traced: '_traced.json',        sample: '_sample' },
+  medium:  { style: 'Medium',  class: 500, base: 'mors-display-medium', traced: '_traced-medium.json', sample: '_sample-medium' },
+  bold:    { style: 'Bold',    class: 700, base: 'mors-display-bold',   traced: '_traced-bold.json',   sample: '_sample-bold' },
+};
+const WEIGHT = WEIGHTS[process.env.WEIGHT] ? process.env.WEIGHT : 'regular';
+const cfg = WEIGHTS[WEIGHT];
+const STYLE_NAME = cfg.style;
+const WEIGHT_CLASS = cfg.class;
+const FONT_BASENAME = cfg.base;
+const TRACED_PATH = join(__dirname, 'glyphs', cfg.traced);
+const SAMPLE_BASENAME = cfg.sample;
 console.log(`weight=${WEIGHT}  style=${STYLE_NAME}  weightClass=${WEIGHT_CLASS}`);
 
 await mkdir(FONT_OUT_DIR, { recursive: true });
