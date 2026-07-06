@@ -40,21 +40,21 @@ export const brandFonts: BrandFont[] = [
     },
   },
   {
-    id: 'mors-display-light',
+    id: 'mors-display-bold',
     family: 'Mors Display',
     cssFamily: "'Mors Display', 'Roboto', system-ui, sans-serif",
-    cssWeight: 300,
-    styleLabel: 'Light',
+    cssWeight: 700,
+    styleLabel: 'Bold',
     source: {
       kind: 'download',
       files: [
-        { format: 'WOFF2', path: '/fonts/mors-display-light.woff2', filename: 'mors-display-light.woff2' },
-        { format: 'OTF', path: '/fonts/mors-display-light.otf', filename: 'mors-display-light.otf' },
+        { format: 'WOFF2', path: '/fonts/mors-display-bold.woff2', filename: 'mors-display-bold.woff2' },
+        { format: 'OTF', path: '/fonts/mors-display-bold.otf', filename: 'mors-display-bold.otf' },
       ],
     },
     role: {
-      da: 'Tyndere variant til større overskrifter, hvor regular bliver for tung.',
-      en: 'Thinner cut for larger headlines where Regular feels too heavy.',
+      da: 'Kraftig variant til overskrifter og accenter, hvor der er brug for mere vægt.',
+      en: 'Heavier cut for headlines and accents that need more weight.',
     },
   },
   {

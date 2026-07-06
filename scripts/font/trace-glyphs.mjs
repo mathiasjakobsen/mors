@@ -1,14 +1,14 @@
 // Trace per-glyph bitmaps into SVG path data via potrace.
 //   node scripts/font/trace-glyphs.mjs                  → regular weight (strokes thinned 0.7px/side)
-//   WEIGHT=light node scripts/font/trace-glyphs.mjs     → light weight   (thinned 1.5px/side)
-//   THIN=<px> …                                         → override the per-side thinning
+//   WEIGHT=bold node scripts/font/trace-glyphs.mjs      → bold weight    (strokes grown 1.25px/side)
+//   THIN=<px> …                                         → override per-side stroke change (negative = embolden)
 //
-// Strokes are thinned by smoothly shrinking the ink (blur-then-threshold on an
-// 8x supersample). The signature 'r' is rendered from public/brand/mors-logo.svg
-// and run through the same pipeline so it picks up each weight automatically.
+// Stroke weight is set by smoothly shrinking OR growing the ink (blur-then-
+// threshold on an 8x supersample). The morˢ letters are rendered from
+// public/brand/mors-logo.svg and run through the same pipeline per weight.
 //
 // Reads:  scripts/font/glyphs/<name>.png + _mapping.json + public/brand/mors-logo.svg
-// Writes: scripts/font/glyphs/_traced.json  (regular)  or  _traced-light.json  (light)
+// Writes: scripts/font/glyphs/_traced.json  (regular)  or  _traced-bold.json  (bold)
 
 import potrace from 'potrace';
 import sharp from 'sharp';
@@ -21,19 +21,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const GLYPHS_DIR = join(__dirname, 'glyphs');
 const MAPPING_PATH = join(GLYPHS_DIR, '_mapping.json');
 
-const WEIGHT = process.env.WEIGHT === 'light' ? 'light' : 'regular';
+const WEIGHT = process.env.WEIGHT === 'bold' ? 'bold' : 'regular';
 
-// Stroke thinning, expressed in *native* pixels peeled off EACH side of every
-// stroke. Source strokes are ~7 px wide, so 0.7 px/side ≈ 20 % thinner (Regular).
-// Light starts from a ~5 px stroke (it used to erode a whole native px/side), so
-// 1.5 px/side keeps it ~20 % thinner than the old Light — and clearly lighter
-// than the new Regular. Values can be fractional: the bitmap is supersampled
-// (see UPSCALE) before erosion, giving sub-pixel control native integer erosion
-// can't. THIN env var overrides the per-weight default (in native px/side).
+// Stroke weight, expressed in *native* pixels peeled off EACH side of every
+// stroke. Source strokes are ~7 px wide, so +0.7 px/side ≈ 20 % thinner (Regular).
+// A NEGATIVE value grows the stroke instead of shrinking it: Bold dilates
+// 1.25 px/side (~9.5 px stroke, ~1.7× Regular). Values can be fractional: the
+// bitmap is supersampled (see UPSCALE) so we get sub-pixel control. THIN
+// overrides the per-weight default (in native px/side; negative = embolden).
 const ERODE_PER_SIDE_PX = process.env.THIN != null
   ? Number(process.env.THIN)
-  : (WEIGHT === 'light' ? 1.5 : 0.7);
+  : (WEIGHT === 'bold' ? -1.25 : 0.7);
 const UPSCALE = 8; // supersample factor for sub-pixel erosion
+// Bold grows the ink outward, so each glyph bitmap needs extra white margin or
+// the growth clips at the tight crop edge. Pad by the dilation depth + 1 px.
+const DILATE_PAD = ERODE_PER_SIDE_PX < 0 ? Math.ceil(-ERODE_PER_SIDE_PX) + 1 : 0;
 
 // Stroke-width equalisation. The source is hand-drawn, so strokes vary in width
 // like brush pressure. We skeletonise each glyph and rebuild its strokes at a
@@ -42,8 +44,8 @@ const UPSCALE = 8; // supersample factor for sub-pixel erosion
 // looking crooked). ~0.2 gently evens it out while staying organic. EQUALIZE overrides.
 const EQUALIZE_ALPHA = process.env.EQUALIZE != null ? Number(process.env.EQUALIZE) : 0.2;
 
-const OUT_PATH = WEIGHT === 'light'
-  ? join(GLYPHS_DIR, '_traced-light.json')
+const OUT_PATH = WEIGHT === 'bold'
+  ? join(GLYPHS_DIR, '_traced-bold.json')
   : join(GLYPHS_DIR, '_traced.json');
 
 console.log(`weight=${WEIGHT}  erosion=${ERODE_PER_SIDE_PX}px/side  upscale=${UPSCALE}x  out=${OUT_PATH.split('/').pop()}`);
@@ -273,13 +275,22 @@ for (const g of mapping) {
   try {
     const logo = logoGlyphs[g.char];
     const filename = g.filename ?? `${g.name}.png`;
-    const source = logo ? logo.buffer : join(GLYPHS_DIR, filename);
+    let source = logo ? logo.buffer : join(GLYPHS_DIR, filename);
     const bbox = logo ? logo.bbox : g.bbox;
-    const padding = logo ? logo.padding : (g.padding ?? 0);
-    // When thinning, we supersample by UPSCALE so path coords come back in the
-    // enlarged space; scale them back to native px afterwards.
-    const scaleBack = ERODE_PER_SIDE_PX > 0 ? UPSCALE : 1;
-    const input = ERODE_PER_SIDE_PX > 0
+    let padding = logo ? logo.padding : (g.padding ?? 0);
+    // Bold dilates the ink outward — give it white margin to grow into, and
+    // fold that margin into `padding` so the glyph stays baseline-aligned.
+    if (DILATE_PAD > 0) {
+      source = await sharp(source)
+        .extend({ top: DILATE_PAD, bottom: DILATE_PAD, left: DILATE_PAD, right: DILATE_PAD, background: '#ffffff' })
+        .png().toBuffer();
+      padding += DILATE_PAD;
+    }
+    // Any nonzero weight adjustment runs through the supersampled shrink/grow
+    // pipeline; scale the resulting path coords back to native px afterwards.
+    const active = ERODE_PER_SIDE_PX !== 0;
+    const scaleBack = active ? UPSCALE : 1;
+    const input = active
       ? await shrinkInkToBuffer(source, ERODE_PER_SIDE_PX, UPSCALE)
       : source;
     const svg = await traceInput(input, scaleBack);

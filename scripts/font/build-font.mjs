@@ -1,13 +1,13 @@
 // Build the Mors Display font from potrace'd source bitmaps.
-//   node scripts/font/build-font.mjs                → Regular (weight 400)
-//   WEIGHT=light node scripts/font/build-font.mjs   → Light   (weight 300)
+//   node scripts/font/build-font.mjs               → Regular (weight 400)
+//   WEIGHT=bold node scripts/font/build-font.mjs   → Bold    (weight 700)
 //
 // Inputs:
-//   scripts/font/glyphs/_traced.json        (from trace-glyphs.mjs, regular)
-//   scripts/font/glyphs/_traced-light.json  (from trace-glyphs.mjs WEIGHT=light)
+//   scripts/font/glyphs/_traced.json       (from trace-glyphs.mjs, regular)
+//   scripts/font/glyphs/_traced-bold.json  (from trace-glyphs.mjs WEIGHT=bold)
 // Outputs:
-//   public/fonts/mors-display{,-light}.otf / .woff2
-//   scripts/font/_sample{,-light}.svg / .png
+//   public/fonts/mors-display{,-bold}.otf / .woff2
+//   scripts/font/_sample{,-bold}.svg / .png
 
 import opentype from 'opentype.js';
 import wawoff2 from 'wawoff2';
@@ -20,12 +20,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..', '..');
 const FONT_OUT_DIR = join(ROOT, 'public', 'fonts');
 
-const WEIGHT = process.env.WEIGHT === 'light' ? 'light' : 'regular';
-const STYLE_NAME = WEIGHT === 'light' ? 'Light' : 'Regular';
-const WEIGHT_CLASS = WEIGHT === 'light' ? 300 : 400;
-const FONT_BASENAME = WEIGHT === 'light' ? 'mors-display-light' : 'mors-display';
-const TRACED_PATH = join(__dirname, 'glyphs', WEIGHT === 'light' ? '_traced-light.json' : '_traced.json');
-const SAMPLE_BASENAME = WEIGHT === 'light' ? '_sample-light' : '_sample';
+const WEIGHT = process.env.WEIGHT === 'bold' ? 'bold' : 'regular';
+const STYLE_NAME = WEIGHT === 'bold' ? 'Bold' : 'Regular';
+const WEIGHT_CLASS = WEIGHT === 'bold' ? 700 : 400;
+const FONT_BASENAME = WEIGHT === 'bold' ? 'mors-display-bold' : 'mors-display';
+const TRACED_PATH = join(__dirname, 'glyphs', WEIGHT === 'bold' ? '_traced-bold.json' : '_traced.json');
+const SAMPLE_BASENAME = WEIGHT === 'bold' ? '_sample-bold' : '_sample';
 console.log(`weight=${WEIGHT}  style=${STYLE_NAME}  weightClass=${WEIGHT_CLASS}`);
 
 await mkdir(FONT_OUT_DIR, { recursive: true });
