@@ -1,7 +1,7 @@
 ---
 import type { Lang } from '../../i18n/ui';
 import Container from '../shared/Container.astro';
-import { brandAssets } from '../../data/brand-assets';
+import { brandLogos } from '../../data/brand-assets';
 import { brandFonts } from '../../data/brand-fonts';
 
 interface Props {
@@ -15,7 +15,7 @@ const copy = {
     hero: { eyebrow: 'Press kit', title: 'Brand', subtitle: 'Logoer, typografi og hvordan vi gerne ses.' },
     logos: {
       title: 'Logoer',
-      lead: 'Brug SVG hvor du kan. PNG og JPG ligger klar til de steder, der ikke understøtter vektor.',
+      lead: 'Hvert mærke findes i standardfarven samt sort og hvid. Brug SVG hvor du kan — PNG og JPG ligger klar til de steder, der ikke understøtter vektor.',
       logo: { name: 'Logo', desc: 'Mærket. Brug det hvor pladsen er smal — favicon, social og kompakte beholdere.' },
       wordmark: { name: 'Ordmærke', desc: 'Skriften morˢ. Brug det som primær identitet på alt fra menuer til skilte.' },
       downloadAll: 'Download alle som ZIP',
@@ -36,7 +36,7 @@ const copy = {
     hero: { eyebrow: 'Press kit', title: 'Brand', subtitle: 'Logos, typography, and how we like to be shown.' },
     logos: {
       title: 'Logos',
-      lead: 'Use SVG wherever you can. PNG and JPG are there for tools that don\'t support vectors.',
+      lead: 'Each mark comes in the default colour plus black and white. Use SVG wherever you can — PNG and JPG are there for tools that don\'t support vectors.',
       logo: { name: 'Logo', desc: 'The mark. Use it where space is tight — favicons, social, compact containers.' },
       wordmark: { name: 'Wordmark', desc: 'The morˢ lettering. Use as the primary identity on menus, signage, and headers.' },
       downloadAll: 'Download all as ZIP',
@@ -55,33 +55,22 @@ const copy = {
   },
 }[lang];
 
-const logoAssets = brandAssets.filter((a) => a.id.startsWith('logo-'));
-const wordmarkAssets = brandAssets.filter((a) => a.id.startsWith('wordmark-'));
-
-const logoCards = [
-  {
-    key: 'logo',
+const logoMeta = {
+  logo: {
     name: copy.logos.logo.name,
     desc: copy.logos.logo.desc,
-    previewSrc: '/brand/mors-logo.svg',
-    previewAria: 'morˢ logo',
     aspect: 'aspect-square',
-    assets: logoAssets,
     ariaPrefix: copy.logos.downloadAriaLogo,
   },
-  {
-    key: 'wordmark',
+  wordmark: {
     name: copy.logos.wordmark.name,
     desc: copy.logos.wordmark.desc,
-    previewSrc: '/brand/mors-wordmark.svg',
-    previewAria: 'morˢ wordmark',
     aspect: 'aspect-[4/3]',
-    assets: wordmarkAssets,
     ariaPrefix: copy.logos.downloadAriaWordmark,
   },
-];
+};
 
-const formatLabel = (id: string) => id.split('-')[1].toUpperCase();
+const logoCards = brandLogos.map((logo) => ({ ...logoMeta[logo.id], id: logo.id, colorways: logo.colorways }));
 ---
 
 <!-- Hero -->
@@ -103,39 +92,41 @@ const formatLabel = (id: string) => id.split('-')[1].toUpperCase();
       <p class="font-body font-light text-lg text-ink-light leading-relaxed">{copy.logos.lead}</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+    <div class="space-y-16 md:space-y-24">
       {logoCards.map((card) => (
         <article data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-          <div class={`${card.aspect} bg-cream rounded-mors border border-ink/5 flex items-center justify-center p-12 md:p-16`}>
-            <img
-              src={card.previewSrc}
-              alt={card.previewAria}
-              class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain"
-              loading="lazy"
-            />
-          </div>
-          <div class="mt-8">
-            <h3 class="font-display font-bold text-2xl text-ink mb-2">{card.name}</h3>
-            <p class="font-body font-light text-ink-light leading-relaxed mb-6">{card.desc}</p>
-            <div class="flex flex-wrap gap-2">
-              {card.assets.map((asset) => (
-                <a
-                  href={asset.path}
-                  download={asset.filename}
-                  data-brand-page-path={asset.path}
-                  data-brand-page-filename={asset.filename}
-                  aria-label={`${card.ariaPrefix} ${formatLabel(asset.id)}`}
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-ink/15 rounded-mors font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/70 hover:text-deep-red hover:border-deep-red/40 hover:bg-deep-red/5 transition-colors"
-                >
-                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-60">
-                    <path d="M7 2v8" />
-                    <path d="M3.5 7L7 10.5 10.5 7" />
-                    <path d="M2.5 12h9" />
-                  </svg>
-                  {formatLabel(asset.id)}
-                </a>
-              ))}
-            </div>
+          <h3 class="font-display font-bold text-2xl text-ink mb-2">{card.name}</h3>
+          <p class="font-body font-light text-ink-light leading-relaxed mb-8 max-w-xl">{card.desc}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
+            {card.colorways.map((cw) => (
+              <figure>
+                <div class={`${card.aspect} ${cw.previewBg} rounded-mors border border-ink/5 flex items-center justify-center p-8 md:p-10`}>
+                  <img
+                    src={cw.previewSrc}
+                    alt={`morˢ ${card.id} — ${cw.label[lang]}`}
+                    class="max-w-[78%] max-h-[70%] w-auto h-auto object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption class="mt-4 flex items-center justify-between gap-3">
+                  <span class="font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/50">{cw.label[lang]}</span>
+                  <div class="flex gap-1.5">
+                    {cw.files.map((f) => (
+                      <a
+                        href={f.path}
+                        download={f.filename}
+                        data-brand-page-path={f.path}
+                        data-brand-page-filename={f.filename}
+                        aria-label={`${card.ariaPrefix} ${cw.label[lang]} ${f.format}`}
+                        class="inline-flex items-center px-2.5 py-1.5 border border-ink/15 rounded-mors font-body text-[10px] font-medium uppercase tracking-[0.12em] text-ink/70 hover:text-deep-red hover:border-deep-red/40 hover:bg-deep-red/5 transition-colors"
+                      >
+                        {f.format}
+                      </a>
+                    ))}
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </article>
       ))}
