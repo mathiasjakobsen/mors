@@ -18,7 +18,7 @@ const summary = getHoursSummary(lang);
   </p>
 ) : (
   <div class="font-body text-sm">
-    <h3 class="font-display text-lg text-deep-red mb-3">{t(lang, 'hours.title')}</h3>
+    <h3 class="font-display text-lg uppercase text-deep-red mb-3">{t(lang, 'hours.title')}</h3>
     <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5">
       {hours.map((h) => (
         <>
