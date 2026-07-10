@@ -142,6 +142,88 @@ function transformPath(commands, bbox, rowBaseline, padding = 0) {
   return path;
 }
 
+// ── Contour winding ─────────────────────────────────────────────────────────
+// potrace winds every contour the same way, which only renders correctly under
+// the even-odd fill rule. Installed OTF/TTF fonts are rasterised with the
+// NON-ZERO rule (design apps, print, most OSes), where same-direction contours
+// make counters (the hole in o, e, a, b, …) fill solid. Fix: orient contours by
+// nesting depth — outer contours clockwise, holes counter-clockwise — so the
+// hole's winding cancels the outer's and the counter stays open under non-zero.
+function splitContours(commands) {
+  const out = [];
+  let cur = null;
+  for (const c of commands) {
+    if (c.type === 'M') { if (cur) out.push(cur); cur = [c]; }
+    else if (cur) cur.push(c);
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
+function onCurvePoints(contour) {
+  const pts = [];
+  for (const c of contour) if (c.type !== 'Z') pts.push([c.x, c.y]);
+  return pts;
+}
+
+function signedArea(pts) {
+  let a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    a += x1 * y2 - x2 * y1;
+  }
+  return a / 2; // > 0 = counter-clockwise (font units are y-up)
+}
+
+function pointInPolygon(p, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > p[1]) !== (yj > p[1]) &&
+        p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+// Reverse one contour (M + L/C/Q segments, optional Z), swapping cubic controls.
+function reverseContour(contour) {
+  const hasZ = contour[contour.length - 1].type === 'Z';
+  const body = hasZ ? contour.slice(0, -1) : contour.slice();
+  const P = body.map((c) => [c.x, c.y]);
+  const k = P.length - 1;
+  const out = [{ type: 'M', x: P[k][0], y: P[k][1] }];
+  for (let i = k; i >= 1; i--) {
+    const seg = body[i]; // original segment P[i-1] → P[i]
+    const [x, y] = P[i - 1];
+    if (seg.type === 'C') out.push({ type: 'C', x1: seg.x2, y1: seg.y2, x2: seg.x1, y2: seg.y1, x, y });
+    else if (seg.type === 'Q') out.push({ type: 'Q', x1: seg.x1, y1: seg.y1, x, y });
+    else out.push({ type: 'L', x, y });
+  }
+  if (hasZ) out.push({ type: 'Z' });
+  return out;
+}
+
+function fixWinding(path) {
+  const contours = splitContours(path.commands);
+  if (contours.length <= 1) return; // no counters, nothing to orient
+  const info = contours.map((c) => {
+    const pts = onCurvePoints(c);
+    return { pts, area: signedArea(pts) };
+  });
+  const oriented = contours.map((c, i) => {
+    // Nesting depth = how many other contours enclose this one.
+    let depth = 0;
+    for (let j = 0; j < contours.length; j++) {
+      if (j !== i && info[j].pts.length > 2 && pointInPolygon(info[i].pts[0], info[j].pts)) depth++;
+    }
+    const wantClockwise = depth % 2 === 0;      // outer levels CW (area < 0)
+    const isClockwise = info[i].area < 0;
+    return wantClockwise === isClockwise ? c : reverseContour(c);
+  });
+  path.commands = oriented.flat();
+}
+
 const notdef = new opentype.Glyph({
   name: '.notdef',
   unicode: 0,
@@ -170,6 +252,7 @@ for (const g of traced) {
   if (baseline == null) continue;
 
   const path = transformPath(g.commands, g.bbox, baseline, g.padding ?? 0);
+  fixWinding(path);
   const advanceWidth = Math.round(g.bbox.w * SCALE + SIDE_BEARING * 2);
 
   glyphList.push(new opentype.Glyph({
@@ -235,6 +318,7 @@ if (supS) {
       case 'Z': path.closePath(); break;
     }
   }
+  fixWinding(path);
   glyphList.push(new opentype.Glyph({
     name: 'uni02E2',
     unicode: 0x02E2,
