@@ -34,21 +34,35 @@ const hoursSummary = getHoursSummary(lang);
         </p>
 
         <!-- Findsmiley badge -->
-        <a
-          href={config.findsmiley.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block mt-6 opacity-70 hover:opacity-100 transition-opacity"
-          aria-label="Findsmiley"
-        >
-          <img
-            src={config.findsmiley.image}
-            alt="Findsmiley - Elite smiley"
-            width="60"
-            height="60"
-            loading="lazy"
-          />
-        </a>
+        <div class="mt-6">
+          <a
+            href={config.findsmiley.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block opacity-70 hover:opacity-100 transition-opacity"
+            aria-label={lang === 'da' ? 'Smiley rapport' : 'Smiley report'}
+          >
+            <img
+              src={config.findsmiley.image}
+              alt="Fødevarekontrol smiley"
+              width="60"
+              height="60"
+              loading="lazy"
+            />
+          </a>
+          <a
+            href={config.findsmiley.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-3 inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
+          >
+            {lang === 'da' ? 'Smiley rapport' : 'Smiley report'}
+            <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-5 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+              <path d="M1 7h21" />
+              <path d="M16 2l5 5-5 5" />
+            </svg>
+          </a>
+        </div>
       </div>
 
       <!-- Column 2: Navigation + Hours -->

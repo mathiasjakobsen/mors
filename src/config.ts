@@ -22,6 +22,6 @@ export const config = {
   foundingYear: 2026,
   findsmiley: {
     url: 'https://www.findsmiley.dk/1580970',
-    image: 'https://www.findsmiley.dk/PublishingImages/1Smiley.png',
+    image: '/findsmiley/smiley-pending.png',
   },
 } as const;
