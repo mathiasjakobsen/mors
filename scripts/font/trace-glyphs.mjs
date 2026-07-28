@@ -165,6 +165,28 @@ function equalizeStrokeMask(ink, W, H, alpha) {
   return out;
 }
 
+// Counter mask: background pixels NOT connected to the border, i.e. the enclosed
+// holes (o, e, a, @, %, …). Flood-fill the exterior from the edges, then invert.
+function enclosedBackground(ink, W, H) {
+  const ext = new Uint8Array(W * H); // 1 = exterior background
+  const stack = [];
+  const tryPush = (x, y) => {
+    if (x < 0 || y < 0 || x >= W || y >= H) return;
+    const i = y * W + x;
+    if (ink[i] === 0 && ext[i] === 0) { ext[i] = 1; stack.push(i); }
+  };
+  for (let x = 0; x < W; x++) { tryPush(x, 0); tryPush(x, H - 1); }
+  for (let y = 0; y < H; y++) { tryPush(0, y); tryPush(W - 1, y); }
+  while (stack.length) {
+    const i = stack.pop();
+    tryPush((i % W) - 1, (i / W) | 0); tryPush((i % W) + 1, (i / W) | 0);
+    tryPush(i % W, ((i / W) | 0) - 1); tryPush(i % W, ((i / W) | 0) + 1);
+  }
+  const holes = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) if (ink[i] === 0 && ext[i] === 0) holes[i] = 1;
+  return holes;
+}
+
 // Smoothly shrink the BLACK ink region by `perSideNativePx` (native px), pulling
 // every stroke edge inward isotropically. Uses the blur-then-threshold identity
 // for morphology: a Gaussian-blurred step edge has value 255·Φ(x/σ) at signed
@@ -196,6 +218,9 @@ async function shrinkInkToBuffer(input, perSideNativePx, upscale) {
   let ink = new Uint8Array(W * H);
   for (let i = 0; i < ink.length; i++) ink[i] = g[i] < 128 ? 1 : 0;
 
+  // The SOURCE counters, captured before equalise/thin/embolden can fill them.
+  const sourceHoles = enclosedBackground(ink, W, H);
+
   // Even out stroke widths before thinning/smoothing.
   if (EQUALIZE_ALPHA > 0) ink = equalizeStrokeMask(ink, W, H, EQUALIZE_ALPHA);
 
@@ -216,6 +241,26 @@ async function shrinkInkToBuffer(input, perSideNativePx, upscale) {
       const v = data[((y + margin) * ew + (x + margin)) * info.channels];
       out[y * W + x] = v >= L ? 0 : 255; // 0 = ink (black) for potrace
     }
+  }
+
+  // Equalising/emboldening can fill small counters. Recover ONLY the source
+  // counters that ended up fully closed — leaving surviving counters untouched
+  // keeps their smooth traced edge (carving them would impose the blocky source
+  // hole). Per connected component: if none of it is open in `out`, carve it.
+  const seen = new Uint8Array(W * H);
+  for (let s = 0; s < W * H; s++) {
+    if (!sourceHoles[s] || seen[s]) continue;
+    const comp = [s]; seen[s] = 1; let open = false;
+    for (let q = 0; q < comp.length; q++) {
+      const p = comp[q];
+      if (out[p] === 255) open = true;
+      const x = p % W, y = (p / W) | 0;
+      if (x > 0 && sourceHoles[p - 1] && !seen[p - 1]) { seen[p - 1] = 1; comp.push(p - 1); }
+      if (x < W - 1 && sourceHoles[p + 1] && !seen[p + 1]) { seen[p + 1] = 1; comp.push(p + 1); }
+      if (y > 0 && sourceHoles[p - W] && !seen[p - W]) { seen[p - W] = 1; comp.push(p - W); }
+      if (y < H - 1 && sourceHoles[p + W] && !seen[p + W]) { seen[p + W] = 1; comp.push(p + W); }
+    }
+    if (!open) for (const p of comp) out[p] = 255;
   }
   return sharp(out, { raw: { width: W, height: H, channels: 1 } }).png().toBuffer();
 }

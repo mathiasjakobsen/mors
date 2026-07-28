@@ -160,9 +160,31 @@ function splitContours(commands) {
   return out;
 }
 
-function onCurvePoints(contour) {
+// Flatten a contour to a dense polygon (samples curves). On-curve points alone
+// approximate concave shapes (e.g. @) too coarsely for reliable point-in-polygon.
+function flattenContour(contour) {
   const pts = [];
-  for (const c of contour) if (c.type !== 'Z') pts.push([c.x, c.y]);
+  let cx = 0, cy = 0;
+  for (const c of contour) {
+    if (c.type === 'M' || c.type === 'L') { cx = c.x; cy = c.y; pts.push([cx, cy]); }
+    else if (c.type === 'Q') {
+      const x0 = cx, y0 = cy;
+      for (let t = 1; t <= 8; t++) {
+        const u = t / 8, m = 1 - u;
+        pts.push([m * m * x0 + 2 * m * u * c.x1 + u * u * c.x,
+                  m * m * y0 + 2 * m * u * c.y1 + u * u * c.y]);
+      }
+      cx = c.x; cy = c.y;
+    } else if (c.type === 'C') {
+      const x0 = cx, y0 = cy;
+      for (let t = 1; t <= 12; t++) {
+        const u = t / 12, m = 1 - u;
+        pts.push([m*m*m*x0 + 3*m*m*u*c.x1 + 3*m*u*u*c.x2 + u*u*u*c.x,
+                  m*m*m*y0 + 3*m*m*u*c.y1 + 3*m*u*u*c.y2 + u*u*u*c.y]);
+      }
+      cx = c.x; cy = c.y;
+    }
+  }
   return pts;
 }
 
@@ -208,7 +230,7 @@ function fixWinding(path) {
   const contours = splitContours(path.commands);
   if (contours.length <= 1) return; // no counters, nothing to orient
   const info = contours.map((c) => {
-    const pts = onCurvePoints(c);
+    const pts = flattenContour(c);
     return { pts, area: signedArea(pts) };
   });
   const oriented = contours.map((c, i) => {
