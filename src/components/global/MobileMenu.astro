@@ -22,6 +22,7 @@ const currentPath = Astro.url.pathname;
   aria-modal="true"
   aria-label={lang === 'da' ? 'Mobilmenu' : 'Mobile menu'}
   aria-hidden="true"
+  inert
 >
   <!-- Header -->
   <div class="flex items-center justify-between px-6 h-20">
@@ -81,6 +82,7 @@ const currentPath = Astro.url.pathname;
     panel?.classList.remove('opacity-0', 'pointer-events-none');
     panel?.classList.add('opacity-100');
     panel?.setAttribute('aria-hidden', 'false');
+    panel?.removeAttribute('inert');
     document.body.style.overflow = 'hidden';
     // Animate nav links in
     navLinks?.forEach(link => {
@@ -101,6 +103,7 @@ const currentPath = Astro.url.pathname;
       link.style.transform = 'translateY(20px)';
     });
     document.getElementById('mobile-menu-toggle')?.focus();
+    panel?.setAttribute('inert', '');
   }
 
   document.addEventListener('mobile-menu:toggle', () => {

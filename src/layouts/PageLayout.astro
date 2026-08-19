@@ -12,9 +12,10 @@ interface Props {
   ogImage?: string;
   jsonLd?: object;
   noindex?: boolean;
+  preloadImage?: string;
 }
 
-const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex } = Astro.props;
+const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex, preloadImage } = Astro.props;
 ---
 
 <BaseLayout
@@ -25,6 +26,7 @@ const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex } = As
   ogImage={ogImage}
   jsonLd={jsonLd}
   noindex={noindex}
+  preloadImage={preloadImage}
 >
   <Header lang={lang} />
   <main id="main-content" class="flex-1 pt-20 md:pt-20">

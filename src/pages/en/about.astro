@@ -1,4 +1,12 @@
 ---
+import { Picture } from 'astro:assets';
+import founders from '../../assets/mors-founders.jpg';
+import bindingsvaerk from '../../assets/mors-bindingsvaerk.jpg';
+import bagBaren from '../../assets/mors-bag-baren.jpg';
+import morgenmad from '../../assets/mors-morgenmad.jpg';
+import doer from '../../assets/mors-doer.jpg';
+import baren from '../../assets/mors-baren.jpg';
+import cafe from '../../assets/mors-cafe.jpg';
 import PageLayout from '../../layouts/PageLayout.astro';
 import { t } from '../../i18n/ui';
 import Container from '../../components/shared/Container.astro';
@@ -6,12 +14,12 @@ import Container from '../../components/shared/Container.astro';
 const lang = 'en';
 
 const gallery = [
-  { src: '/images/mors-bindingsvaerk.jpg', title: 'Listed 17th-century half-timbering' },
-  { src: '/images/mors-bag-baren.jpg',     title: 'Behind the bar' },
-  { src: '/images/mors-morgenmad.jpg',     title: 'Breakfast in the sun' },
-  { src: '/images/mors-doer.jpg',          title: 'The door is open' },
-  { src: '/images/mors-baren.jpg',         title: 'While we brew' },
-  { src: '/images/mors-cafe.jpg',          title: 'Room for a chat' },
+  { src: bindingsvaerk, title: 'Listed 17th-century half-timbering' },
+  { src: bagBaren,      title: 'Behind the bar' },
+  { src: morgenmad,     title: 'Breakfast in the sun' },
+  { src: doer,          title: 'The door is open' },
+  { src: baren,         title: 'While we brew' },
+  { src: cafe,          title: 'Room for a chat' },
 ];
 ---
 
@@ -23,8 +31,11 @@ const gallery = [
 >
   <!-- Hero -->
   <section class="relative min-h-[60vh] md:min-h-[75vh] overflow-hidden">
-    <img
-      src="/images/mors-founders.jpg"
+    <Picture
+      src={founders}
+      formats={['avif', 'webp']}
+      widths={[640, 960, 1280, 1920, 2400]}
+      sizes="100vw"
       alt="Mathias and Johanne, founders of morˢ"
       fetchpriority="high"
       decoding="async"
@@ -51,15 +62,18 @@ const gallery = [
         {gallery.map((item) => (
           <figure class="animate-on-scroll mb-6 md:mb-8 break-inside-avoid">
             <div class="overflow-hidden rounded-mors bg-cream">
-              <img
+              <Picture
                 src={item.src}
                 alt={item.title}
+                formats={['avif', 'webp']}
+                widths={[400, 640, 800, 1024, 1280]}
+                sizes="(min-width: 1024px) 360px, (min-width: 640px) calc((100vw - 4.5rem) / 2), calc(100vw - 2rem)"
                 loading="lazy"
                 decoding="async"
                 class="w-full h-auto object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.03]"
               />
             </div>
-            <figcaption class="mt-3 font-body text-xs uppercase tracking-[0.2em] text-ink/50">
+            <figcaption class="mt-3 font-body text-xs uppercase tracking-[0.2em] text-ink-muted">
               {item.title}
             </figcaption>
           </figure>

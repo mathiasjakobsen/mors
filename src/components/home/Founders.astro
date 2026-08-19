@@ -1,5 +1,7 @@
 ---
+import { Picture } from 'astro:assets';
 import type { Lang } from '../../i18n/ui';
+import facade from '../../assets/mors-facade.jpg';
 
 interface Props {
   lang: Lang;
@@ -20,9 +22,12 @@ const alt = lang === 'da'
 <section class="relative w-full">
   <a href={aboutHref} class="group block relative overflow-hidden">
     <div class="relative h-[42vh] md:h-[56vh] min-h-[300px]">
-      <img
-        src="/images/mors-facade.jpg"
+      <Picture
+        src={facade}
         alt={alt}
+        formats={['avif', 'webp']}
+        widths={[640, 960, 1280, 1800]}
+        sizes="100vw"
         loading="lazy"
         decoding="async"
         class="absolute inset-0 w-full h-full object-cover object-bottom transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"

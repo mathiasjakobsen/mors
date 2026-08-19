@@ -109,7 +109,7 @@ const logoCards = brandLogos.map((logo) => ({ ...logoMeta[logo.id], id: logo.id,
                   />
                 </div>
                 <figcaption class="mt-4 flex items-center justify-between gap-3">
-                  <span class="font-body text-xs font-medium uppercase tracking-[0.18em] text-ink/50">{cw.label[lang]}</span>
+                  <span class="font-body text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">{cw.label[lang]}</span>
                   <div class="flex gap-1.5">
                     {cw.files.map((f) => (
                       <a
@@ -166,7 +166,7 @@ const logoCards = brandLogos.map((logo) => ({ ...logoMeta[logo.id], id: logo.id,
           <header class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-8 md:mb-10">
             <div>
               <h3 class="font-display font-bold text-2xl md:text-3xl uppercase text-ink">{font.family}</h3>
-              <p class="font-body text-xs uppercase tracking-[0.22em] text-ink/40 mt-2">{font.styleLabel}</p>
+              <p class="font-body text-xs uppercase tracking-[0.22em] text-ink-muted mt-2">{font.styleLabel}</p>
             </div>
             <p class="font-body font-light text-ink-light max-w-md md:text-right">{font.role[lang]}</p>
           </header>

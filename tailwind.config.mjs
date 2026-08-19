@@ -15,6 +15,10 @@ export default {
         ink: {
           DEFAULT: '#1A1A1A',
           light: '#3A3A3A',
+          // Muted label text. Warm grey rather than a tint of ink so it clears
+          // WCAG AA (4.5:1) on both cream and warm-white — the old ink/40 and
+          // ink/60 tints did not.
+          muted: '#6B635C',
         },
         gold: '#C4943E',
         sage: '#7A8B6F',

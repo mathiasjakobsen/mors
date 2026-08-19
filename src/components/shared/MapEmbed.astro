@@ -1,0 +1,61 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { config } from '../../config';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+// Google Maps embed for the shop.
+//
+// The iframe is mounted on approach rather than rendered up front. The embed
+// pulls ~200 KB of third-party JS, and `loading="lazy"` is not enough on its
+// own: Chrome's lazy threshold is wide enough that a map one screen below the
+// fold still downloads during first paint, where it competes with the hero for
+// bandwidth. Mounting at 300px out keeps it invisible to the user — the map is
+// always there by the time they scroll to it — while keeping it off the
+// critical path entirely.
+const src =
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2222.5!2d10.2107!3d56.1572!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sKlostergade+58%2C+8000+Aarhus+C!5e0!3m2!1sda!2sdk!4v1700000000000';
+
+const title =
+  lang === 'da'
+    ? `Kort over ${config.name}, ${config.address.street}`
+    : `Map of ${config.name}, ${config.address.street}`;
+---
+
+<div class="w-full h-full" data-map-embed data-map-src={src} data-map-title={title}></div>
+
+<script is:inline>
+  (function () {
+    var holder = document.querySelector('[data-map-embed]');
+    if (!holder) return;
+
+    function mount() {
+      var frame = document.createElement('iframe');
+      frame.src = holder.getAttribute('data-map-src');
+      frame.title = holder.getAttribute('data-map-title');
+      frame.width = '100%';
+      frame.height = '100%';
+      frame.style.border = '0';
+      frame.loading = 'lazy';
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      holder.appendChild(frame);
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      mount();
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+      observer.disconnect();
+      mount();
+    }, { rootMargin: '300px' });
+    observer.observe(holder);
+  })();
+</script>

@@ -43,7 +43,7 @@ const staggerDelays = [
   <section class="bg-cream py-32 md:py-48">
     <Container>
       <div data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <a href="/en/crafts" class="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.2em] text-ink/40 hover:text-deep-red transition-colors mb-8">
+        <a href="/en/crafts" class="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.2em] text-ink-muted hover:text-deep-red transition-colors mb-8">
           &larr; {t(lang, 'products.title')}
         </a>
         <h1 class="font-mors font-medium text-5xl md:text-7xl text-deep-red">
@@ -91,14 +91,14 @@ const staggerDelays = [
               </p>
 
               {product.maker && (
-                <p class="font-body font-light text-xs text-ink/40 uppercase tracking-[0.15em]">
+                <p class="font-body font-light text-xs text-ink-muted uppercase tracking-[0.15em]">
                   {product.maker}
                 </p>
               )}
 
               <span class:list={[
                 'inline-block text-xs font-body font-light uppercase tracking-[0.15em]',
-                product.inStock ? 'text-sage' : 'text-ink/30',
+                product.inStock ? 'text-sage' : 'text-ink-muted',
               ]}>
                 {product.inStock ? t(lang, 'common.inStock') : t(lang, 'common.outOfStock')}
               </span>

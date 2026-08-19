@@ -62,8 +62,8 @@ const scheduleJson = JSON.stringify(schedule);
           <path d="M2 21h20" stroke="#8B1A1A" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </span>
-      <span id="open-text" class="font-body text-xs font-medium uppercase tracking-[0.15em] text-ink/60"></span>
-      <span id="open-detail" class="font-body text-xs font-light text-ink/40 hidden"></span>
+      <span id="open-text" class="font-body text-xs font-medium uppercase tracking-[0.15em] text-ink-muted"></span>
+      <span id="open-detail" class="font-body text-xs font-light text-ink-muted hidden"></span>
     </div>
   </div>
 
@@ -72,20 +72,23 @@ const scheduleJson = JSON.stringify(schedule);
     <figure class="w-1/3 mx-auto">
       <img
         class="wordmark"
-        src="/brand/mors-wordmark.png"
+        src="/brand/mors-wordmark.svg"
         alt="morˢ"
+        width="1333"
+        height="371"
+        fetchpriority="high"
       />
     </figure>
 
-    <p data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.2s] mt-8 font-display font-bold text-base md:text-lg text-ink max-w-lg mx-auto uppercase tracking-[0.2em]">
+    <p class="opacity-0 animate-fade-up [animation-delay:0.2s] mt-8 font-display font-bold text-base md:text-lg text-ink max-w-lg mx-auto uppercase tracking-[0.2em]">
       {t(lang, 'hero.tagline')}
     </p>
 
-    <p data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.3s] mt-12 font-body text-sm md:text-base uppercase tracking-[0.3em] text-deep-red">
+    <p class="opacity-0 animate-fade-up [animation-delay:0.3s] mt-12 font-body text-sm md:text-base uppercase tracking-[0.3em] text-deep-red">
       Klostergade 58, Aarhus
     </p>
 
-    <div data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.4s] mt-12 flex flex-wrap items-center justify-center gap-6">
+    <div class="opacity-0 animate-fade-up [animation-delay:0.4s] mt-12 flex flex-wrap items-center justify-center gap-6">
       <CTAButton
         href={contactHref}
         variant="primary"
