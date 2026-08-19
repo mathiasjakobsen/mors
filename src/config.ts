@@ -1,7 +1,7 @@
 export const config = {
   name: 'morˢ',
   legalName: 'Mors ApS',
-  cvr: 'DK12345678',
+  cvr: 'DK46441508',
   siteUrl: 'https://mors.coffee',
   phone: '+45 93 96 76 88',
   phoneTel: '+4593967688',

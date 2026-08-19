@@ -11,8 +11,8 @@ export function cafeSchema(lang: Lang) {
     name: config.name,
     description:
       lang === 'da'
-        ? 'Specialkaffe og hjemmebagt bagværk i hjertet af Aarhus.'
-        : 'Specialty coffee and homemade pastries in the heart of Aarhus.',
+        ? 'Specialty kaffe og sprødt bagværk i hjertet af Aarhus.'
+        : 'Specialty coffee and baked goods in the heart of Aarhus.',
     url: lang === 'da' ? `${config.siteUrl}/` : `${config.siteUrl}/en/`,
     telephone: config.phoneTel,
     email: config.email,
