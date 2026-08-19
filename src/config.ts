@@ -22,6 +22,9 @@ export const config = {
   foundingYear: 2026,
   findsmiley: {
     url: 'https://www.findsmiley.dk/1580970',
-    image: '/findsmiley/smiley-pending.png',
+    image: '/findsmiley/smiley.svg',
+    // Date of the latest food-safety inspection report, ISO. Formatted per
+    // locale in the footer (da: 14-08-26, en: 14 Aug 2026).
+    date: '2026-08-14',
   },
 } as const;

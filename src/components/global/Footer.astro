@@ -13,6 +13,19 @@ const { lang } = Astro.props;
 const navItems = getNavItems(lang);
 const homePath = getLocalizedPath(lang, '/');
 const hoursSummary = getHoursSummary(lang);
+
+// Danish keeps the compact DD-MM-YY the Fødevarestyrelsen reports use; English
+// spells the month out so DD-MM isn't misread as MM-DD.
+const [smileyYear, smileyMonth, smileyDay] = config.findsmiley.date.split('-');
+const smileyDate =
+  lang === 'da'
+    ? `${smileyDay}-${smileyMonth}-${smileyYear.slice(2)}`
+    : new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(new Date(`${config.findsmiley.date}T00:00:00Z`));
 ---
 
 <footer class="bg-ink text-cream relative overflow-hidden">
@@ -39,7 +52,7 @@ const hoursSummary = getHoursSummary(lang);
             href={config.findsmiley.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-block opacity-70 hover:opacity-100 transition-opacity"
+            class="inline-block"
             aria-label={lang === 'da' ? 'Smiley rapport' : 'Smiley report'}
           >
             <img
@@ -48,13 +61,14 @@ const hoursSummary = getHoursSummary(lang);
               width="60"
               height="60"
               loading="lazy"
+              class="[filter:brightness(0)_invert(1)] opacity-70 hover:opacity-100 transition-opacity"
             />
           </a>
           <a
             href={config.findsmiley.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="mt-3 inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
+            class="mt-3 flex w-fit items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
           >
             {lang === 'da' ? 'Smiley rapport' : 'Smiley report'}
             <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-5 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
@@ -62,6 +76,9 @@ const hoursSummary = getHoursSummary(lang);
               <path d="M16 2l5 5-5 5" />
             </svg>
           </a>
+          <p class="mt-1 text-xs font-body font-light text-cream/50">
+            <time datetime={config.findsmiley.date}>{smileyDate}</time>
+          </p>
         </div>
       </div>
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Fødevarekontrol smiley">
+  <g fill="none" stroke="#307562">
+    <circle cx="150" cy="150" r="140" stroke-width="19"/>
+    <path d="M55 138.5a95 95 0 0 0 190 0" stroke-width="21"/>
+  </g>
+  <g fill="#307562">
+    <circle cx="109.5" cy="113" r="18.75"/>
+    <circle cx="190.5" cy="113" r="18.75"/>
+  </g>
+</svg>
