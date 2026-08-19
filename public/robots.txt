@@ -1,4 +1,8 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+# Internal brand guidelines — not for indexing
+Disallow: /brand
+Disallow: /en/brand
 
 Sitemap: https://mors.coffee/sitemap-index.xml
