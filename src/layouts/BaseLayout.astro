@@ -76,6 +76,20 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
+    <!-- Analytics -->
+    <script
+      is:inline
+      defer
+      src="https://umami.notrs.dk/script.js"
+      data-website-id="835e0c38-c035-4f87-a017-d49d9b64310a"
+    ></script>
+    <script
+      is:inline
+      defer
+      src="https://umami.notrs.dk/recorder.js"
+      data-website-id="835e0c38-c035-4f87-a017-d49d9b64310a"
+    ></script>
+
     <!-- JSON-LD -->
     {jsonLd && (
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
