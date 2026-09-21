@@ -147,17 +147,6 @@ export const productCategories: ProductCategory[] = [
         price: 50,
         inStock: true,
       },
-      {
-        id: 'gift-card',
-        slug: 'gavekort',
-        name: { da: 'Gavekort', en: 'Gift card' },
-        description: {
-          da: 'Gavekort til brug i caféen og webshoppen. Vælg beløb ved kassen.',
-          en: 'Gift card for use in the cafe and webshop. Choose amount at checkout.',
-        },
-        price: 500,
-        inStock: true,
-      },
     ],
   },
 ];

@@ -7,6 +7,7 @@ import { getHoursSummary } from '../../data/hours';
 import Container from '../shared/Container.astro';
 import SectionHeading from '../shared/SectionHeading.astro';
 import CTAButton from '../shared/CTAButton.astro';
+import WalletPassMockup from './WalletPassMockup.astro';
 
 interface Props {
   lang: Lang;
@@ -49,15 +50,15 @@ const bestValueId =
       }).id
     : null;
 
-// Every card currently carries the same POS description ("Gavekort. Indløses
-// ved disken — et klip pr. vare."). Three identical paragraphs side by side
-// read as a rendering fault, so a description shared by all of them moves to a
-// single note under the grid. Cards with their own wording keep it in place.
+// A description every card shares is POS boilerplate, not per-card
+// information — today it is "Gavekort. Indløses ved disken — et klip pr. vare.",
+// which both repeats badly three-across and describes the old physical card.
+// How redemption actually works is the job of the steps, the Wallet section and
+// the FAQ, so the boilerplate is dropped. A card with wording of its own still
+// shows it. (Fix the text in the staff PWA, not here — see CLAUDE.md.)
 const firstDescription = giftCards[0]?.description?.[lang] ?? null;
-const sharedDescription =
-  firstDescription && giftCards.every((c) => c.description?.[lang] === firstDescription)
-    ? firstDescription
-    : null;
+const isBoilerplate =
+  !!firstDescription && giftCards.every((c) => c.description?.[lang] === firstDescription);
 
 const steps = [
   { title: t(lang, 'giftcards.how.step1.title'), body: t(lang, 'giftcards.how.step1.body') },
@@ -70,7 +71,15 @@ const faqs = [
   { q: t(lang, 'giftcards.faq.q2'), a: t(lang, 'giftcards.faq.a2'), menuLink: true },
   { q: t(lang, 'giftcards.faq.q3'), a: t(lang, 'giftcards.faq.a3'), menuLink: false },
   { q: t(lang, 'giftcards.faq.q4'), a: t(lang, 'giftcards.faq.a4'), menuLink: false },
+  { q: t(lang, 'giftcards.faq.q5'), a: t(lang, 'giftcards.faq.a5'), menuLink: false },
 ];
+
+// The pass illustration quotes a real card's wording. Prefer the scope of an
+// actual drinks card from the API so the mockup stays true if the POS wording
+// changes; fall back to the first card.
+const showcased = giftCards.find((c) => c.clips === 5) ?? giftCards[0];
+const passScope = showcased?.name[lang] ?? '';
+const passRemaining = showcased?.clips ?? 5;
 
 const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[transition-delay:0.3s]'];
 ---
@@ -127,6 +136,29 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
   </Container>
 </section>
 
+<!-- Wallet showcase -->
+<section class="bg-warm-white pb-24 md:pb-40">
+  <Container>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-center max-w-5xl mx-auto">
+      <div data-animate-on-scroll class="order-2 md:order-1 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+        <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
+          {t(lang, 'giftcards.wallet.title')}
+        </h2>
+        <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-8">
+          {t(lang, 'giftcards.wallet.body')}
+        </p>
+        <p class="font-body font-normal text-sm uppercase tracking-[0.18em] text-sage">
+          {t(lang, 'giftcards.wallet.note')}
+        </p>
+      </div>
+
+      <div data-animate-on-scroll class="order-1 md:order-2 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.15s]">
+        <WalletPassMockup lang={lang} scope={passScope} remaining={passRemaining} />
+      </div>
+    </div>
+  </Container>
+</section>
+
 <!-- The cards -->
 <section class="bg-cream py-24 md:py-40">
   <Container>
@@ -171,7 +203,7 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
               </p>
             )}
 
-            {card.description && !sharedDescription && (
+            {card.description && !isBoilerplate && (
               <p class="font-body font-light text-sm text-ink-light leading-relaxed mt-4">
                 {card.description[lang]}
               </p>
@@ -199,15 +231,6 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
         );
       })}
     </div>
-
-    {sharedDescription && (
-      <p
-        data-animate-on-scroll
-        class="max-w-5xl mx-auto mt-10 text-center font-body font-light text-sm text-ink-muted opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
-      >
-        {sharedDescription}
-      </p>
-    )}
   </Container>
 </section>
 
