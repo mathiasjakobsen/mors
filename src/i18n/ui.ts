@@ -56,14 +56,33 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
   return currentPath;
 }
 
-/** Navigation items for a given language */
+/**
+ * Navigation items for a given language.
+ *
+ * `match` is the section root the item stands for, which is not always its
+ * `href`: the crafts link points at one category, but every craft page under
+ * it should still mark the item as current.
+ */
 export function getNavItems(lang: Lang) {
   return [
-    { label: t(lang, 'nav.menu'), href: lang === 'da' ? '/menu' : '/en/menu' },
-    { label: t(lang, 'nav.beans'), href: lang === 'da' ? '/kaffe' : '/en/coffee' },
-    { label: t(lang, 'nav.products'), href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/' },
-    { label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard' },
-    { label: t(lang, 'nav.about'), href: lang === 'da' ? '/om' : '/en/about' },
-    { label: t(lang, 'nav.contact'), href: lang === 'da' ? '/kontakt' : '/en/contact' },
+    { label: t(lang, 'nav.menu'),      href: lang === 'da' ? '/menu' : '/en/menu',                          match: lang === 'da' ? '/menu' : '/en/menu' },
+    { label: t(lang, 'nav.beans'),     href: lang === 'da' ? '/kaffe' : '/en/coffee',                       match: lang === 'da' ? '/kaffe' : '/en/coffee' },
+    { label: t(lang, 'nav.products'),  href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/', match: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
+    { label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard',                  match: lang === 'da' ? '/gavekort' : '/en/giftcard' },
+    { label: t(lang, 'nav.about'),     href: lang === 'da' ? '/om' : '/en/about',                           match: lang === 'da' ? '/om' : '/en/about' },
+    { label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
   ];
+}
+
+/**
+ * Is `currentPath` inside the section a nav item stands for?
+ *
+ * Trailing slashes are ignored, since whether a page is served as `/menu` or
+ * `/menu/` is up to the host. Sub-paths only count on a segment boundary, so
+ * `/kaffe` never claims a hypothetical `/kaffebar`.
+ */
+export function isNavItemActive(currentPath: string, match: string): boolean {
+  const path = currentPath.replace(/\/+$/, '') || '/';
+  const root = match.replace(/\/+$/, '') || '/';
+  return path === root || path.startsWith(`${root}/`);
 }

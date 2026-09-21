@@ -1,6 +1,6 @@
 ---
 import type { Lang } from '../../i18n/ui';
-import { getNavItems, getLocalizedPath } from '../../i18n/ui';
+import { getNavItems, getLocalizedPath, isNavItemActive } from '../../i18n/ui';
 import { config } from '../../config';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 
@@ -43,19 +43,25 @@ const currentPath = Astro.url.pathname;
 
   <!-- Nav links -->
   <nav class="flex-1 px-6 py-8 flex flex-col justify-center gap-2" aria-label={lang === 'da' ? 'Mobilnavigation' : 'Mobile navigation'}>
-    {navItems.map((item, i) => (
-      <a
-        href={item.href}
-        class:list={[
-          'mobile-nav-link font-display text-4xl md:text-5xl font-bold text-ink hover:text-deep-red transition-all duration-500 py-3',
-          `stagger-${i + 1}`,
-          { 'text-deep-red': currentPath === item.href },
-        ]}
-        style={`opacity: 0; transform: translateY(20px); transition-delay: ${i * 0.08}s;`}
-      >
-        {item.label}
-      </a>
-    ))}
+    {navItems.map((item, i) => {
+      const isActive = isNavItemActive(currentPath, item.match);
+      return (
+        <a
+          href={item.href}
+          aria-current={isActive ? 'page' : undefined}
+          class:list={[
+            'mobile-nav-link font-display text-4xl md:text-5xl font-bold hover:text-deep-red transition-all duration-500 py-3',
+            `stagger-${i + 1}`,
+            // Emitting both colours leaves the winner to Tailwind's output
+            // order, so the current page picks exactly one.
+            isActive ? 'text-deep-red' : 'text-ink',
+          ]}
+          style={`opacity: 0; transform: translateY(20px); transition-delay: ${i * 0.08}s;`}
+        >
+          {item.label}
+        </a>
+      );
+    })}
 
     <div class="mt-8 mobile-nav-link" style={`opacity: 0; transform: translateY(20px); transition-delay: ${navItems.length * 0.08}s;`}>
       <LanguageSwitcher lang={lang} currentPath={currentPath} />

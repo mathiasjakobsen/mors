@@ -1,6 +1,6 @@
 ---
 import type { Lang } from '../../i18n/ui';
-import { getNavItems, getLocalizedPath } from '../../i18n/ui';
+import { getNavItems, getLocalizedPath, isNavItemActive } from '../../i18n/ui';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import MobileMenu from './MobileMenu.astro';
 import BrandContextMenu from './BrandContextMenu.astro';
@@ -31,17 +31,24 @@ const currentPath = Astro.url.pathname;
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center md:gap-6 lg:gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
-        {navItems.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'font-body text-xs font-medium uppercase tracking-[0.2em] text-ink/70 hover:text-deep-red transition-colors',
-              { 'text-deep-red': currentPath === item.href },
-            ]}
-          >
-            {item.label}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const isActive = isNavItemActive(currentPath, item.match);
+          return (
+            <a
+              href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              class:list={[
+                'font-body text-xs font-medium uppercase tracking-[0.2em] hover:text-deep-red transition-colors',
+                // One colour utility, never two: `text-ink/70` and
+                // `text-deep-red` have equal specificity, so emitting both
+                // leaves the winner up to Tailwind's output order.
+                isActive ? 'text-deep-red' : 'text-ink/70',
+              ]}
+            >
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
       <!-- Right side -->
