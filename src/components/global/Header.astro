@@ -30,7 +30,7 @@ const currentPath = Astro.url.pathname;
       </a>
 
       <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
+      <nav class="hidden md:flex items-center md:gap-6 lg:gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
         {navItems.map((item) => (
           <a
             href={item.href}

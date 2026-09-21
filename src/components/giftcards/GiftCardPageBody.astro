@@ -1,0 +1,325 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t, getLocalizedPath } from '../../i18n/ui';
+import { config } from '../../config';
+import { getGiftCards } from '../../lib/api';
+import { getHoursSummary } from '../../data/hours';
+import Container from '../shared/Container.astro';
+import SectionHeading from '../shared/SectionHeading.astro';
+import CTAButton from '../shared/CTAButton.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const giftCards = await getGiftCards();
+const hoursSummary = getHoursSummary(lang);
+const menuPath = getLocalizedPath(lang, '/menu');
+const contactPath = lang === 'da' ? '/kontakt' : '/en/contact';
+
+const currency = lang === 'da' ? 'kr.' : 'DKK';
+
+// Whole kroner stay whole ("200 kr."); a per-clip price that lands between
+// them gets two decimals, with the separator the locale expects.
+function money(amount: number): string {
+  const formatted = new Intl.NumberFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  return `${formatted} ${currency}`;
+}
+
+function clipLabel(clips: number): string {
+  return `${clips} ${t(lang, clips === 1 ? 'giftcards.clip' : 'giftcards.clips')}`;
+}
+
+// "Best per clip" is derived, not editorial: it flags the card with the lowest
+// price per clip, and only when there is something to compare it against.
+// Today's 4-clip and 10-clip cards tie at 37.50 kr., so ties go to the card
+// with the most clips — exactly one badge, on the bigger commitment.
+const comparable = giftCards.filter((c) => !!c.clips && c.clips > 0);
+const bestValueId =
+  comparable.length > 1
+    ? comparable.reduce((best, c) => {
+        const a = c.price / c.clips!;
+        const b = best.price / best.clips!;
+        return a < b || (a === b && c.clips! > best.clips!) ? c : best;
+      }).id
+    : null;
+
+// Every card currently carries the same POS description ("Gavekort. Indløses
+// ved disken — et klip pr. vare."). Three identical paragraphs side by side
+// read as a rendering fault, so a description shared by all of them moves to a
+// single note under the grid. Cards with their own wording keep it in place.
+const firstDescription = giftCards[0]?.description?.[lang] ?? null;
+const sharedDescription =
+  firstDescription && giftCards.every((c) => c.description?.[lang] === firstDescription)
+    ? firstDescription
+    : null;
+
+const steps = [
+  { title: t(lang, 'giftcards.how.step1.title'), body: t(lang, 'giftcards.how.step1.body') },
+  { title: t(lang, 'giftcards.how.step2.title'), body: t(lang, 'giftcards.how.step2.body') },
+  { title: t(lang, 'giftcards.how.step3.title'), body: t(lang, 'giftcards.how.step3.body') },
+];
+
+const faqs = [
+  { q: t(lang, 'giftcards.faq.q1'), a: t(lang, 'giftcards.faq.a1'), menuLink: false },
+  { q: t(lang, 'giftcards.faq.q2'), a: t(lang, 'giftcards.faq.a2'), menuLink: true },
+  { q: t(lang, 'giftcards.faq.q3'), a: t(lang, 'giftcards.faq.a3'), menuLink: false },
+  { q: t(lang, 'giftcards.faq.q4'), a: t(lang, 'giftcards.faq.a4'), menuLink: false },
+];
+
+const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[transition-delay:0.3s]'];
+---
+
+<!-- Hero -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-3xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <span class="inline-block text-xs font-body font-normal uppercase tracking-[0.25em] text-gold mb-6">
+        {t(lang, 'giftcards.inStoreOnly')}
+      </span>
+      <h1 class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-8">
+        {t(lang, 'giftcards.title')}
+      </h1>
+      <p class="font-body font-light text-lg md:text-xl text-ink-light leading-relaxed">
+        {t(lang, 'giftcards.lead')}
+      </p>
+    </div>
+  </Container>
+</section>
+
+<!-- How it works -->
+<section class="bg-warm-white py-24 md:py-40">
+  <Container>
+    <SectionHeading title={t(lang, 'giftcards.how.title')} subtitle={t(lang, 'giftcards.how.subtitle')} />
+
+    <ol class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
+      {steps.map((step, i) => (
+        <li
+          data-animate-on-scroll
+          class:list={[
+            'opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
+            stepDelays[i],
+          ]}
+        >
+          <span
+            class="flex items-center justify-center w-12 h-12 rounded-full border border-deep-red/20 font-mors font-medium text-xl text-deep-red mb-6"
+            aria-hidden="true"
+          >
+            {i + 1}
+          </span>
+          <h3 class="font-mors font-medium text-2xl text-deep-red mb-3 tracking-normal">
+            {step.title}
+          </h3>
+          <p class="font-body font-light text-ink-light leading-relaxed">
+            {step.body}
+          </p>
+        </li>
+      ))}
+    </ol>
+  </Container>
+</section>
+
+<!-- The cards -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <SectionHeading title={t(lang, 'giftcards.cards.title')} subtitle={t(lang, 'giftcards.cards.subtitle')} />
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-5xl mx-auto items-stretch">
+      {giftCards.map((card, i) => {
+        const perClip = card.clips && card.clips > 0 ? card.price / card.clips : null;
+        const isBest = card.id === bestValueId;
+        return (
+          <article
+            data-animate-on-scroll
+            class:list={[
+              'relative flex flex-col h-full rounded-lg bg-warm-white p-8 md:p-10 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
+              isBest ? 'border border-deep-red/25 shadow-sm' : 'border border-ink/5',
+              !card.inStock && 'opacity-60',
+              stepDelays[i % 3],
+            ]}
+          >
+            {isBest && (
+              <span class="absolute -top-3 left-8 md:left-10 bg-deep-red text-cream text-[10px] font-body font-medium uppercase tracking-[0.18em] px-3 py-1 rounded-full">
+                {t(lang, 'giftcards.bestValue')}
+              </span>
+            )}
+
+            {/* The punch holes the card is named after — one dot per clip. */}
+            {card.clips && card.clips > 0 && (
+              <div class="flex flex-wrap gap-1.5 mb-6" aria-hidden="true">
+                {Array.from({ length: card.clips }).map(() => (
+                  <span class="w-2.5 h-2.5 rounded-full border border-deep-red/35"></span>
+                ))}
+              </div>
+            )}
+
+            <h3 class="font-mors font-medium text-2xl text-deep-red leading-snug tracking-normal">
+              {card.name[lang]}
+            </h3>
+
+            {card.clips && card.clips > 0 && (
+              <p class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage mt-3">
+                {clipLabel(card.clips)}
+              </p>
+            )}
+
+            {card.description && !sharedDescription && (
+              <p class="font-body font-light text-sm text-ink-light leading-relaxed mt-4">
+                {card.description[lang]}
+              </p>
+            )}
+
+            <div class="mt-auto pt-8">
+              <div class="w-full h-px bg-deep-red/10 mb-5"></div>
+              <div class="flex items-baseline justify-between gap-3">
+                <span class="font-display font-bold text-2xl text-ink whitespace-nowrap">
+                  {money(card.price)}
+                </span>
+                {perClip !== null && (
+                  <span class="font-body font-light text-sm text-ink-muted whitespace-nowrap">
+                    {money(perClip)} {t(lang, 'giftcards.perClip')}
+                  </span>
+                )}
+              </div>
+              {!card.inStock && (
+                <p class="font-body font-normal text-xs uppercase tracking-[0.15em] text-ink-muted mt-3">
+                  {t(lang, 'common.outOfStock')}
+                </p>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    {sharedDescription && (
+      <p
+        data-animate-on-scroll
+        class="max-w-5xl mx-auto mt-10 text-center font-body font-light text-sm text-ink-muted opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+      >
+        {sharedDescription}
+      </p>
+    )}
+  </Container>
+</section>
+
+<!-- FAQ -->
+<section class="bg-warm-white py-24 md:py-40">
+  <Container>
+    <SectionHeading title={t(lang, 'giftcards.faq.title')} />
+
+    <div class="max-w-2xl mx-auto">
+      {faqs.map((faq) => (
+        <details class="faq-item border-b border-ink/10">
+          <summary class="faq-summary flex items-center justify-between gap-6 cursor-pointer py-6 font-body font-normal text-lg text-ink hover:text-deep-red transition-colors">
+            {faq.q}
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              aria-hidden="true"
+              class="faq-icon w-4 h-4 shrink-0 text-deep-red transition-transform duration-300"
+            >
+              <path d="M8 2v12" class="faq-icon-bar" />
+              <path d="M2 8h12" />
+            </svg>
+          </summary>
+          <div class="faq-body pb-6">
+            <p class="font-body font-light text-ink-light leading-relaxed">
+              {faq.a}
+            </p>
+            {faq.menuLink && (
+              <a
+                href={menuPath}
+                class="inline-flex items-center gap-2 mt-3 font-body font-normal text-deep-red hover:text-ink transition-colors group"
+              >
+                {t(lang, 'giftcards.seeMenu')}
+                <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-5 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                  <path d="M1 7h21" />
+                  <path d="M16 2l5 5-5 5" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </details>
+      ))}
+    </div>
+  </Container>
+</section>
+
+<!-- Closing CTA -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-2xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
+        {t(lang, 'giftcards.cta.title')}
+      </h2>
+      <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-10">
+        {t(lang, 'giftcards.cta.body')}
+      </p>
+
+      <address class="not-italic font-body font-light text-ink-light leading-relaxed mb-3">
+        {config.address.street}, {config.address.zip} {config.address.city}
+      </address>
+      <div class="flex flex-col items-center gap-1 mb-10">
+        {hoursSummary.map((line) => (
+          <span class="font-body font-light text-sm text-ink-muted">{line}</span>
+        ))}
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <CTAButton href={contactPath} variant="primary" label={t(lang, 'giftcards.cta.directions')} />
+        <CTAButton href={`tel:${config.phoneTel}`} variant="outline" label={t(lang, 'giftcards.cta.call')} />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  /* Native disclosure, no JavaScript. The height animation needs
+     `interpolate-size: allow-keywords` from global.css; browsers without
+     ::details-content support just open and close instantly. */
+  .faq-summary {
+    list-style: none;
+  }
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    content-visibility: hidden;
+    transition:
+      block-size 350ms ease,
+      content-visibility 350ms allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+    content-visibility: visible;
+  }
+
+  /* Plus turns into a minus when the answer is open. */
+  .faq-item[open] .faq-icon {
+    transform: rotate(180deg);
+  }
+  .faq-icon-bar {
+    transition: opacity 300ms ease;
+  }
+  .faq-item[open] .faq-icon-bar {
+    opacity: 0;
+  }
+</style>

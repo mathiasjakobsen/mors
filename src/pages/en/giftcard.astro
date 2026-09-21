@@ -1,0 +1,16 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import GiftCardPageBody from '../../components/giftcards/GiftCardPageBody.astro';
+import { t } from '../../i18n/ui';
+
+const lang = 'en';
+---
+
+<PageLayout
+  title={t(lang, 'seo.giftcards.title')}
+  description={t(lang, 'seo.giftcards.description')}
+  lang={lang}
+  canonicalPath="/en/giftcard"
+>
+  <GiftCardPageBody lang={lang} />
+</PageLayout>

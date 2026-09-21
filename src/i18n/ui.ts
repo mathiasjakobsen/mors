@@ -29,6 +29,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/menu': { da: '/menu', en: '/en/menu' },
     '/kaffe': { da: '/kaffe', en: '/en/coffee' },
     '/haandvaerk': { da: '/haandvaerk', en: '/en/crafts' },
+    '/gavekort': { da: '/gavekort', en: '/en/giftcard' },
     '/om': { da: '/om', en: '/en/about' },
     '/kontakt': { da: '/kontakt', en: '/en/contact' },
     '/brand': { da: '/brand', en: '/en/brand' },
@@ -36,6 +37,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/en/menu': { da: '/menu', en: '/en/menu' },
     '/en/coffee': { da: '/kaffe', en: '/en/coffee' },
     '/en/crafts': { da: '/haandvaerk', en: '/en/crafts' },
+    '/en/giftcard': { da: '/gavekort', en: '/en/giftcard' },
     '/en/about': { da: '/om', en: '/en/about' },
     '/en/contact': { da: '/kontakt', en: '/en/contact' },
     '/en/brand': { da: '/brand', en: '/en/brand' },
@@ -60,6 +62,7 @@ export function getNavItems(lang: Lang) {
     { label: t(lang, 'nav.menu'), href: lang === 'da' ? '/menu' : '/en/menu' },
     { label: t(lang, 'nav.beans'), href: lang === 'da' ? '/kaffe' : '/en/coffee' },
     { label: t(lang, 'nav.products'), href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/' },
+    { label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard' },
     { label: t(lang, 'nav.about'), href: lang === 'da' ? '/om' : '/en/about' },
     { label: t(lang, 'nav.contact'), href: lang === 'da' ? '/kontakt' : '/en/contact' },
   ];

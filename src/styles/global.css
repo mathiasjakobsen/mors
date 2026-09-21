@@ -54,6 +54,13 @@
     box-sizing: border-box;
   }
 
+  /* Lets CSS transitions interpolate to keyword sizes like `auto`, which is
+     what makes the gift card FAQ's <details> animate open without JS.
+     Browsers without it fall back to the native instant show/hide. */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
   body {
     margin: 0;
     padding: 0;

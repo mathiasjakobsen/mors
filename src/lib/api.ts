@@ -9,15 +9,17 @@
 // categories with products. This module knows which category slugs feed
 // which page on the marketing site:
 //
-//   beans   → category with slug = "kaffebonner"
-//   menu    → categories with slug ∈ MENU_CATEGORY_SLUGS
-//   crafts  → categories with slug ∈ CRAFT_CATEGORY_SLUGS
+//   beans     → category with slug = "kaffebonner"
+//   menu      → categories with slug ∈ MENU_CATEGORY_SLUGS
+//   crafts    → categories with slug ∈ CRAFT_CATEGORY_SLUGS
+//   giftcards → the category whose slug contains GIFTCARD_SLUG_MATCH
 //
 // On fetch failure (network down, non-2xx response, malformed payload)
 // we fall back to the static src/data/*.ts arrays so local dev and
 // offline builds keep working.
 
 import { beans as beansFallback, type CoffeeBean } from '../data/beans';
+import { giftCards as giftCardsFallback, type GiftCard } from '../data/giftcards';
 import { menuCategories as menuFallback, type MenuCategory } from '../data/menu';
 import {
   productCategories as productsFallback,
@@ -35,6 +37,10 @@ const FETCH_TIMEOUT_MS = 8_000;
 const BEANS_CATEGORY_SLUG  = 'kaffebonner';
 const MENU_CATEGORY_SLUGS  = ['hot-drinks', 'pastries', 'food', 'cold-drinks'];
 const CRAFT_CATEGORY_SLUGS = ['ceramics', 'carpentry', 'other'];
+// The gift card category is ordered in the POS by a numeric name prefix, which
+// ends up in the slug ("9) Gavekort" → "9-gavekort"). Match the meaningful part
+// so re-ordering the category in the POS doesn't empty the page.
+const GIFTCARD_SLUG_MATCH  = 'gavekort';
 
 interface ApiOrigin   { country?: string; region?: string; farm?: string }
 interface ApiCategory {
@@ -65,6 +71,7 @@ interface ApiProduct {
     weight_g?: number;
     flavor_notes?: string[];
     tags?: string[];
+    clips?: number;
   };
 }
 interface CatalogPayload {
@@ -223,5 +230,49 @@ function toProductCategory(c: ApiCategory): ProductCategory {
       inStock: p.in_stock,
       maker:   p.maker,
     })),
+  };
+}
+
+// ---- Gift cards --------------------------------------------------------
+
+export async function getGiftCards(): Promise<GiftCard[]> {
+  const categories = await getCatalog();
+  const gift = categories?.find((c) => c.slug.includes(GIFTCARD_SLUG_MATCH));
+  if (!gift?.products?.length) return giftCardsFallback;
+  return gift.products.map(toGiftCard);
+}
+
+// A gift card is a clip card, and how many clips it holds only lives in the
+// product name the shop maintains in the POS ("2× bagværk + 2× varm/kold drik"
+// → 4 clips). Sum every `N×` token; `properties.clips` wins when it's set, so
+// the count can be stated explicitly without renaming the product.
+//
+// The negative lookahead keeps the `x` branch from firing inside a word, so
+// "6 x kaffe" counts but "Box kaffe" doesn't.
+const CLIP_COUNT_RE = /(\d+)\s*[×x](?![a-zæøåA-ZÆØÅ])/g;
+
+function clipCount(p: ApiProduct): number | undefined {
+  if (typeof p.properties?.clips === 'number') return p.properties.clips;
+  const source = p.translations.name?.da || p.name || '';
+  const matches = [...source.matchAll(CLIP_COUNT_RE)];
+  if (!matches.length) return undefined;
+  return matches.reduce((sum, m) => sum + Number(m[1]), 0);
+}
+
+function toGiftCard(p: ApiProduct): GiftCard {
+  // The POS has no English copy for gift cards yet. Show the Danish string on
+  // the English page rather than an empty card; the moment `en` is filled in
+  // on the Rails side it takes over with no change here.
+  const daName = p.translations.name?.da || p.name;
+  const daDesc = p.translations.description?.da || p.description || '';
+  return {
+    id:    p.slug || String(p.id),
+    name:  { da: daName, en: p.translations.name?.en || daName },
+    description: daDesc
+      ? { da: daDesc, en: p.translations.description?.en || daDesc }
+      : undefined,
+    price:   priceInclVat(p),
+    clips:   clipCount(p),
+    inStock: p.in_stock,
   };
 }
