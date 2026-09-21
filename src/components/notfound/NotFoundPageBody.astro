@@ -1,0 +1,137 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t, getLocalizedPath } from '../../i18n/ui';
+import Container from '../shared/Container.astro';
+import CTAButton from '../shared/CTAButton.astro';
+
+interface Props {
+  /** Language the markup is rendered in. English is applied client-side. */
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alt: Lang = lang === 'da' ? 'en' : 'da';
+
+const homePath = getLocalizedPath(lang, '/');
+const menuPath = getLocalizedPath(lang, '/menu');
+const altHomePath = getLocalizedPath(alt, '/');
+const altMenuPath = getLocalizedPath(alt, '/menu');
+---
+
+<section
+  class="bg-cream flex items-center min-h-[calc(100vh-14rem)] py-24 md:py-32"
+  data-notfound
+  data-alt-lang={alt}
+  data-alt-title={t(alt, 'seo.notFound.title')}
+>
+  <Container>
+    <div class="max-w-2xl mx-auto text-center">
+      <!-- The same cup the header's open/closed indicator uses, drawn large.
+           `currentColor` inherits text-deep-red instead of repeating a hex. -->
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-10 text-deep-red opacity-0 animate-fade-up"
+      >
+        <path
+          class="animate-steam"
+          d="M9 2c0 1.5-1 2.5-1 4s1 2.5 1 4"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          opacity="0.5"
+        />
+        <path
+          class="animate-steam [animation-delay:0.3s]"
+          d="M13 3c0 1-0.7 1.8-0.7 2.8s0.7 1.8 0.7 2.8"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          opacity="0.35"
+        />
+        <rect x="4" y="11" width="12" height="9" rx="2" fill="currentColor" />
+        <path d="M16 13h1.5a2 2 0 0 1 0 4H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <path d="M2 21h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+
+      <p
+        class="font-body text-xs font-normal uppercase tracking-[0.25em] text-ink-muted mb-6 opacity-0 animate-fade-up [animation-delay:0.1s]"
+        data-alt-text={t(alt, 'notFound.code')}
+      >
+        {t(lang, 'notFound.code')}
+      </p>
+
+      <h1
+        class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-8 opacity-0 animate-fade-up [animation-delay:0.2s]"
+        data-alt-text={t(alt, 'notFound.title')}
+      >
+        {t(lang, 'notFound.title')}
+      </h1>
+
+      <p
+        class="font-body font-light text-lg md:text-xl text-ink-light leading-relaxed mb-12 opacity-0 animate-fade-up [animation-delay:0.3s]"
+        data-alt-text={t(alt, 'notFound.body')}
+      >
+        {t(lang, 'notFound.body')}
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-fade-up [animation-delay:0.4s]">
+        <CTAButton
+          href={homePath}
+          variant="primary"
+          label={t(lang, 'common.backToHome')}
+          class="js-alt"
+          data-alt-text={t(alt, 'common.backToHome')}
+          data-alt-href={altHomePath}
+        />
+        <CTAButton
+          href={menuPath}
+          variant="outline"
+          label={t(lang, 'home.menu.cta')}
+          class="js-alt"
+          data-alt-text={t(alt, 'home.menu.cta')}
+          data-alt-href={altMenuPath}
+        />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  /* The staggered entrance holds its 0% keyframe through the delay, so nothing
+     flashes in at full opacity before its turn. */
+  .animate-fade-up {
+    animation-fill-mode: both;
+  }
+
+  /* global.css zeroes animation durations for reduced motion but leaves the
+     delays, which would hold the content blank for up to 0.4s. Drop them too
+     so the page is simply there. */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-up {
+      animation-delay: 0ms !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  // GitHub Pages answers every unknown path with this one file, including
+  // paths under /en/, so the page ships Danish markup and swaps to the English
+  // strings when the visitor was somewhere English. Without JS the Danish
+  // default stands, which is the right fallback for a café in Aarhus.
+  (() => {
+    const root = document.querySelector('[data-notfound]');
+    if (!root || !/^\/en(\/|$)/.test(location.pathname)) return;
+
+    document.documentElement.lang = root.dataset.altLang;
+    document.title = root.dataset.altTitle;
+
+    for (const el of root.querySelectorAll('[data-alt-text]')) {
+      el.textContent = el.dataset.altText;
+    }
+    for (const el of root.querySelectorAll('[data-alt-href]')) {
+      el.setAttribute('href', el.dataset.altHref);
+    }
+  })();
+</script>

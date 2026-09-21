@@ -111,6 +111,11 @@ export default {
   'footer.followUs': 'Follow us',
   'footer.est': 'Est. 2026',
 
+  // 404 page
+  'notFound.code': 'Error 404',
+  'notFound.title': 'We ground this one too fine',
+  'notFound.body': 'We have looked in the grinder, under the French press and behind the espresso machine. This page is not here — but the coffee still is.',
+
   // Common
   'common.price': 'DKK',
   'common.backToHome': 'Back to home',
@@ -134,6 +139,8 @@ export default {
   'seo.products.description': 'Ceramics, carpentry and curated crafts from local artisans. Visit our shop at Klostergade 58, Aarhus C.',
   'seo.giftcards.title': 'Gift cards — morˢ',
   'seo.giftcards.description': 'A morˢ gift card is a clip card for coffee, cold drinks and pastries. Available in the café at Klostergade 58 in Aarhus C.',
+  'seo.notFound.title': 'Page not found — morˢ',
+  'seo.notFound.description': 'We could not find that page. Head back to the front page or see the menu at morˢ, Klostergade 58 in Aarhus C.',
   'seo.about.title': 'About morˢ — Our Story',
   'seo.about.description': 'morˢ is inspired by craftsmanship and values inherited from our mothers. Get to know us and the story behind the cafe at Klostergade in Aarhus.',
   'seo.contact.title': 'Contact — morˢ Coffee',

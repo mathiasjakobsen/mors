@@ -8,7 +8,8 @@ export default defineConfig({
   integrations: [
     tailwind(),
     sitemap({
-      filter: (page) => !/\/brand\/?$/.test(page),
+      // The press kit is unlisted and 404 isn't a real page.
+      filter: (page) => !/\/(brand|404)\/?$/.test(page),
     }),
   ],
   i18n: {

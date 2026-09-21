@@ -1,0 +1,17 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import NotFoundPageBody from '../components/notfound/NotFoundPageBody.astro';
+import { t } from '../i18n/ui';
+
+const lang = 'da';
+---
+
+<PageLayout
+  title={t(lang, 'seo.notFound.title')}
+  description={t(lang, 'seo.notFound.description')}
+  lang={lang}
+  canonicalPath="/404"
+  noindex={true}
+>
+  <NotFoundPageBody lang={lang} />
+</PageLayout>

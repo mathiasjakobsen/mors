@@ -111,6 +111,11 @@ export default {
   'footer.followUs': 'Følg os',
   'footer.est': 'Est. 2026',
 
+  // 404 page
+  'notFound.code': 'Fejl 404',
+  'notFound.title': 'Siden er malet for fint',
+  'notFound.body': 'Vi har ledt i kværnen, under stempelkanden og bag espressomaskinen. Siden er her ikke — men kaffen er stadig varm.',
+
   // Common
   'common.price': 'kr.',
   'common.backToHome': 'Tilbage til forsiden',
@@ -134,6 +139,8 @@ export default {
   'seo.products.description': 'Håndplukket keramik, snedkeri og håndværk fra lokale kunstnere og håndværkere. Oplev i vores butik på Klostergade 58, Aarhus C.',
   'seo.giftcards.title': 'Gavekort — morˢ',
   'seo.giftcards.description': 'Gavekort til morˢ er klippekort til kaffe, kolde drikke og bagværk. Købes i caféen på Klostergade 58 i Aarhus C.',
+  'seo.notFound.title': 'Siden blev ikke fundet — morˢ',
+  'seo.notFound.description': 'Vi kunne ikke finde den side. Find vej tilbage til forsiden eller se menuen hos morˢ på Klostergade 58 i Aarhus C.',
   'seo.about.title': 'Om morˢ',
   'seo.about.description': 'morˢ er inspireret af håndværk og værdier arvet fra vores mødre. Lær os at kende og historien bag caféen på Klostergade i Aarhus.',
   'seo.contact.title': 'Kontakt — morˢ',
