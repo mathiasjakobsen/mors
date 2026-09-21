@@ -104,63 +104,8 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
   </Container>
 </section>
 
-<!-- How it works -->
-<section class="bg-warm-white py-24 md:py-40">
-  <Container>
-    <SectionHeading title={t(lang, 'giftcards.how.title')} subtitle={t(lang, 'giftcards.how.subtitle')} />
-
-    <ol class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
-      {steps.map((step, i) => (
-        <li
-          data-animate-on-scroll
-          class:list={[
-            'opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
-            stepDelays[i],
-          ]}
-        >
-          <span
-            class="flex items-center justify-center w-12 h-12 rounded-full border border-deep-red/20 font-mors font-medium text-xl text-deep-red mb-6"
-            aria-hidden="true"
-          >
-            {i + 1}
-          </span>
-          <h3 class="font-mors font-medium text-2xl text-deep-red mb-3 tracking-normal">
-            {step.title}
-          </h3>
-          <p class="font-body font-light text-ink-light leading-relaxed">
-            {step.body}
-          </p>
-        </li>
-      ))}
-    </ol>
-  </Container>
-</section>
-
-<!-- Wallet showcase -->
-<section class="bg-warm-white pb-24 md:pb-40">
-  <Container>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-center max-w-5xl mx-auto">
-      <div data-animate-on-scroll class="order-2 md:order-1 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
-          {t(lang, 'giftcards.wallet.title')}
-        </h2>
-        <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-8">
-          {t(lang, 'giftcards.wallet.body')}
-        </p>
-        <p class="font-body font-normal text-sm uppercase tracking-[0.18em] text-sage">
-          {t(lang, 'giftcards.wallet.note')}
-        </p>
-      </div>
-
-      <div data-animate-on-scroll class="order-1 md:order-2 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.15s]">
-        <WalletPassMockup lang={lang} scope={passScope} remaining={passRemaining} />
-      </div>
-    </div>
-  </Container>
-</section>
-
 <!-- The cards -->
-<section class="bg-cream py-24 md:py-40">
+<section class="bg-warm-white py-24 md:py-40">
   <Container>
     <SectionHeading title={t(lang, 'giftcards.cards.title')} subtitle={t(lang, 'giftcards.cards.subtitle')} />
 
@@ -172,7 +117,7 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
           <article
             data-animate-on-scroll
             class:list={[
-              'relative flex flex-col h-full rounded-lg bg-warm-white p-8 md:p-10 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
+              'relative flex flex-col h-full rounded-lg bg-cream p-8 md:p-10 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
               isBest ? 'border border-deep-red/25 shadow-sm' : 'border border-ink/5',
               !card.inStock && 'opacity-60',
               stepDelays[i % 3],
@@ -230,6 +175,61 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
           </article>
         );
       })}
+    </div>
+  </Container>
+</section>
+
+<!-- How it works -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <SectionHeading title={t(lang, 'giftcards.how.title')} />
+
+    <ol class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
+      {steps.map((step, i) => (
+        <li
+          data-animate-on-scroll
+          class:list={[
+            'opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
+            stepDelays[i],
+          ]}
+        >
+          <span
+            class="flex items-center justify-center w-12 h-12 rounded-full border border-deep-red/20 font-mors font-medium text-xl text-deep-red mb-6"
+            aria-hidden="true"
+          >
+            {i + 1}
+          </span>
+          <h3 class="font-mors font-medium text-2xl text-deep-red mb-3 tracking-normal">
+            {step.title}
+          </h3>
+          <p class="font-body font-light text-ink-light leading-relaxed">
+            {step.body}
+          </p>
+        </li>
+      ))}
+    </ol>
+  </Container>
+</section>
+
+<!-- Wallet showcase -->
+<section class="bg-cream pb-24 md:pb-40">
+  <Container>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-center max-w-5xl mx-auto">
+      <div data-animate-on-scroll class="order-2 md:order-1 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+        <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
+          {t(lang, 'giftcards.wallet.title')}
+        </h2>
+        <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-8">
+          {t(lang, 'giftcards.wallet.body')}
+        </p>
+        <p class="font-body font-normal text-sm uppercase tracking-[0.18em] text-sage">
+          {t(lang, 'giftcards.wallet.note')}
+        </p>
+      </div>
+
+      <div data-animate-on-scroll class="order-1 md:order-2 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out [transition-delay:0.15s]">
+        <WalletPassMockup lang={lang} scope={passScope} remaining={passRemaining} />
+      </div>
     </div>
   </Container>
 </section>
