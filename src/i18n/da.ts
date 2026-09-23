@@ -9,7 +9,7 @@ export default {
   'nav.contact': 'Kontakt',
 
   // Hero
-  'hero.tagline': 'Usæriøst god kaffe og sprødt bagværk',
+  'hero.tagline': 'Useriøst god kaffe og sprødt bagværk',
   'hero.subtitle': 'Håndværk og værdier arvet fra vores mødre',
   'hero.cta.visit': 'Find vej',
   'hero.cta.hours': 'Åbningstider',
