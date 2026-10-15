@@ -88,22 +88,17 @@ export default {
   'giftcards.seeMenu': 'Se menuen',
 
   // Jobs page
-  'jobs.eyebrow': 'Job hos morˢ',
-  'jobs.title': 'Arbejd bag baren',
-  'jobs.lead': 'Vi er et lille hold i kaffebaren på Klostergade 58. Når vi mangler en hånd, slår vi stillingen op her.',
+  'jobs.title': 'Job hos morˢ',
+  'jobs.lead': 'Når vi mangler en hånd bag baren, slår vi stillingen op her.',
   'jobs.open.title': 'Ledige stillinger',
   'jobs.open.position': 'stilling',
   'jobs.open.positions': 'stillinger',
-  'jobs.open.empty.title': 'Ingen ledige stillinger lige nu',
-  'jobs.open.empty.body': 'Vi har ikke nogen stillinger slået op i øjeblikket. Når vi har, står de her.',
+  'jobs.open.empty': 'Ingen ledige stillinger lige nu.',
   'jobs.open.apply': 'Søg stillingen',
   'jobs.unsolicited.title': 'Uopfordret ansøgning',
-  'jobs.unsolicited.body': 'Du er velkommen til at sende en uopfordret ansøgning. Skriv lidt om dig selv og hvornår du kan arbejde, og vedhæft dit CV. Vi vender tilbage, hvis vi får brug for dig.',
-  'jobs.unsolicited.where': 'Send den kun til job@mors.coffee, ikke til vores almindelige mail, så lander den det rigtige sted.',
-  'jobs.unsolicited.cta': 'Send ansøgning',
+  'jobs.unsolicited.body': 'Send din ansøgning og dit CV hertil. Vi vender tilbage, hvis vi får brug for dig.',
   'jobs.unsolicited.subject': 'Uopfordret ansøgning',
-  'jobs.consent.title': 'Når du sender en uopfordret ansøgning',
-  'jobs.consent.body': 'Ved at sende en uopfordret ansøgning giver du samtykke til, at vi gemmer din ansøgning og dit CV, så vi kan kontakte dig, hvis der senere opstår en stilling, der passer. Du kan altid trække samtykket tilbage ved at skrive til job@mors.coffee, så sletter vi dine oplysninger.',
+  'jobs.consent': 'Når du sender en uopfordret ansøgning, giver du samtykke til, at vi gemmer din ansøgning og dit CV, så vi kan kontakte dig, hvis der senere opstår en stilling, der passer. Du kan altid trække samtykket tilbage ved at skrive til job@mors.coffee, så sletter vi dine oplysninger.',
 
   // About page
   'about.title': 'Om morˢ',
@@ -134,7 +129,7 @@ export default {
   'footer.followUs': 'Følg os',
   'footer.est': 'Est. 2026',
   'footer.jobs.none': 'Ingen ledige stillinger lige nu.',
-  'footer.jobs.cta': 'Uopfordret ansøgning',
+  'footer.jobs.more': 'Læs mere',
 
   // 404 page
   'notFound.code': 'Fejl 404',

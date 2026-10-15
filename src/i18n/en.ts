@@ -88,22 +88,17 @@ export default {
   'giftcards.seeMenu': 'See the menu',
 
   // Jobs page
-  'jobs.eyebrow': 'Jobs at morˢ',
-  'jobs.title': 'Work behind the bar',
-  'jobs.lead': 'We are a small team in the coffee bar at Klostergade 58. When we need an extra pair of hands, the position is posted here.',
+  'jobs.title': 'Jobs at morˢ',
+  'jobs.lead': 'When we need an extra pair of hands behind the bar, the position is posted here.',
   'jobs.open.title': 'Open positions',
   'jobs.open.position': 'position',
   'jobs.open.positions': 'positions',
-  'jobs.open.empty.title': 'No open positions right now',
-  'jobs.open.empty.body': 'We have no positions posted at the moment. When we do, they will be listed here.',
+  'jobs.open.empty': 'No open positions right now.',
   'jobs.open.apply': 'Apply',
   'jobs.unsolicited.title': 'Unsolicited applications',
-  'jobs.unsolicited.body': 'You are welcome to send an unsolicited application. Tell us a little about yourself and when you can work, and attach your CV. We will get back to you if we need you.',
-  'jobs.unsolicited.where': 'Send it to job@mors.coffee only, not to our general inbox, so it ends up in the right place.',
-  'jobs.unsolicited.cta': 'Send application',
+  'jobs.unsolicited.body': 'Send your application and CV here. We will get back to you if we need you.',
   'jobs.unsolicited.subject': 'Unsolicited application',
-  'jobs.consent.title': 'When you send an unsolicited application',
-  'jobs.consent.body': 'By sending an unsolicited application, you consent to us keeping your application and CV so we can reach out if a suitable position comes up later. You can withdraw your consent at any time by writing to job@mors.coffee, and we will delete your details.',
+  'jobs.consent': 'By sending an unsolicited application, you consent to us keeping your application and CV so we can reach out if a suitable position comes up later. You can withdraw your consent at any time by writing to job@mors.coffee, and we will delete your details.',
 
   // About page
   'about.title': 'About morˢ',
@@ -134,7 +129,7 @@ export default {
   'footer.followUs': 'Follow us',
   'footer.est': 'Est. 2026',
   'footer.jobs.none': 'No open positions right now.',
-  'footer.jobs.cta': 'Unsolicited applications',
+  'footer.jobs.more': 'Read more',
 
   // 404 page
   'notFound.code': 'Error 404',

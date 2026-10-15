@@ -1,4 +1,5 @@
 import type { Lang } from '../i18n/ui';
+import { config } from '../config';
 
 export interface JobPosition {
   id: string;
@@ -16,3 +17,11 @@ export interface JobPosition {
  * here to post a position; the page and footer pick it up on the next build.
  */
 export const openPositions: JobPosition[] = [];
+
+/**
+ * mailto: link for an application. The subject lets job@ be filtered and
+ * sorted without opening every mail.
+ */
+export function applicationMailto(subject: string): string {
+  return `mailto:${config.jobEmail}?subject=${encodeURIComponent(subject)}`;
+}
