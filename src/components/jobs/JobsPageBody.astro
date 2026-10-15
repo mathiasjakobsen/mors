@@ -1,0 +1,138 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import { openPositions } from '../../data/jobs';
+import Container from '../shared/Container.astro';
+import CTAButton from '../shared/CTAButton.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+// A subject line lets job@ be filtered and sorted without opening every mail.
+function mailto(subject: string): string {
+  return `mailto:${config.jobEmail}?subject=${encodeURIComponent(subject)}`;
+}
+
+const count = openPositions.length;
+const countLabel = `${count} ${t(lang, count === 1 ? 'jobs.open.position' : 'jobs.open.positions')}`;
+---
+
+<!-- Hero -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-3xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <span class="inline-block text-xs font-body font-normal uppercase tracking-[0.25em] text-gold mb-6">
+        {t(lang, 'jobs.eyebrow')}
+      </span>
+      <h1 class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-8">
+        {t(lang, 'jobs.title')}
+      </h1>
+      <p class="font-body font-light text-lg md:text-xl text-ink-light leading-relaxed">
+        {t(lang, 'jobs.lead')}
+      </p>
+    </div>
+  </Container>
+</section>
+
+<!-- Open positions. Shown even when empty, so "nothing open" is an answer
+     rather than an absence. -->
+<section class="bg-warm-white py-24 md:py-40">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <div class="flex items-baseline justify-between gap-6 border-b border-ink/10 pb-5">
+        <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red">
+          {t(lang, 'jobs.open.title')}
+        </h2>
+        <span class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage whitespace-nowrap">
+          {countLabel}
+        </span>
+      </div>
+
+      {count === 0 ? (
+        <div class="mt-8 rounded-lg border border-dashed border-ink/15 px-8 py-12 md:py-16 text-center">
+          <p class="font-mors font-medium text-2xl text-ink tracking-normal mb-3">
+            {t(lang, 'jobs.open.empty.title')}
+          </p>
+          <p class="font-body font-light text-ink-light leading-relaxed max-w-md mx-auto">
+            {t(lang, 'jobs.open.empty.body')}
+          </p>
+        </div>
+      ) : (
+        <ul>
+          {openPositions.map((job) => (
+            <li class="border-b border-ink/10 py-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+              <div>
+                <h3 class="font-mors font-medium text-2xl text-deep-red tracking-normal">
+                  {job.title[lang]}
+                </h3>
+                <p class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage mt-2">
+                  {job.hours[lang]}
+                </p>
+                <p class="font-body font-light text-ink-light leading-relaxed mt-4 max-w-xl">
+                  {job.summary[lang]}
+                </p>
+              </div>
+              <CTAButton
+                href={mailto(job.title[lang])}
+                variant="outline"
+                label={t(lang, 'jobs.open.apply')}
+                class="shrink-0 self-start"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </Container>
+</section>
+
+<!-- Unsolicited applications -->
+<section class="bg-cream py-24 md:py-40">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-2xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
+        {t(lang, 'jobs.unsolicited.title')}
+      </h2>
+      <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-4">
+        {t(lang, 'jobs.unsolicited.body')}
+      </p>
+      <p class="font-body font-light text-ink-muted leading-relaxed mb-10">
+        {t(lang, 'jobs.unsolicited.where')}
+      </p>
+
+      {/* Above the button, so the consent is read before the application is sent. */}
+      <div class="mb-10 rounded-lg border border-deep-red/15 bg-warm-white px-8 py-8 text-left">
+        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink-muted mb-3">
+          {t(lang, 'jobs.consent.title')}
+        </h3>
+        <p class="font-body font-light text-ink-light leading-relaxed">
+          {t(lang, 'jobs.consent.body')}
+        </p>
+      </div>
+
+      <CTAButton
+        href={mailto(t(lang, 'jobs.unsolicited.subject'))}
+        variant="primary"
+        label={t(lang, 'jobs.unsolicited.cta')}
+      />
+      <p class="mt-4 font-body font-light text-sm text-ink-muted">
+        <a href={mailto(t(lang, 'jobs.unsolicited.subject'))} class="hover:text-deep-red transition-colors">
+          {config.jobEmail}
+        </a>
+      </p>
+    </div>
+  </Container>
+</section>

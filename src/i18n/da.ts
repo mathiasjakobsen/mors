@@ -7,6 +7,7 @@ export default {
   'nav.giftcards': 'Gavekort',
   'nav.about': 'Om morˢ',
   'nav.contact': 'Kontakt',
+  'nav.jobs': 'Job',
 
   // Hero
   'hero.tagline': 'Useriøst god kaffe og sprødt bagværk',
@@ -86,6 +87,24 @@ export default {
   'giftcards.cta.call': 'Ring til os',
   'giftcards.seeMenu': 'Se menuen',
 
+  // Jobs page
+  'jobs.eyebrow': 'Job hos morˢ',
+  'jobs.title': 'Arbejd bag baren',
+  'jobs.lead': 'Vi er et lille hold i kaffebaren på Klostergade 58. Når vi mangler en hånd, slår vi stillingen op her.',
+  'jobs.open.title': 'Ledige stillinger',
+  'jobs.open.position': 'stilling',
+  'jobs.open.positions': 'stillinger',
+  'jobs.open.empty.title': 'Ingen ledige stillinger lige nu',
+  'jobs.open.empty.body': 'Vi har ikke nogen stillinger slået op i øjeblikket. Når vi har, står de her.',
+  'jobs.open.apply': 'Søg stillingen',
+  'jobs.unsolicited.title': 'Uopfordret ansøgning',
+  'jobs.unsolicited.body': 'Du er velkommen til at sende en uopfordret ansøgning. Skriv lidt om dig selv og hvornår du kan arbejde, og vedhæft dit CV. Vi vender tilbage, hvis vi får brug for dig.',
+  'jobs.unsolicited.where': 'Send den kun til job@mors.coffee, ikke til vores almindelige mail, så lander den det rigtige sted.',
+  'jobs.unsolicited.cta': 'Send ansøgning',
+  'jobs.unsolicited.subject': 'Uopfordret ansøgning',
+  'jobs.consent.title': 'Når du sender en uopfordret ansøgning',
+  'jobs.consent.body': 'Ved at sende en uopfordret ansøgning giver du samtykke til, at vi gemmer din ansøgning og dit CV, så vi kan kontakte dig, hvis der senere opstår en stilling, der passer. Du kan altid trække samtykket tilbage ved at skrive til job@mors.coffee, så sletter vi dine oplysninger.',
+
   // About page
   'about.title': 'Om morˢ',
   'about.description': 'Historien bag morˢ — specialkaffe og håndværk i Aarhus C',
@@ -114,6 +133,8 @@ export default {
   'footer.navigation': 'Navigation',
   'footer.followUs': 'Følg os',
   'footer.est': 'Est. 2026',
+  'footer.jobs.none': 'Ingen ledige stillinger lige nu.',
+  'footer.jobs.cta': 'Uopfordret ansøgning',
 
   // 404 page
   'notFound.code': 'Fejl 404',
@@ -147,6 +168,8 @@ export default {
   'seo.notFound.description': 'Vi kunne ikke finde den side. Find vej tilbage til forsiden eller se menuen hos morˢ på Klostergade 58 i Aarhus C.',
   'seo.about.title': 'Om morˢ',
   'seo.about.description': 'morˢ er inspireret af håndværk og værdier arvet fra vores mødre. Lær os at kende og historien bag kaffebaren på Klostergade i Aarhus.',
+  'seo.jobs.title': 'Job — morˢ',
+  'seo.jobs.description': 'Ledige stillinger i kaffebaren morˢ på Klostergade 58 i Aarhus C. Uopfordrede ansøgninger sendes til job@mors.coffee.',
   'seo.contact.title': 'Kontakt — morˢ',
   'seo.contact.description': 'Find morˢ på Klostergade 58, 8000 Aarhus C. Se åbningstider, telefonnummer og hvordan du finder os.',
 } as const;

@@ -32,6 +32,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/gavekort': { da: '/gavekort', en: '/en/giftcard' },
     '/om': { da: '/om', en: '/en/about' },
     '/kontakt': { da: '/kontakt', en: '/en/contact' },
+    '/job': { da: '/job', en: '/en/jobs' },
     '/brand': { da: '/brand', en: '/en/brand' },
     '/en/': { da: '/', en: '/en/' },
     '/en/menu': { da: '/menu', en: '/en/menu' },
@@ -40,6 +41,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/en/giftcard': { da: '/gavekort', en: '/en/giftcard' },
     '/en/about': { da: '/om', en: '/en/about' },
     '/en/contact': { da: '/kontakt', en: '/en/contact' },
+    '/en/jobs': { da: '/job', en: '/en/jobs' },
     '/en/brand': { da: '/brand', en: '/en/brand' },
   };
 

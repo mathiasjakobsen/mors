@@ -7,6 +7,7 @@ export default {
   'nav.giftcards': 'Gift cards',
   'nav.about': 'About',
   'nav.contact': 'Contact',
+  'nav.jobs': 'Jobs',
 
   // Hero
   'hero.tagline': 'Speciality coffee and baked goods',
@@ -86,6 +87,24 @@ export default {
   'giftcards.cta.call': 'Call us',
   'giftcards.seeMenu': 'See the menu',
 
+  // Jobs page
+  'jobs.eyebrow': 'Jobs at morˢ',
+  'jobs.title': 'Work behind the bar',
+  'jobs.lead': 'We are a small team in the coffee bar at Klostergade 58. When we need an extra pair of hands, the position is posted here.',
+  'jobs.open.title': 'Open positions',
+  'jobs.open.position': 'position',
+  'jobs.open.positions': 'positions',
+  'jobs.open.empty.title': 'No open positions right now',
+  'jobs.open.empty.body': 'We have no positions posted at the moment. When we do, they will be listed here.',
+  'jobs.open.apply': 'Apply',
+  'jobs.unsolicited.title': 'Unsolicited applications',
+  'jobs.unsolicited.body': 'You are welcome to send an unsolicited application. Tell us a little about yourself and when you can work, and attach your CV. We will get back to you if we need you.',
+  'jobs.unsolicited.where': 'Send it to job@mors.coffee only, not to our general inbox, so it ends up in the right place.',
+  'jobs.unsolicited.cta': 'Send application',
+  'jobs.unsolicited.subject': 'Unsolicited application',
+  'jobs.consent.title': 'When you send an unsolicited application',
+  'jobs.consent.body': 'By sending an unsolicited application, you consent to us keeping your application and CV so we can reach out if a suitable position comes up later. You can withdraw your consent at any time by writing to job@mors.coffee, and we will delete your details.',
+
   // About page
   'about.title': 'About morˢ',
   'about.description': 'The story behind morˢ — specialty coffee and craftsmanship in Aarhus',
@@ -114,6 +133,8 @@ export default {
   'footer.navigation': 'Navigation',
   'footer.followUs': 'Follow us',
   'footer.est': 'Est. 2026',
+  'footer.jobs.none': 'No open positions right now.',
+  'footer.jobs.cta': 'Unsolicited applications',
 
   // 404 page
   'notFound.code': 'Error 404',
@@ -147,6 +168,8 @@ export default {
   'seo.notFound.description': 'We could not find that page. Head back to the front page or see the menu at morˢ, Klostergade 58 in Aarhus C.',
   'seo.about.title': 'About morˢ — Our Story',
   'seo.about.description': 'morˢ is inspired by craftsmanship and values inherited from our mothers. Get to know us and the story behind the coffee bar at Klostergade in Aarhus.',
+  'seo.jobs.title': 'Jobs — morˢ',
+  'seo.jobs.description': 'Open positions at the morˢ coffee bar, Klostergade 58 in Aarhus C. Unsolicited applications go to job@mors.coffee.',
   'seo.contact.title': 'Contact — morˢ Coffee',
   'seo.contact.description': 'Find morˢ at Klostergade 58, 8000 Aarhus C. See opening hours, phone number and how to find us.',
 } as const;
