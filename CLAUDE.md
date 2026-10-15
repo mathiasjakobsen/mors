@@ -7,8 +7,10 @@ deployed to GitHub Pages on every push to `master`.
 
 **morˢ is a kaffebar. Never call it a café.** In Danish it is "kaffebaren", in
 English "the coffee bar". This applies to UI strings, SEO descriptions, e-mail
-and PDF copy — anywhere a customer might read it. The counter is "baren", not
-"disken".
+and PDF copy — anywhere a customer might read it. Where something happens —
+buying, ordering, showing a QR code — say "i kaffebaren" ("in the coffee bar"),
+not "ved baren" or "i baren", and never "disken". "Bag baren" is fine when it
+means working behind the counter.
 
 The exceptions are technical or external, and they stay as they are:
 `CafeOrCoffeeShop` (a schema.org type), the `cafe-latte` menu id and the
