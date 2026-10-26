@@ -17,8 +17,8 @@ export default {
   'hero.cta.call': 'Ring til os',
 
   // Home sections
-  'home.beans.title': 'Vores kaffe',
-  'home.beans.subtitle': 'Håndplukket specialkaffe fra verdens bedste farme',
+  'home.beans.title': 'Usæriøst gode bønner',
+  'home.beans.subtitle': 'Håndplukket specialkaffe, ristet af IDEAL Kafferisteri',
   'home.beans.cta': 'Se alle kaffebønner',
   'home.menu.title': 'Fra vores menu',
   'home.menu.cta': 'Se hele menuen',

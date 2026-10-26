@@ -18,7 +18,7 @@ export default {
 
   // Home sections
   'home.beans.title': 'Our coffee',
-  'home.beans.subtitle': 'Hand-picked specialty coffee from the world\'s finest farms',
+  'home.beans.subtitle': 'Hand-picked specialty coffee, roasted by IDEAL Kafferisteri',
   'home.beans.cta': 'See all coffee beans',
   'home.menu.title': 'From our menu',
   'home.menu.cta': 'See full menu',
