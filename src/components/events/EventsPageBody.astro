@@ -1,0 +1,156 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import { upcomingEvents } from '../../data/events';
+import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
+import PhotoStack from '../shared/PhotoStack.astro';
+// Stand-ins until there are photos from an actual event: swap these for the
+// real ones (back to front), alt texts included.
+import cafe from '../../assets/mors-cafe.jpg';
+import baren from '../../assets/mors-baren.jpg';
+import bagBaren from '../../assets/mors-bag-baren.jpg';
+import morgenmad from '../../assets/mors-morgenmad.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const mailto = (subject: string) => `mailto:${config.email}?subject=${encodeURIComponent(subject)}`;
+const events = upcomingEvents();
+
+// "Fredag 27. november, kl. 17.00–20.00" / "Friday 27 November, 17:00–20:00".
+function eventDate(iso: string, time?: { from: string; to: string }): string {
+  const day = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC',
+  }).format(new Date(`${iso}T00:00:00Z`));
+  const s = day.charAt(0).toUpperCase() + day.slice(1);
+  if (!time) return s;
+  // Danish writes clock times with a dot.
+  const clock = (hhmm: string) => (lang === 'da' ? hhmm.replace(':', '.') : hhmm);
+  return `${s}, ${lang === 'da' ? 'kl. ' : ''}${clock(time.from)}–${clock(time.to)}`;
+}
+const cases = (['case1', 'case2', 'case3', 'case4'] as const).map((c) => t(lang, `events.${c}`));
+const eventPhotos = lang === 'da'
+  ? [
+      { src: morgenmad, alt: 'Kaffe og morgenmad i vindueskarmen' },
+      { src: bagBaren, alt: 'Barista bag baren hos morˢ' },
+      { src: baren, alt: 'Gæster i kø ved baren' },
+      { src: cafe, alt: 'Gæster ved bordene i kaffebaren' },
+    ]
+  : [
+      { src: morgenmad, alt: 'Coffee and breakfast on the window sill' },
+      { src: bagBaren, alt: 'Barista behind the bar at morˢ' },
+      { src: baren, alt: 'Guests queueing at the bar' },
+      { src: cafe, alt: 'Guests at the tables in the coffee bar' },
+    ];
+const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang, `events.contact.${k}`));
+---
+
+<PageHero title={t(lang, 'events.title')}>
+  <!-- Points people who came to book, not to join, straight down the page. -->
+  <a
+    href="#eget-event"
+    class="group mt-10 flex items-center justify-between gap-4 text-left rounded-mors bg-cream-dark px-5 py-4 border border-deep-red/10 hover:border-deep-red/30 transition-colors"
+  >
+    <span class="font-body font-medium text-deep-red">{t(lang, 'events.private.banner')}</span>
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-4 h-4 shrink-0 text-deep-red transition-transform duration-300 group-hover:translate-y-0.5">
+      <line x1="7" y1="2" x2="7" y2="12" />
+      <polyline points="3,8 7,12 11,8" />
+    </svg>
+  </a>
+</PageHero>
+
+<!-- Our own events. Deliberately short: date and time when they are set;
+     sign-up and details go over e-mail. -->
+<section class="bg-warm-white py-16 md:py-20">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      {events.length === 0 ? (
+        <p class="mt-6 rounded-lg border border-dashed border-ink/15 px-8 py-8 text-center font-body font-light text-ink-light">
+          {t(lang, 'events.public.empty')}
+        </p>
+      ) : (
+        <ul class="divide-y divide-ink/10">
+          {events.map((event) => (
+            <li class="py-8 first:pt-0 last:pb-0 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+              <div>
+                <p class="inline-block rounded-full bg-sage/15 px-2.5 py-1 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-[#4d5c44]">{event.kind[lang]}</p>
+                <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mt-2">{event.title[lang]}</h3>
+                <p class="font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl">{event.body[lang]}</p>
+                <p class="font-body font-medium text-sm text-ink mt-4">
+                  {event.date ? <time datetime={event.date}>{eventDate(event.date, event.time)}</time> : t(lang, 'events.public.soon')}
+                </p>
+              </div>
+              <a
+                href={mailto(`${t(lang, event.cta === 'signup' ? 'events.public.signupSubject' : 'events.public.notify')}: ${event.title[lang]}`)}
+                class:list={[
+                  'shrink-0 self-start inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors',
+                  event.cta === 'signup'
+                    ? 'bg-deep-red text-cream hover:bg-ink'
+                    : 'border border-deep-red/30 text-deep-red hover:bg-deep-red hover:text-cream',
+                ]}
+              >
+                {t(lang, event.cta === 'signup' ? 'events.public.signup' : 'events.public.notify')}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </Container>
+</section>
+
+<!-- Hosting your own: never just the room — we run the bar, with food and
+     drinks. The examples are the kinds of events that sit outside our own
+     opening hours as a rule of thumb, without promising any times. -->
+<section id="eget-event" class="bg-cream py-20 md:py-28 scroll-mt-20">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <div class="grid gap-8 sm:grid-cols-[minmax(0,1fr)_minmax(0,16rem)] sm:items-center sm:gap-10">
+        <div>
+          <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red">{t(lang, 'events.private.title')}</h2>
+          <p class="font-body font-light text-ink-light leading-relaxed mt-2">{t(lang, 'events.private.lead')}</p>
+          <p class="font-body font-light text-ink-light mt-5">{t(lang, 'events.private.examples')}</p>
+          <ul class="mt-2 space-y-1 font-body text-ink">
+            {cases.map((c) => (
+              <li class="flex gap-3"><span class="text-deep-red" aria-hidden="true">–</span>{c}</li>
+            ))}
+          </ul>
+        </div>
+        <PhotoStack photos={eventPhotos} class="w-56 sm:w-full mx-auto" />
+      </div>
+
+      <!-- How to ask: the address is the headline, and the list says what to
+           put in the mail so the first reply can be a proposal. -->
+      <div class="mt-16 text-center">
+        <a
+          href={mailto(t(lang, 'events.contact.subject'))}
+          class="inline-block font-display font-medium text-3xl sm:text-4xl md:text-5xl text-deep-red break-all underline decoration-deep-red/25 decoration-2 underline-offset-[0.2em] hover:decoration-deep-red transition-colors"
+        >
+          {config.email}
+        </a>
+
+        <p class="mt-10 font-body text-xs uppercase tracking-[0.2em] text-ink-muted">{t(lang, 'events.contact.title')}</p>
+        <ul class="mt-4 inline-flex flex-col gap-1.5 text-left font-body font-light text-ink-light">
+          {asks.map((ask) => (
+            <li class="flex gap-3"><span class="text-deep-red" aria-hidden="true">–</span>{ask}</li>
+          ))}
+        </ul>
+
+        <p class="mt-8 font-body font-light text-sm text-ink-muted leading-relaxed">
+          {t(lang, 'events.contact.after')}
+        </p>
+      </div>
+    </div>
+  </Container>
+</section>

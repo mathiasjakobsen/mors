@@ -1,0 +1,61 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+// A small pile of physical prints: white borders, a shadow each, every one at
+// its own angle. On hover (or keyboard focus inside) the pile fans out a
+// little. Purely decorative layout; the alt texts still describe the photos.
+interface Props {
+  photos: { src: ImageMetadata; alt: string }[];
+  class?: string;
+}
+
+const { photos, class: className = '' } = Astro.props;
+
+// Resting and fanned-out pose per print, back to front. At rest every print
+// peeks out far enough to be recognisable; on hover they spread into a fan,
+// and the one under the pointer comes to the front.
+const poses = [
+  { rest: 'rotate(-12deg) translate(-26%, 6%)', fan: 'rotate(-16deg) translate(-52%, 8%)' },
+  { rest: 'rotate(10deg) translate(24%, -4%)', fan: 'rotate(15deg) translate(50%, -2%)' },
+  { rest: 'rotate(-4deg) translate(-8%, -12%)', fan: 'rotate(-6deg) translate(-16%, -24%)' },
+  { rest: 'rotate(3deg) translate(5%, 8%)', fan: 'rotate(4deg) translate(14%, 18%)' },
+];
+
+const prints = await Promise.all(
+  photos.slice(0, poses.length).map(async (p, i) => ({
+    ...p,
+    img: await getImage({ src: p.src, width: 640, format: 'webp' }),
+    pose: poses[i],
+  })),
+);
+---
+
+<div class:list={['photo-stack relative aspect-square', className]}>
+  {prints.map((p) => (
+    <figure
+      class="photo-print absolute inset-[18%] bg-warm-white p-[4%] pb-[13%] shadow-[0_10px_24px_-8px_rgba(26,26,26,0.45),0_2px_4px_rgba(26,26,26,0.12)]"
+      style={`--rest:${p.pose.rest};--fan:${p.pose.fan}`}
+    >
+      <img src={p.img.src} alt={p.alt} loading="lazy" decoding="async" class="w-full h-full object-cover" />
+    </figure>
+  ))}
+</div>
+
+<style>
+  .photo-print {
+    transform: var(--rest);
+    transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  .photo-stack:hover .photo-print,
+  .photo-stack:focus-within .photo-print {
+    transform: var(--fan);
+  }
+  .photo-stack .photo-print:hover {
+    z-index: 10;
+    transform: var(--fan) scale(1.08);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-print { transition: none; }
+  }
+</style>
