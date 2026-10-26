@@ -1,7 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import type { Lang } from '../../i18n/ui';
-import facade from '../../assets/mors-facade.jpg';
+import cafe from '../../assets/mors-cafe.jpg';
 
 interface Props {
   lang: Lang;
@@ -15,22 +15,22 @@ const heading = lang === 'da'
   : "A coffee bar in Aarhus' coziest half-timbered house.";
 const cta = lang === 'da' ? 'Kig indenfor' : 'Step inside';
 const alt = lang === 'da'
-  ? 'morˢ kaffebar i det farverige bindingsværkshus på Klostergade, Aarhus'
-  : 'morˢ coffee bar in the colourful half-timbered house on Klostergade, Aarhus';
+  ? 'Gæster ved bordene inde i kaffebaren morˢ på Klostergade, Aarhus'
+  : 'Guests at the tables inside the morˢ coffee bar on Klostergade, Aarhus';
 ---
 
-<section class="relative w-full">
+<section data-teaser-on-dark class="relative w-full">
   <a href={aboutHref} class="group block relative overflow-hidden">
     <div class="relative h-[42vh] md:h-[56vh] min-h-[300px]">
       <Picture
-        src={facade}
+        src={cafe}
         alt={alt}
         formats={['avif', 'webp']}
         widths={[640, 960, 1280, 1800]}
         sizes="100vw"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 w-full h-full object-cover object-bottom transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+        class="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
 

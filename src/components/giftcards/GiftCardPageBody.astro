@@ -1,12 +1,12 @@
 ---
 import type { Lang } from '../../i18n/ui';
 import { t, getLocalizedPath } from '../../i18n/ui';
-import { config } from '../../config';
 import { getGiftCards } from '../../lib/api';
-import { getHoursSummary } from '../../data/hours';
 import Container from '../shared/Container.astro';
+import ProductGrid from '../shared/ProductGrid.astro';
+import GiftCardVisual from '../shared/GiftCardVisual.astro';
+import PageHero from '../shared/PageHero.astro';
 import SectionHeading from '../shared/SectionHeading.astro';
-import CTAButton from '../shared/CTAButton.astro';
 import WalletPassMockup from './WalletPassMockup.astro';
 
 interface Props {
@@ -16,9 +16,7 @@ interface Props {
 const { lang } = Astro.props;
 
 const giftCards = await getGiftCards();
-const hoursSummary = getHoursSummary(lang);
 const menuPath = getLocalizedPath(lang, '/menu');
-const contactPath = lang === 'da' ? '/kontakt' : '/en/contact';
 
 const currency = lang === 'da' ? 'kr.' : 'DKK';
 
@@ -32,9 +30,6 @@ function money(amount: number): string {
   return `${formatted} ${currency}`;
 }
 
-function clipLabel(clips: number): string {
-  return `${clips} ${t(lang, clips === 1 ? 'giftcards.clip' : 'giftcards.clips')}`;
-}
 
 // "Best per clip" is derived, not editorial: it flags the card with the lowest
 // price per clip, and only when there is something to compare it against.
@@ -82,34 +77,16 @@ const passScope = showcased?.name[lang] ?? '';
 const passRemaining = showcased?.clips ?? 5;
 
 const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[transition-delay:0.3s]'];
+const tilts = [-3, 2, -1.5];
 ---
 
-<!-- Hero -->
-<section class="bg-cream py-24 md:py-40">
-  <Container>
-    <div
-      data-animate-on-scroll
-      class="max-w-3xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
-    >
-      <span class="inline-block text-xs font-body font-normal uppercase tracking-[0.25em] text-gold mb-6">
-        {t(lang, 'giftcards.inStoreOnly')}
-      </span>
-      <h1 class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-8">
-        {t(lang, 'giftcards.title')}
-      </h1>
-      <p class="font-body font-light text-lg md:text-xl text-ink-light leading-relaxed">
-        {t(lang, 'giftcards.lead')}
-      </p>
-    </div>
-  </Container>
-</section>
+<PageHero title={t(lang, 'giftcards.title')} lead={t(lang, 'giftcards.lead')} />
 
-<!-- The cards -->
-<section class="bg-warm-white py-24 md:py-40">
+<!-- The cards, drawn as the Wallet passes they become (same as on the front
+     page, larger), with price and price per use underneath. -->
+<section class="bg-warm-white py-20 md:py-28">
   <Container>
-    <SectionHeading title={t(lang, 'giftcards.cards.title')} subtitle={t(lang, 'giftcards.cards.subtitle')} />
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-5xl mx-auto items-stretch">
+    <ProductGrid>
       {giftCards.map((card, i) => {
         const perClip = card.clips && card.clips > 0 ? card.price / card.clips : null;
         const isBest = card.id === bestValueId;
@@ -117,72 +94,55 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
           <article
             data-animate-on-scroll
             class:list={[
-              'relative flex flex-col h-full rounded-lg bg-cream p-8 md:p-10 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
-              isBest ? 'border border-deep-red/25 shadow-sm' : 'border border-ink/5',
+              'group relative flex flex-col opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out',
               !card.inStock && 'opacity-60',
               stepDelays[i % 3],
             ]}
           >
             {isBest && (
-              <span class="absolute -top-3 left-8 md:left-10 bg-deep-red text-cream text-[10px] font-body font-medium uppercase tracking-[0.18em] px-3 py-1 rounded-full">
+              <span class="absolute -top-3 left-5 z-10 bg-gold text-ink text-[10px] font-body font-semibold uppercase tracking-[0.18em] px-3 py-1 rounded-full shadow-sm">
                 {t(lang, 'giftcards.bestValue')}
               </span>
             )}
 
-            {/* The punch holes the card is named after — one dot per clip. */}
-            {card.clips && card.clips > 0 && (
-              <div class="flex flex-wrap gap-1.5 mb-6" aria-hidden="true">
-                {Array.from({ length: card.clips }).map(() => (
-                  <span class="w-2.5 h-2.5 rounded-full border border-deep-red/35"></span>
-                ))}
-              </div>
-            )}
-
-            <h3 class="font-mors font-medium text-2xl text-deep-red leading-snug tracking-normal">
-              {card.name[lang]}
-            </h3>
-
-            {card.clips && card.clips > 0 && (
-              <p class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage mt-3">
-                {clipLabel(card.clips)}
-              </p>
-            )}
+            <GiftCardVisual card={card} lang={lang} size="lg" tilt={tilts[i % tilts.length]} />
 
             {card.description && !isBoilerplate && (
-              <p class="font-body font-light text-sm text-ink-light leading-relaxed mt-4">
+              <p class="font-body font-light text-sm text-ink-light leading-relaxed mt-6">
                 {card.description[lang]}
               </p>
             )}
 
-            <div class="mt-auto pt-8">
-              <div class="w-full h-px bg-deep-red/10 mb-5"></div>
-              <div class="flex items-baseline justify-between gap-3">
-                <span class="font-display font-bold text-2xl text-ink whitespace-nowrap">
-                  {money(card.price)}
+            <div class="mt-6 flex items-baseline justify-between gap-3">
+              <span class="font-display font-bold text-2xl text-ink whitespace-nowrap">
+                {money(card.price)}
+              </span>
+              {perClip !== null && (
+                <span class="font-body font-light text-sm text-ink-muted whitespace-nowrap">
+                  {money(perClip)} {t(lang, 'giftcards.perClip')}
                 </span>
-                {perClip !== null && (
-                  <span class="font-body font-light text-sm text-ink-muted whitespace-nowrap">
-                    {money(perClip)} {t(lang, 'giftcards.perClip')}
-                  </span>
-                )}
-              </div>
-              {!card.inStock && (
-                <p class="font-body font-normal text-xs uppercase tracking-[0.15em] text-ink-muted mt-3">
-                  {t(lang, 'common.outOfStock')}
-                </p>
               )}
             </div>
+            {!card.inStock && (
+              <p class="font-body font-normal text-xs uppercase tracking-[0.15em] text-ink-muted mt-3">
+                {t(lang, 'common.outOfStock')}
+              </p>
+            )}
           </article>
         );
       })}
-    </div>
+    </ProductGrid>
+
+    <p class="mt-12 text-center font-body font-light text-sm uppercase tracking-[0.2em] text-ink-muted">
+      {t(lang, 'giftcards.cards.subtitle')}
+    </p>
   </Container>
 </section>
 
 <!-- How it works -->
 <section class="bg-cream py-24 md:py-40">
   <Container>
-    <SectionHeading title={t(lang, 'giftcards.how.title')} />
+    <SectionHeading secondary title={t(lang, 'giftcards.how.title')} />
 
     <ol class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
       {steps.map((step, i) => (
@@ -194,12 +154,12 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
           ]}
         >
           <span
-            class="flex items-center justify-center w-12 h-12 rounded-full border border-deep-red/20 font-mors font-medium text-xl text-deep-red mb-6"
+            class="flex items-center justify-center w-12 h-12 rounded-full border border-deep-red/20 font-display font-semibold text-xl text-deep-red mb-6"
             aria-hidden="true"
           >
             {i + 1}
           </span>
-          <h3 class="font-mors font-medium text-2xl text-deep-red mb-3 tracking-normal">
+          <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mb-3">
             {step.title}
           </h3>
           <p class="font-body font-light text-ink-light leading-relaxed">
@@ -216,7 +176,7 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
   <Container>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-center max-w-5xl mx-auto">
       <div data-animate-on-scroll class="order-2 md:order-1 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
+        <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-6">
           {t(lang, 'giftcards.wallet.title')}
         </h2>
         <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-8">
@@ -237,7 +197,7 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
 <!-- FAQ -->
 <section class="bg-warm-white py-24 md:py-40">
   <Container>
-    <SectionHeading title={t(lang, 'giftcards.faq.title')} />
+    <SectionHeading secondary title={t(lang, 'giftcards.faq.title')} />
 
     <div class="max-w-2xl mx-auto">
       {faqs.map((faq) => (
@@ -276,37 +236,6 @@ const stepDelays = ['[transition-delay:0.1s]', '[transition-delay:0.2s]', '[tran
           </div>
         </details>
       ))}
-    </div>
-  </Container>
-</section>
-
-<!-- Closing CTA -->
-<section class="bg-cream py-24 md:py-40">
-  <Container>
-    <div
-      data-animate-on-scroll
-      class="max-w-2xl mx-auto text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
-    >
-      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">
-        {t(lang, 'giftcards.cta.title')}
-      </h2>
-      <p class="font-body font-light text-lg text-ink-light leading-relaxed mb-10">
-        {t(lang, 'giftcards.cta.body')}
-      </p>
-
-      <address class="not-italic font-body font-light text-ink-light leading-relaxed mb-3">
-        {config.address.street}, {config.address.zip} {config.address.city}
-      </address>
-      <div class="flex flex-col items-center gap-1 mb-10">
-        {hoursSummary.map((line) => (
-          <span class="font-body font-light text-sm text-ink-muted">{line}</span>
-        ))}
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <CTAButton href={contactPath} variant="primary" label={t(lang, 'giftcards.cta.directions')} />
-        <CTAButton href={`tel:${config.phoneTel}`} variant="outline" label={t(lang, 'giftcards.cta.call')} />
-      </div>
     </div>
   </Container>
 </section>

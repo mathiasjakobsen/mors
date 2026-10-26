@@ -1,0 +1,56 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { getGiftCards } from '../../lib/api';
+import Container from '../shared/Container.astro';
+import GiftCardVisual from '../shared/GiftCardVisual.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const giftCards = (await getGiftCards()).filter((c) => c.inStock);
+const giftCardsHref = lang === 'da' ? '/gavekort' : '/en/giftcard';
+const tilts = [-4, 2.5, -1.5];
+---
+
+<!-- Compact teaser for /gavekort: what it is in one line, the cards, and a
+     link to the full page. -->
+<section class="bg-warm-white py-14 md:py-20">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-14 items-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <div class="text-center lg:text-left">
+        <h2 class="font-mors font-medium text-4xl md:text-5xl text-deep-red">{t(lang, 'giftcards.title')}</h2>
+        <p class="font-body font-light text-ink-light mt-4 max-w-md mx-auto lg:mx-0">{t(lang, 'home.giftcards.lead')}</p>
+        <a
+          href={giftCardsHref}
+          class="group inline-flex items-center gap-2 mt-6 font-body text-xs font-medium uppercase tracking-[0.2em] text-deep-red"
+        >
+          {t(lang, 'home.giftcards.cta')}
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1">
+            <line x1="2" y1="7" x2="12" y2="7" />
+            <polyline points="8,3 12,7 8,11" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- The cards as the Wallet passes they become. No prices here: the
+           section points to /gavekort, which has them. On phones the cards sit
+           in a swipeable row rather than a tall stack. -->
+      <ul class="-mx-6 flex gap-5 overflow-x-auto snap-x snap-mandatory px-6 py-3 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:p-0">
+        {giftCards.map((card, i) => (
+          <li class="w-[62%] shrink-0 snap-center sm:w-auto">
+            <a href={giftCardsHref} class="group block" aria-label={card.name[lang]}>
+              <GiftCardVisual card={card} lang={lang} tilt={tilts[i % tilts.length]} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Container>
+</section>
+

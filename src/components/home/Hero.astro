@@ -1,15 +1,21 @@
 ---
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
-import { config } from '../../config';
 import { hours } from '../../data/hours';
 import CTAButton from '../shared/CTAButton.astro';
+import { getImage } from 'astro:assets';
+import type { HeroBackground } from '../../data/hero';
 
 interface Props {
   lang: Lang;
+  /** Photo behind the hero; without it the hero stays plain cream. */
+  background?: HeroBackground;
 }
 
-const { lang } = Astro.props;
+const { lang, background } = Astro.props;
+const photo = !!background;
+const desktopImg = background && await getImage({ src: background.image, width: 2000, format: 'webp' });
+const mobileImg = background && await getImage({ src: background.mobile ?? background.image, width: 900, format: 'webp' });
 
 const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
 const openLabel = lang === 'da' ? 'Åbent nu' : 'Open now';
@@ -26,11 +32,33 @@ for (const h of hours) {
 const scheduleJson = JSON.stringify(schedule);
 ---
 
-<section class="relative min-h-[calc(100svh-5rem)] md:min-h-screen flex flex-col items-center justify-center bg-cream overflow-hidden">
+<section data-teaser-on-dark={photo || undefined} class:list={['relative flex flex-col items-center justify-center overflow-hidden', photo ? 'bg-ink min-h-[100svh] pt-20' : 'bg-cream min-h-[calc(100svh-5rem)] md:min-h-screen']}>
+  {background && desktopImg && mobileImg && (
+    <!-- Photo, then tint, then grain. Plain filter/opacity/blend layers rather
+         than backdrop-filter, so every browser renders the same thing. -->
+    <div
+      class="hero-bg absolute inset-0"
+      aria-hidden="true"
+      style={`--hero-tint:${background.overlay.tint};--hero-tint-opacity:${background.overlay.tintOpacity};--hero-blur:${background.overlay.blur};--hero-grain:${background.overlay.grain}`}
+    >
+      <picture>
+        <source media="(max-width: 767px)" srcset={mobileImg.src} />
+        <img
+          src={desktopImg.src}
+          alt=""
+          fetchpriority="high"
+          class="hero-bg-img absolute inset-0 w-full h-full object-cover"
+          style={background.position ? `object-position:${background.position}` : undefined}
+        />
+      </picture>
+      <div class="hero-bg-tint absolute inset-0"></div>
+      <div class="hero-bg-grain absolute inset-0"></div>
+    </div>
+  )}
   <!-- Live open/closed indicator -->
   <div
     id="open-indicator"
-    class="relative md:absolute md:top-28 md:left-1/2 md:-translate-x-1/2 z-20 opacity-0 transition-opacity duration-500"
+    class:list={['relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 opacity-0 transition-opacity duration-500', photo ? 'md:top-48' : 'md:top-28']}
     data-open-label={openLabel}
     data-closed-label={closedLabel}
     data-opens-at-label={opensAtLabel}
@@ -72,7 +100,7 @@ const scheduleJson = JSON.stringify(schedule);
     <figure data-teaser-avoid class="w-3/4 max-w-sm sm:w-1/2 sm:max-w-none lg:w-1/3 mx-auto">
       <img
         class="wordmark"
-        src="/brand/mors-wordmark.svg"
+        src={photo ? '/brand/mors-wordmark-white.svg' : '/brand/mors-wordmark.svg'}
         alt="morˢ"
         width="1333"
         height="371"
@@ -80,12 +108,8 @@ const scheduleJson = JSON.stringify(schedule);
       />
     </figure>
 
-    <p data-teaser-avoid class="w-fit opacity-0 animate-fade-up [animation-delay:0.2s] mt-8 font-display font-bold text-sm md:text-lg text-ink max-w-lg mx-auto uppercase tracking-[0.12em] md:tracking-[0.2em] text-balance">
+    <p data-teaser-avoid class:list={['w-fit opacity-0 animate-fade-up [animation-delay:0.2s] mt-8 font-display font-bold text-sm md:text-lg max-w-lg mx-auto uppercase tracking-[0.12em] md:tracking-[0.2em] text-balance', photo ? 'text-cream drop-shadow-[0_1px_8px_rgba(0,0,0,0.4)]' : 'text-ink']}>
       {t(lang, 'hero.tagline')}
-    </p>
-
-    <p data-teaser-avoid class="w-fit mx-auto opacity-0 animate-fade-up [animation-delay:0.3s] mt-6 md:mt-12 font-body text-xs md:text-base uppercase tracking-[0.25em] md:tracking-[0.3em] text-deep-red">
-      Klostergade 58, Aarhus
     </p>
 
     <div class="opacity-0 animate-fade-up [animation-delay:0.4s] mt-10 md:mt-12 mx-auto flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
@@ -99,24 +123,28 @@ const scheduleJson = JSON.stringify(schedule);
         href="#hours"
         variant="outline"
         label={t(lang, 'hero.cta.hours')}
-        data-teaser-avoid
-      />
-      <CTAButton
-        href={`tel:${config.phoneTel}`}
-        variant="secondary"
-        label={t(lang, 'hero.cta.call')}
+        class={photo ? '!border-cream/60 !text-cream hover:!bg-cream hover:!text-deep-red' : ''}
         data-teaser-avoid
       />
     </div>
   </div>
 
+  <!-- Address, just above the scroll arrow (near the bottom edge on phones,
+       which have no arrow). -->
+  <div class="absolute inset-x-0 bottom-8 md:bottom-20 z-10 px-6 text-center">
+    <p data-teaser-avoid class:list={['w-fit mx-auto opacity-0 animate-fade-up [animation-delay:0.3s] font-body font-semibold text-xs md:text-base uppercase tracking-[0.25em] md:tracking-[0.3em]', photo ? 'text-cream/85' : 'text-deep-red']}>
+      Klostergade 58, Aarhus
+    </p>
+  </div>
+
   <!-- Scroll indicator -->
   <div class="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
-    <svg class="w-6 h-6 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+    <svg class:list={['w-6 h-6', photo ? 'text-cream/60' : 'text-ink/30']} fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7" />
     </svg>
   </div>
 </section>
+
 
 <script is:inline>
   (function() {
@@ -182,3 +210,22 @@ const scheduleJson = JSON.stringify(schedule);
     setInterval(update, 60000);
   })();
 </script>
+
+<style>
+  .hero-bg { overflow: hidden; }
+  /* Scaled up a touch with the blur so its soft edges stay off-screen. */
+  .hero-bg-img {
+    filter: blur(calc(var(--hero-blur) * 1px));
+    transform: scale(calc(1 + var(--hero-blur) * 0.012));
+  }
+  .hero-bg-tint {
+    background: var(--hero-tint);
+    opacity: var(--hero-tint-opacity);
+  }
+  .hero-bg-grain {
+    opacity: var(--hero-grain);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+</style>

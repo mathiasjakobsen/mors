@@ -3,6 +3,7 @@ import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { getBeans } from '../../lib/api';
 import Container from '../shared/Container.astro';
+import ProductGrid from '../shared/ProductGrid.astro';
 import SectionHeading from '../shared/SectionHeading.astro';
 import CTAButton from '../shared/CTAButton.astro';
 
@@ -30,14 +31,16 @@ const staggerDelays = [
 ];
 ---
 
-<section class="bg-warm-white py-24 md:py-40">
+<section class="bg-warm-white py-14 md:py-20">
   <Container>
     <SectionHeading
       title={t(lang, 'home.beans.title')}
       subtitle={t(lang, 'home.beans.subtitle')}
+      compact
     />
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+    {featured.length > 0 && (
+    <ProductGrid>
       {featured.map((bean, i) => (
         <div
           data-animate-on-scroll
@@ -47,7 +50,7 @@ const staggerDelays = [
           ]}
         >
           <!-- Image -->
-          <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+          <div class="aspect-[4/5] overflow-hidden rounded-lg bg-cream mb-6">
             <img
               src={bean.image || '/images/beans/bean-default.svg'}
               alt={bean.name}
@@ -75,7 +78,7 @@ const staggerDelays = [
 
             <div class="flex flex-wrap gap-2 pt-1">
               {bean.flavorNotes.map((note) => (
-                <span class="px-3 py-1 text-xs font-body font-light bg-cream text-ink-light rounded-full">
+                <span class="px-3 py-1 text-xs font-body font-normal rounded-full bg-sage/15 text-[#4d5c44]">
                   {note}
                 </span>
               ))}
@@ -83,9 +86,10 @@ const staggerDelays = [
           </div>
         </div>
       ))}
-    </div>
+    </ProductGrid>
+    )}
 
-    <div data-animate-on-scroll class="mt-16 text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+    <div data-animate-on-scroll class="mt-8 md:mt-10 text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
       <CTAButton
         href={beansHref}
         variant="outline"

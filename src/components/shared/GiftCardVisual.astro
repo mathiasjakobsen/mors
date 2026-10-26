@@ -1,0 +1,65 @@
+---
+import type { Lang } from '../../i18n/ui';
+import type { GiftCard } from '../../data/giftcards';
+
+// A gift card drawn as the Wallet pass it becomes: the real pass brown and
+// gold, the card's name, "Tilbage N×" and one dot per use. Tilted a little,
+// like a card on a table, and it straightens up when its link (an ancestor
+// with the `group` class) is hovered or focused.
+interface Props {
+  card: GiftCard;
+  lang: Lang;
+  /** Degrees of resting tilt. */
+  tilt?: number;
+  size?: 'md' | 'lg';
+}
+
+const { card, lang, tilt = 0, size = 'md' } = Astro.props;
+const lg = size === 'lg';
+---
+
+<div
+  class:list={['gift-card-face relative flex aspect-[1.586] flex-col justify-between overflow-hidden text-white', lg ? 'rounded-2xl p-6' : 'rounded-xl p-4']}
+  style={`--tilt:${tilt}deg`}
+>
+  <div class="flex items-start justify-between gap-3">
+    <img src="/brand/mors-wordmark-white.svg" alt="" width="64" height="18" class:list={['w-auto mt-0.5', lg ? 'h-[22px]' : 'h-[15px]']} />
+    {card.clips && (
+      <div class="text-right leading-none">
+        <p class:list={['uppercase tracking-[0.18em] text-[#d4b078]', lg ? 'text-[10px]' : 'text-[8px]']}>{lang === 'da' ? 'Tilbage' : 'Remaining'}</p>
+        <p class:list={['mt-1 tabular-nums', lg ? 'text-2xl' : 'text-lg']}>{card.clips}&times;</p>
+      </div>
+    )}
+  </div>
+
+  <p class:list={['font-body font-normal leading-snug text-white/95 pr-6', lg ? 'text-lg' : 'text-[12px]']}>{card.name[lang]}</p>
+
+  {card.clips ? (
+    <div class:list={['flex flex-wrap', lg ? 'gap-1.5' : 'gap-1']} aria-hidden="true">
+      {Array.from({ length: card.clips }).map(() => (
+        <span class:list={['rounded-full bg-[#d4b078]', lg ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5']}></span>
+      ))}
+    </div>
+  ) : <span></span>}
+</div>
+
+<style>
+  .gift-card-face {
+    /* #2D1D14 is the real pass background; the sheen gives it a printed,
+       slightly glossy look. */
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 45%),
+      #2D1D14;
+    box-shadow: 0 14px 28px -12px rgba(26, 26, 26, 0.55), 0 2px 4px rgba(26, 26, 26, 0.15);
+    transform: rotate(var(--tilt));
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+  }
+  :global(.group:hover) .gift-card-face,
+  :global(.group:focus-visible) .gift-card-face {
+    transform: rotate(0deg) translateY(-6px);
+    box-shadow: 0 22px 36px -14px rgba(26, 26, 26, 0.6), 0 2px 4px rgba(26, 26, 26, 0.15);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gift-card-face { transition: none; }
+  }
+</style>

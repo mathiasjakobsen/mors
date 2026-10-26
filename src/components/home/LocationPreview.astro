@@ -4,7 +4,7 @@ import { t } from '../../i18n/ui';
 import { config } from '../../config';
 import Container from '../shared/Container.astro';
 import SectionHeading from '../shared/SectionHeading.astro';
-import OpeningHours from '../shared/OpeningHours.astro';
+import { getHoursSummary } from '../../data/hours';
 import CTAButton from '../shared/CTAButton.astro';
 import MapEmbed from '../shared/MapEmbed.astro';
 
@@ -13,72 +13,69 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
+// Directions from wherever the visitor is: Google Maps' documented URL with
+// only a destination routes from the current location (and opens the app on
+// phones).
+const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+  `morˢ, ${config.address.street}, ${config.address.zip} ${config.address.city}`,
+)}`;
+// "Man-Fre: 7:30-18:00" → ["Man–Fre", "7:30–18:00"], with proper dashes.
+const hours = getHoursSummary(lang).map((line) => line.replace(/-/g, '–').split(': '));
+const label = 'font-body text-xs uppercase tracking-[0.2em] text-ink-muted mb-3';
+const value = 'font-body font-normal text-ink leading-relaxed';
 ---
 
-<section id="hours" class="bg-cream pt-24 md:pt-40">
+<!-- Address, hours and the way here in one row (stacked on phones), then
+     the map. One label style and one value style throughout. -->
+<section id="hours" class="bg-cream pt-12 md:pt-16">
   <Container>
-    <SectionHeading title={t(lang, 'home.location.title')} />
+    <SectionHeading title={t(lang, 'home.location.title')} compact />
 
-    <div data-animate-on-scroll class="max-w-2xl mx-auto text-center mb-16 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-      <div class="space-y-6">
-        <div>
-          <h3 class="font-body text-xs uppercase tracking-[0.2em] text-ink-muted mb-3">
-            {t(lang, 'contact.address')}
-          </h3>
-          <p class="font-display text-2xl text-ink">
-            {config.address.street}
-          </p>
-          <p class="font-body font-light text-ink-light mt-1">
-            {config.address.zip} {config.address.city}
-          </p>
-        </div>
+    <div data-animate-on-scroll class="max-w-4xl mx-auto mb-12 md:mb-14 grid gap-8 text-center sm:grid-cols-3 sm:text-left opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+      <div>
+        <h3 class={label}>{t(lang, 'contact.address')}</h3>
+        <address class:list={['not-italic', value]}>
+          {config.address.street}<br />
+          {config.address.zip} {config.address.city}<br />
+          {config.address.country[lang]}
+        </address>
+      </div>
 
-        <div class="w-12 h-px bg-deep-red/20 mx-auto"></div>
+      <div>
+        <h3 class={label}>{t(lang, 'hours.title')}</h3>
+        <dl class:list={['inline-grid grid-cols-[auto_auto] gap-x-4 text-left', value]}>
+          {hours.map(([days, time]) => (
+            <>
+              <dt>{days}</dt>
+              <dd class="tabular-nums">{time}</dd>
+            </>
+          ))}
+        </dl>
+      </div>
 
-        <div class="max-w-xs mx-auto">
-          <OpeningHours lang={lang} compact={false} />
-        </div>
-
-        <div class="pt-4">
-          <CTAButton
-            href={contactHref}
-            variant="primary"
-            label={t(lang, 'hero.cta.visit')}
-          />
-        </div>
+      <!-- Centred in its column, both ways, so it sits level with the two text blocks. -->
+      <div class="flex items-center justify-center">
+        <CTAButton href={directionsHref} variant="primary" label={t(lang, 'hero.cta.visit')} external />
       </div>
     </div>
 
-    <a
-      data-animate-on-scroll
-      href="https://europeancoffeetrip.com/cafe/mors-aarhus/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="group flex items-center justify-between gap-4 max-w-sm mx-auto mb-16 px-5 py-3.5 rounded-mors bg-[#1c0fb9] opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out hover:bg-[#1709a3] hover:-translate-y-[1px] hover:shadow-lg"
-    >
-      <img
-        src="/brand/partners/ect-logo.png"
-        alt="European Coffee Trip"
-        width="276"
-        height="82"
-        class="h-6 w-auto"
-        loading="lazy"
-      />
-      <span class="inline-flex items-center gap-2.5">
-        <span class="font-body text-[10px] uppercase tracking-[0.22em] text-white/70">
+    <div class="mb-12 md:mb-16 flex justify-center">
+      <a
+        href="https://europeancoffeetrip.com/cafe/mors-aarhus/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex items-center gap-3 rounded-mors bg-[#1c0fb9] px-4 py-2.5 transition-colors hover:bg-[#1709a3]"
+      >
+        <img src="/brand/partners/ect-logo.png" alt="European Coffee Trip" width="276" height="82" class="h-5 w-auto" loading="lazy" />
+        <span class="font-body text-[10px] uppercase tracking-[0.2em] text-white/70 group-hover:text-white transition-colors">
           {lang === 'da' ? 'Anbefalet på' : 'Featured on'}
         </span>
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-4 h-4 text-white/70 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white">
-          <line x1="2" y1="7" x2="12" y2="7" />
-          <polyline points="8,3 12,7 8,11" />
-        </svg>
-      </span>
-    </a>
+      </a>
+    </div>
   </Container>
 
   <!-- Full-width map -->
-  <div data-animate-on-scroll class="w-full h-[400px] md:h-[500px] opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
+  <div data-animate-on-scroll class="w-full h-[260px] md:h-[320px] opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
     <MapEmbed lang={lang} />
   </div>
 </section>
