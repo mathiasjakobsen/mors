@@ -1,10 +1,12 @@
 ---
 import PageLayout from '../../../layouts/PageLayout.astro';
+import PageHero from '../../../components/shared/PageHero.astro';
 import { t } from '../../../i18n/ui';
 import { config } from '../../../config';
 import { getProductCategories } from '../../../lib/api';
 import { breadcrumbSchema } from '../../../utils/jsonld';
 import Container from '../../../components/shared/Container.astro';
+import ProductGrid from '../../../components/shared/ProductGrid.astro';
 import CTAButton from '../../../components/shared/CTAButton.astro';
 
 const lang = 'en';
@@ -30,24 +32,12 @@ const staggerDelays = [
   canonicalPath="/en/crafts"
   jsonLd={jsonLd}
 >
-  <!-- Hero -->
-  <section class="bg-cream py-32 md:py-48">
-    <Container>
-      <div data-animate-on-scroll class="text-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <h1 class="font-mors font-medium text-5xl md:text-7xl text-deep-red mb-6">
-          {t(lang, 'products.title')}
-        </h1>
-        <p class="font-body font-light text-lg text-ink-light max-w-lg mx-auto">
-          {t(lang, 'products.description')}
-        </p>
-      </div>
-    </Container>
-  </section>
+  <PageHero title={t(lang, 'products.title')} lead={t(lang, 'products.description')} />
 
   <!-- Category grid -->
   <section class="bg-warm-white py-24 md:py-40">
     <Container>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+      <ProductGrid>
         {productCategories.map((cat, i) => (
           <a
             href={`/en/crafts/${cat.slug.en}`}
@@ -68,7 +58,7 @@ const staggerDelays = [
             </div>
 
             <!-- Content -->
-            <h2 class="font-mors font-medium text-2xl text-deep-red group-hover:text-deep-red-dark transition-colors mb-2">
+            <h2 class="font-display font-semibold text-xl tracking-normal text-deep-red group-hover:text-deep-red-dark transition-colors mb-2">
               {cat.name.en}
             </h2>
             <p class="font-body font-light text-ink-light">
@@ -79,7 +69,7 @@ const staggerDelays = [
             </span>
           </a>
         ))}
-      </div>
+      </ProductGrid>
     </Container>
   </section>
 </PageLayout>

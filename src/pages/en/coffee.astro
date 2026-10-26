@@ -1,8 +1,10 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
+import PageHero from '../../components/shared/PageHero.astro';
 import { t } from '../../i18n/ui';
 import { getBeans } from '../../lib/api';
 import Container from '../../components/shared/Container.astro';
+import ProductGrid from '../../components/shared/ProductGrid.astro';
 
 const lang = 'en';
 const beans = await getBeans();
@@ -35,24 +37,12 @@ const staggerDelays = [
   lang={lang}
   canonicalPath="/en/coffee"
 >
-  <!-- Hero -->
-  <section class="bg-cream py-24 md:py-40">
-    <Container>
-      <div data-animate-on-scroll class="text-center max-w-2xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-        <h1 class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-6">
-          {t(lang, 'beans.title')}
-        </h1>
-        <p class="font-body font-light text-lg text-ink-light leading-relaxed">
-          {t(lang, 'beans.description')}
-        </p>
-      </div>
-    </Container>
-  </section>
+  <PageHero title={t(lang, 'beans.title')} lead={t(lang, 'beans.description')} />
 
   <!-- Bean grid -->
   <section class="bg-warm-white py-24 md:py-40">
     <Container>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+      <ProductGrid>
         {beans.map((bean, i) => (
           <div
             data-animate-on-scroll
@@ -62,7 +52,7 @@ const staggerDelays = [
             ]}
           >
             <!-- Image -->
-            <div class="aspect-[4/3] overflow-hidden rounded-lg bg-cream mb-6">
+            <div class="aspect-[4/5] overflow-hidden rounded-lg bg-cream mb-6">
               <img
                 src={bean.image || '/images/beans/bean-default.svg'}
                 alt={bean.name}
@@ -74,7 +64,7 @@ const staggerDelays = [
             <!-- Content -->
             <div class="space-y-3">
               <div class="flex items-start justify-between gap-4">
-                <h2 class="font-mors font-medium text-2xl text-deep-red group-hover:text-deep-red-dark transition-colors">
+                <h2 class="font-display font-semibold text-xl tracking-normal text-deep-red group-hover:text-deep-red-dark transition-colors">
                   {bean.name}
                 </h2>
                 <span class="font-display font-bold text-xl text-ink whitespace-nowrap">
@@ -110,7 +100,7 @@ const staggerDelays = [
               <!-- Flavor notes -->
               <div class="flex flex-wrap gap-2 pt-1">
                 {bean.flavorNotes.map((note) => (
-                  <span class="px-3 py-1 text-xs font-body font-light bg-cream text-ink-light rounded-full">
+                  <span class="px-3 py-1 text-xs font-body font-normal rounded-full bg-sage/15 text-[#4d5c44]">
                     {note}
                   </span>
                 ))}
@@ -131,7 +121,7 @@ const staggerDelays = [
             </div>
           </div>
         ))}
-      </div>
+      </ProductGrid>
     </Container>
   </section>
 </PageLayout>

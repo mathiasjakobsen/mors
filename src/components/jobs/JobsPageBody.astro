@@ -4,6 +4,7 @@ import { t } from '../../i18n/ui';
 import { config } from '../../config';
 import { openPositions, applicationMailto } from '../../data/jobs';
 import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
 import CTAButton from '../shared/CTAButton.astro';
 
 interface Props {
@@ -17,22 +18,16 @@ const countLabel = `${count} ${t(lang, count === 1 ? 'jobs.open.position' : 'job
 const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'));
 ---
 
-<!-- Intro + open positions. The list is shown even when empty, so "nothing
-     open" is an answer rather than an absence. -->
-<section class="bg-cream py-24 md:py-32">
+<PageHero title={t(lang, 'jobs.title')} lead={t(lang, 'jobs.lead')} />
+
+<!-- Open positions. The list is shown even when empty, so "nothing open" is
+     an answer rather than an absence. -->
+<section class="bg-warm-white py-24 md:py-32">
   <Container>
     <div
       data-animate-on-scroll
       class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
     >
-      <div class="text-center mb-16 md:mb-20">
-        <h1 class="font-mors font-medium text-4xl md:text-6xl text-deep-red mb-6">
-          {t(lang, 'jobs.title')}
-        </h1>
-        <p class="font-body font-light text-lg md:text-xl text-ink-light leading-relaxed">
-          {t(lang, 'jobs.lead')}
-        </p>
-      </div>
 
       <div class="flex items-baseline justify-between gap-6 border-b border-ink/10 pb-4">
         <h2 class="font-body text-xs uppercase tracking-[0.2em] text-ink-muted">
@@ -52,7 +47,7 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
           {openPositions.map((job) => (
             <li class="border-b border-ink/10 py-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
               <div>
-                <h3 class="font-mors font-medium text-2xl text-deep-red tracking-normal">
+                <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red">
                   {job.title[lang]}
                 </h3>
                 <p class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage mt-2">
@@ -78,7 +73,7 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
 
 <!-- Unsolicited applications. The address is the headline, so nobody has to
      go looking and fall back on the general inbox. -->
-<section class="bg-warm-white py-24 md:py-32">
+<section class="bg-cream py-24 md:py-32">
   <Container>
     <div
       data-animate-on-scroll

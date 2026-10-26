@@ -1,10 +1,10 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
+import PageHero from '../../components/shared/PageHero.astro';
 import { t } from '../../i18n/ui';
 import { getMenuCategories } from '../../lib/api';
 import { menuSchema } from '../../utils/jsonld';
 import Container from '../../components/shared/Container.astro';
-import SectionHeading from '../../components/shared/SectionHeading.astro';
 
 const lang = 'en';
 const menuCategories = await getMenuCategories();
@@ -24,14 +24,15 @@ const tagLabels: Record<string, string> = {
   canonicalPath="/en/menu"
   jsonLd={menuSchema(menuCategories, lang)}
 >
+  <PageHero title={t(lang, 'menu.title')} />
+
   <section class="bg-warm-white py-24 md:py-40">
     <Container>
-      <SectionHeading title={t(lang, 'menu.title')} subtitle={t(lang, 'menu.description')} />
 
       <div class="max-w-2xl mx-auto space-y-20">
         {menuCategories.map((category) => (
           <div class="animate-on-scroll">
-            <h2 class="font-mors font-medium text-3xl text-deep-red mb-8 text-center">
+            <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-8 text-center">
               {category.name[lang]}
             </h2>
 
@@ -66,21 +67,19 @@ const tagLabels: Record<string, string> = {
             </div>
 
             {category.items.some((item) => item.image) && (
-              <div class="grid grid-cols-2 gap-6 mt-10">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5 mt-10">
                 {category.items.filter((item) => item.image).map((item) => (
                   <div class="group text-center">
-                    <div class="aspect-[3/4] overflow-hidden rounded-lg bg-white border border-ink/5 mb-4 flex items-center justify-center p-5">
+                    <div class="aspect-square overflow-hidden rounded-lg bg-white border border-ink/5 mb-3 flex items-center justify-center p-3">
                       <img
                         src={item.image}
                         alt={item.name[lang]}
                         loading="lazy"
-                        class="max-h-full w-auto object-contain transition-transform duration-[600ms] ease-out group-hover:scale-105"
+                        class="w-full h-full object-contain transition-transform duration-[600ms] ease-out group-hover:scale-105"
                       />
                     </div>
-                    <div class="flex items-baseline justify-center gap-2">
-                      <span class="font-body font-normal text-ink">{item.name[lang]}</span>
-                      <span class="font-body font-normal text-ink-light whitespace-nowrap">{item.price} DKK</span>
-                    </div>
+                    <p class="font-body font-normal text-ink leading-snug">{item.name[lang]}</p>
+                    <p class="font-body font-normal text-ink-light whitespace-nowrap">{item.price} DKK</p>
                     {item.tags && item.tags.length > 0 && (
                       <div class="flex justify-center gap-1.5 mt-1">
                         {item.tags.map((tag) => (
