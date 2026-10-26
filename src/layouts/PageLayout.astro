@@ -3,6 +3,7 @@ import type { Lang } from '../i18n/ui';
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/global/Header.astro';
 import Footer from '../components/global/Footer.astro';
+import StampCardTeaser from '../components/global/StampCardTeaser.astro';
 
 interface Props {
   title: string;
@@ -33,4 +34,5 @@ const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex, prelo
     <slot />
   </main>
   <Footer lang={lang} />
+  <StampCardTeaser lang={lang} />
 </BaseLayout>

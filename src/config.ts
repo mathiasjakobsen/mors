@@ -8,6 +8,10 @@ export const config = {
   email: 'hej@mors.coffee',
   // Applications go here, never to `email`, so they stay out of the main inbox.
   jobEmail: 'job@mors.coffee',
+  // Stamp card sign-up: a promo landing in the staff PWA. The `web` promo
+  // must exist (and be active) in EDB → Promos; it also attributes every
+  // sign-up from the site to that promo.
+  stampCardSignupUrl: 'https://edb.mors.coffee/p/web',
   address: {
     street: 'Klostergade 58',
     city: 'Aarhus C',

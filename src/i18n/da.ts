@@ -149,6 +149,11 @@ export default {
   'brand.downloadAll': 'Download alle som ZIP',
 
   // SEO
+  'stampcard.teaser.text': 'Få et stempelkort – hver 10. kaffe er gratis',
+  'stampcard.teaser.label': 'Hent dit digitale stempelkort til Apple eller Google Wallet',
+  'stampcard.teaser.dismiss': 'Luk',
+  'stampcard.teaser.stamps': 'Stempler',
+  'stampcard.teaser.rules': '10 stempler = 1 gratis kaffe',
   'seo.home.title': 'morˢ · kaffe og bagværk i Aarhus C',
   'seo.home.description': 'Useriøst god kaffe og sprødt bagværk i smuk bindingsværksbygning fra 1600-tallet, på Klostergade 58 i Aarhus C.',
   'seo.menu.title': 'Menu — morˢ',

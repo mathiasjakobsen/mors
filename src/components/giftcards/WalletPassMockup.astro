@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../../i18n/ui';
+import { QR_SIZE, qrPattern } from '../../lib/qr-pattern';
 
 interface Props {
   lang: Lang;
@@ -11,38 +12,8 @@ interface Props {
 
 const { lang, remaining = 5, scope } = Astro.props;
 
-// An illustration of the Wallet pass, not a working one. A real pass carries a
-// live card number and a scannable code, so the code below is a decorative
-// pattern: correct QR furniture (three finder eyes, timing rows) over a
-// deterministic fill, seeded so it renders identically on every build.
-const QR_SIZE = 21;
-let seed = 0x9e37;
-const rand = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) >>> 16) & 1;
-
-const isFinder = (x: number, y: number) => {
-  const inBox = (ox: number, oy: number) =>
-    x >= ox && x < ox + 7 && y >= oy && y < oy + 7;
-  return inBox(0, 0) || inBox(QR_SIZE - 7, 0) || inBox(0, QR_SIZE - 7);
-};
-const finderOn = (x: number, y: number) => {
-  const ox = x >= QR_SIZE - 7 ? x - (QR_SIZE - 7) : x;
-  const oy = y >= QR_SIZE - 7 ? y - (QR_SIZE - 7) : y;
-  const ring = Math.max(Math.abs(ox - 3), Math.abs(oy - 3));
-  return ring === 3 || ring <= 1;
-};
-
-const modules: { x: number; y: number }[] = [];
-for (let y = 0; y < QR_SIZE; y++) {
-  for (let x = 0; x < QR_SIZE; x++) {
-    if (isFinder(x, y)) {
-      if (finderOn(x, y)) modules.push({ x, y });
-    } else if (x === 6 || y === 6) {
-      if ((x + y) % 2 === 0) modules.push({ x, y });
-    } else if (rand()) {
-      modules.push({ x, y });
-    }
-  }
-}
+// An illustration of the Wallet pass, not a working one — see qrPattern.
+const modules = qrPattern();
 
 const label = lang === 'da'
   ? { remaining: 'Tilbage', yours: 'Dit gavekort', name: 'Navn', to: 'Til dig', show: 'Vis QR-koden i kaffebaren' }

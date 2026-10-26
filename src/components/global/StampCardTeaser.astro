@@ -1,0 +1,268 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import { QR_SIZE, qrPattern } from '../../lib/qr-pattern';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+// A stamp card peeking in from the right edge, drawn like the real Wallet pass
+// (EDB's Loyalty::AppleStampPass colours and its 10-slot stamp strip), with a
+// hand-drawn arrow and typed-out line pointing at it. Clicking it opens the
+// sign-up promo in EDB. Dismissal is remembered per browser.
+const modules = qrPattern();
+const SLOTS = 10;
+const STAMPED = 1;
+const text = t(lang, 'stampcard.teaser.text');
+---
+
+<div id="stampcard-teaser" class="st print:hidden" hidden>
+  <div class="st-slide">
+    <!-- Every character is rendered up front and revealed one by one, so the
+         line breaks are fixed before typing starts and nothing reflows. -->
+    <p class="st-note font-mors font-medium text-deep-red" aria-hidden="true">
+      {[...text].map((ch) => <span class="st-ch">{ch}</span>)}
+    </p>
+
+    <svg class="st-arrow text-deep-red" viewBox="0 0 120 90" fill="none" aria-hidden="true">
+      <path
+        class="st-arrow-shaft"
+        pathLength="1"
+        d="M10 6 C 22 40, 52 70, 104 74"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      />
+      <path
+        class="st-arrow-head"
+        pathLength="1"
+        d="M90 62 L 105 74 L 88 84"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+
+    <a
+      href={config.stampCardSignupUrl}
+      class="st-card"
+      aria-label={t(lang, 'stampcard.teaser.label')}
+      data-umami-event="stampcard-teaser-click"
+    >
+      <div class="st-wiggle">
+        <!-- Pass face. Colours are the pkpass background/label colours. -->
+        <div class="st-pass">
+          <div class="flex items-start justify-between gap-3">
+            <img
+              src="/brand/mors-wordmark-white.svg"
+              alt=""
+              width="64"
+              height="18"
+              class="h-[18px] w-auto mt-0.5"
+            />
+            <div class="text-right leading-tight">
+              <p class="text-[8px] uppercase tracking-[0.18em] st-gold">{t(lang, 'stampcard.teaser.stamps')}</p>
+              <p class="text-base tabular-nums">{STAMPED}/{SLOTS}</p>
+            </div>
+          </div>
+
+          <svg viewBox="0 0 220 34" class="mt-4 block w-full h-auto" aria-hidden="true">
+            {Array.from({ length: SLOTS }, (_, i) => {
+              const cx = 11 + i * 22;
+              return i < STAMPED
+                ? <circle cx={cx} cy="17" r="8" fill="#d4b078" />
+                : <circle cx={cx} cy="17" r="7" fill="none" stroke="#d4b078" stroke-width="2" opacity="0.45" />;
+            })}
+          </svg>
+
+          <p class="text-[10px] font-light mt-3 text-white/85">{t(lang, 'stampcard.teaser.rules')}</p>
+
+          <div class="mt-3 mx-auto w-[58%] rounded-md bg-white p-1.5">
+            <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} class="block w-full h-auto" aria-hidden="true" shape-rendering="crispEdges">
+              {modules.map((m) => (
+                <rect x={m.x} y={m.y} width="1" height="1" fill="#2D1D14" />
+              ))}
+            </svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <button type="button" class="st-close" aria-label={t(lang, 'stampcard.teaser.dismiss')} data-st-close>
+      <svg viewBox="0 0 12 12" class="h-2.5 w-2.5" aria-hidden="true">
+        <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .st {
+    --card-w: 210px;
+    --tilt: -12deg;
+    --peek: 18%;
+    position: fixed;
+    right: 0;
+    bottom: 14vh;
+    z-index: 40;
+    width: var(--card-w);
+    pointer-events: none;
+  }
+  @media (max-width: 639px) {
+    .st { --card-w: 150px; --peek: 22%; bottom: 92px; }
+  }
+
+  /* Outer layer: slides in from off-screen, and further out on hover. */
+  .st-slide {
+    position: relative;
+    transform: translateX(140%);
+    transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .st.is-in .st-slide { transform: translateX(var(--peek)); }
+  .st.is-in .st-slide:has(.st-card:hover, .st-card:focus-visible) { transform: translateX(4%); }
+
+  .st-card {
+    display: block;
+    pointer-events: auto;
+    border-radius: 16px;
+    outline-offset: 4px;
+  }
+
+  /* Inner layer: tilted, tethered to the right edge, with a wiggle every few
+     seconds. Separate from the slide layer so the two transforms never fight. */
+  .st-wiggle {
+    transform-origin: 100% 50%;
+    transform: rotate(var(--tilt));
+    transition: transform 0.4s ease;
+  }
+  .st.is-in .st-wiggle { animation: st-wiggle 4.5s ease-in-out 1.2s infinite; }
+  .st-card:hover .st-wiggle,
+  .st-card:focus-visible .st-wiggle {
+    animation: none;
+    transform: rotate(-5deg);
+  }
+  @keyframes st-wiggle {
+    0%, 78%, 100% { transform: rotate(var(--tilt)); }
+    82% { transform: rotate(calc(var(--tilt) + 6deg)); }
+    86% { transform: rotate(calc(var(--tilt) - 4deg)); }
+    90% { transform: rotate(calc(var(--tilt) + 3deg)); }
+    94% { transform: rotate(calc(var(--tilt) - 1.5deg)); }
+  }
+
+  .st-pass {
+    background: #2D1D14;
+    color: rgb(251, 246, 238);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 24px 40px -14px rgba(26, 26, 26, 0.5), 0 2px 6px rgba(26, 26, 26, 0.2);
+  }
+  @media (max-width: 639px) {
+    .st-pass { padding: 10px; }
+  }
+  .st-gold { color: #d4b078; }
+
+  /* Annotation: typed line, and an arrow curving down into the card. */
+  .st-note {
+    position: absolute;
+    right: calc(100% - 10px);
+    bottom: calc(100% + 68px);
+    width: 220px;
+    font-size: 24px;
+    line-height: 1.1;
+    text-align: right;
+    transform: rotate(-4deg);
+  }
+  .st-arrow {
+    position: absolute;
+    right: calc(100% - 6px);
+    bottom: calc(100% - 12px);
+    width: 96px;
+    height: auto;
+  }
+  @media (max-width: 639px) {
+    .st-note { width: 150px; font-size: 18px; bottom: calc(100% + 41px); }
+    .st-arrow { width: 64px; bottom: calc(100% - 9px); right: calc(100% - 4px); }
+  }
+  .st-arrow path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .st.is-drawn .st-arrow-shaft { transition: stroke-dashoffset 0.7s ease-out; stroke-dashoffset: 0; }
+  .st.is-drawn .st-arrow-head { transition: stroke-dashoffset 0.25s ease-out 0.65s; stroke-dashoffset: 0; }
+
+  .st-ch { visibility: hidden; }
+  .st-ch.is-shown { visibility: visible; }
+  /* The caret rides on the last revealed character. */
+  .st.is-typing .st-ch.is-caret { animation: st-blink 0.8s steps(1) infinite; }
+  @keyframes st-blink { 50% { box-shadow: none; } }
+  .st.is-typing .st-ch.is-caret { box-shadow: 3px 0 0 -1px currentColor; }
+
+  .st-close {
+    position: absolute;
+    /* Top-right of the visible part of the card: --peek of it is off-screen. */
+    top: -14px;
+    right: calc(var(--peek) + 6px);
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    background: #FDFBF7;
+    color: #1A1A1A;
+    box-shadow: 0 2px 6px rgba(26, 26, 26, 0.25);
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease 1s;
+  }
+  .st.is-in .st-close { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .st-slide, .st-wiggle { transition: none; }
+    .st.is-in .st-wiggle { animation: none; }
+    .st.is-drawn .st-arrow path { transition: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var KEY = 'mors:stampcard-teaser-dismissed';
+    var el = document.getElementById('stampcard-teaser');
+    if (!el) return;
+    try { if (localStorage.getItem(KEY)) return; } catch (e) {}
+
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var chars = el.querySelectorAll('.st-ch');
+
+    el.hidden = false;
+    el.querySelector('[data-st-close]').addEventListener('click', function () {
+      el.remove();
+      try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    });
+
+    if (reduced) {
+      chars.forEach(function (c) { c.classList.add('is-shown'); });
+      el.classList.add('is-in', 'is-drawn');
+      return;
+    }
+
+    // Card slides in, then the arrow draws, then the line types itself out.
+    setTimeout(function () {
+      requestAnimationFrame(function () { el.classList.add('is-in'); });
+      setTimeout(function () { el.classList.add('is-drawn'); }, 700);
+      setTimeout(function () {
+        el.classList.add('is-typing');
+        var i = 0;
+        var tick = setInterval(function () {
+          if (i > 0) chars[i - 1].classList.remove('is-caret');
+          chars[i].classList.add('is-shown', 'is-caret');
+          if (++i >= chars.length) {
+            clearInterval(tick);
+            setTimeout(function () { el.classList.remove('is-typing'); }, 1600);
+          }
+        }, 45);
+      }, 1500);
+    }, 2000);
+  })();
+</script>

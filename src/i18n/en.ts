@@ -149,6 +149,11 @@ export default {
   'brand.downloadAll': 'Download all as ZIP',
 
   // SEO
+  'stampcard.teaser.text': 'Get a stamp card – every 10th coffee is free',
+  'stampcard.teaser.label': 'Get your digital stamp card for Apple or Google Wallet',
+  'stampcard.teaser.dismiss': 'Close',
+  'stampcard.teaser.stamps': 'Stamps',
+  'stampcard.teaser.rules': '10 stamps = 1 free coffee',
   'seo.home.title': 'morˢ — Specialty Coffee & Crafts in Aarhus',
   'seo.home.description': 'morˢ is a specialty coffee bar and shop at Klostergade 58 in Aarhus C, Denmark. We serve hand-brewed coffee and sell ceramics, carpentry and coffee beans.',
   'seo.menu.title': 'Menu — morˢ Coffee',
