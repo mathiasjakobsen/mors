@@ -27,8 +27,14 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
   <div class="st-slide">
     <!-- Every character is rendered up front and revealed one by one, so the
          line breaks are fixed before typing starts and nothing reflows. -->
-    <p class="st-note font-mors font-medium text-deep-red" aria-hidden="true">
-      {[...line1].map((ch) => <span class="st-ch">{ch}</span>)}<br class="st-br" />{[...line2].map((ch) => <span class="st-ch">{ch}</span>)}
+    <p class="st-note font-mors font-medium text-deep-red">
+      <span aria-hidden="true">{[...line1].map((ch) => <span class="st-ch">{ch}</span>)}<br class="st-br" />{[...line2].map((ch) => <span class="st-ch">{ch}</span>)}</span>
+      <!-- Close sits on the text's top-right corner and moves with it. -->
+      <button type="button" class="st-close" aria-label={t(lang, 'stampcard.teaser.dismiss')} data-st-close>
+        <svg viewBox="0 0 12 12" class="h-2.5 w-2.5" aria-hidden="true">
+          <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
     </p>
 
     <svg class="st-arrow text-deep-red" viewBox="0 0 120 90" fill="none" aria-hidden="true">
@@ -96,11 +102,6 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
       </div>
     </a>
 
-    <button type="button" class="st-close" aria-label={t(lang, 'stampcard.teaser.dismiss')} data-st-close>
-      <svg viewBox="0 0 12 12" class="h-2.5 w-2.5" aria-hidden="true">
-        <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-      </svg>
-    </button>
   </div>
 </div>
 
@@ -215,9 +216,8 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
 
   .st-close {
     position: absolute;
-    /* Top-right of the visible part of the card: --peek of it is off-screen. */
-    top: -14px;
-    right: calc(var(--peek) + 6px);
+    top: -20px;
+    right: -22px;
     display: grid;
     place-items: center;
     width: 24px;
@@ -336,7 +336,7 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
     } else {
-      setTimeout(start, 2000);
+      setTimeout(start, 1000);
     }
   })();
 </script>
