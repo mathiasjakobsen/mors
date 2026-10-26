@@ -17,7 +17,7 @@ export interface BrandColorway {
 }
 
 export interface BrandLogo {
-  id: 'logo' | 'wordmark';
+  id: 'logo' | 'wordmark' | 'illustration';
   colorways: BrandColorway[];
 }
 
@@ -54,6 +54,7 @@ const colorways = (base: string): BrandColorway[] => [
 export const brandLogos: BrandLogo[] = [
   { id: 'logo', colorways: colorways('mors-logo') },
   { id: 'wordmark', colorways: colorways('mors-wordmark') },
+  { id: 'illustration', colorways: colorways('mors-house') },
 ];
 
 // ── Flat list for the right-click context menu ──────────────────────────────
@@ -66,7 +67,11 @@ export interface BrandAsset {
   path: string;
 }
 
-const NAME = { logo: { da: 'Logo', en: 'Logo' }, wordmark: { da: 'Ordmærke', en: 'Wordmark' } };
+const NAME = {
+  logo: { da: 'Logo', en: 'Logo' },
+  wordmark: { da: 'Ordmærke', en: 'Wordmark' },
+  illustration: { da: 'Huset (illustration)', en: 'The house (illustration)' },
+};
 
 export const brandAssets: BrandAsset[] = brandLogos.flatMap((logo) => {
   const dflt = logo.colorways.find((c) => c.color === 'default')!;

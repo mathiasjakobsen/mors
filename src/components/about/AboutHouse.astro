@@ -1,0 +1,58 @@
+---
+import type { Lang } from '../../i18n/ui';
+import Container from '../shared/Container.astro';
+
+// The building's history, next to the line drawing of the house. Facts from
+// Aarhus Stadsarkiv and AarhusWiki (linked in the source line); keep them
+// sourced if this is edited.
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  da: {
+    title: 'Huset',
+    paragraphs: [
+      'Klostergade 58 er en gammel købmandsgård. Under huset ligger en kampestenskælder med murværk fra middelalderen, og omkring år 1600 stod her et gavlhus med gavlen ud mod gaden.',
+      'I 1702 byggede Rasmus Pedersen det bindingsværkshus, du ser i dag. I sidehuset sidder stadig en bjælke med »K.A.D. 1702« – for Karen Andersdatter, hans kone. Den brede port var til hestevognene, og varerne blev hejst op på loftet.',
+      'I 1900-tallet sad møbelpolstreren C. Bøjstrup & Søn her i fire generationer. Huset blev fredet i 1970 og restaureret omkring år 2000. I dag dufter det af kaffe.',
+    ],
+    sources: 'Kilder',
+    alt: 'Stregtegning af bindingsværkshuset på Klostergade 58 med morˢ-skiltet over døren',
+  },
+  en: {
+    title: 'The house',
+    paragraphs: [
+      'Klostergade 58 is an old merchant’s yard. Under the house is a fieldstone cellar with masonry from the Middle Ages, and around 1600 a gable house stood here, gable end to the street.',
+      'In 1702 Rasmus Pedersen built the half-timbered house you see today. A beam in the side house still reads “K.A.D. 1702” – for Karen Andersdatter, his wife. The wide gate was for the horse carts, and goods were hoisted up into the loft.',
+      'In the 1900s the upholsterers C. Bøjstrup & Søn worked here for four generations. The house was listed in 1970 and restored around 2000. Today it smells of coffee.',
+    ],
+    sources: 'Sources',
+    alt: 'Line drawing of the half-timbered house at Klostergade 58 with the morˢ sign above the door',
+  },
+}[lang];
+---
+
+<section class="bg-cream py-20 md:py-28">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-5xl mx-auto grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-14 md:items-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <div>
+        <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-6">{copy.title}</h2>
+        <div class="space-y-4 font-body font-light text-ink-light leading-relaxed">
+          {copy.paragraphs.map((p) => <p>{p}</p>)}
+        </div>
+        <p class="mt-6 font-body text-xs text-ink-muted">
+          {copy.sources}:
+          <a href="https://stadsarkiv.aarhus.dk/nyheder/2024/ugens-aarhushistorie-klostergades-fredede-huse" target="_blank" rel="noopener noreferrer" class="underline decoration-ink/20 underline-offset-2 hover:text-deep-red">Aarhus Stadsarkiv</a>,
+          <a href="https://aarhuswiki.dk/wiki/Klostergade_58" target="_blank" rel="noopener noreferrer" class="underline decoration-ink/20 underline-offset-2 hover:text-deep-red">AarhusWiki</a>
+        </p>
+      </div>
+      <img src="/brand/mors-house.svg" alt={copy.alt} width="773" height="527" loading="lazy" class="w-full h-auto" />
+    </div>
+  </Container>
+</section>

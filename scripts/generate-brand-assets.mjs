@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 
-// Rasterise the brand logo + wordmark, and derive black / white colourways from
+// Rasterise the brand logo, wordmark and house illustration, and derive black / white colourways from
 // the default (brand brown) source SVGs.
 //   default → PNG (transparent) + JPG (on cream)
 //   black   → SVG + PNG (transparent)
@@ -19,9 +19,15 @@ const BRAND_DIR = new URL('../public/brand/', import.meta.url).pathname;
 const PUBLIC_DIR = new URL('../public/', import.meta.url).pathname;
 const ASSETS_DIR = new URL('../src/assets/', import.meta.url).pathname;
 const SIZE = 1024;
-const BRAND_HEX = /#713b2a/gi; // the only visible colour in both source SVGs
+const BRAND_HEX = /#713b2a/gi; // the only visible colour in every source SVG
 
-const BASES = ['mors-logo', 'mors-wordmark'];
+const BASES = ['mors-logo', 'mors-wordmark', 'mors-house'];
+// Raster canvas per mark, roughly following each SVG's own proportions.
+const DIMENSIONS = {
+  'mors-logo': [SIZE, SIZE],
+  'mors-wordmark': [SIZE * 4, SIZE],
+  'mors-house': [SIZE * 1.5, Math.round(SIZE * 1.5 * (527.14 / 773.4))],
+};
 const COLORWAYS = [
   { suffix: '', color: null },          // default — keep the source brown
   { suffix: '-black', color: '#000000' },
@@ -30,9 +36,7 @@ const COLORWAYS = [
 
 let count = 0;
 for (const base of BASES) {
-  const isWide = base.includes('wordmark');
-  const width = isWide ? SIZE * 4 : SIZE;
-  const height = SIZE;
+  const [width, height] = DIMENSIONS[base];
   const baseSvg = await readFile(join(BRAND_DIR, `${base}.svg`), 'utf8');
 
   for (const { suffix, color } of COLORWAYS) {

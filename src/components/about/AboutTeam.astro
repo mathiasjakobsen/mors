@@ -1,0 +1,80 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { config } from '../../config';
+import Container from '../shared/Container.astro';
+import PhotoStack from '../shared/PhotoStack.astro';
+import sensorik from '../../assets/team/mors-team-sensorik.jpg';
+import bordet from '../../assets/team/mors-team-bordet.jpg';
+import holdet from '../../assets/team/mors-team-holdet.jpg';
+import holdet2 from '../../assets/team/mors-team-holdet-2.jpg';
+
+// How morˢ started and who helped, what we are aiming for, and a quiet way
+// to send us ideas.
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  da: {
+    // "BaristA-holdet": barista + A-holdet (the A-team). Headings are set in
+    // capitals, so the pun's A is picked out in gold rather than by its case.
+    title: ['Barist', 'A', '-holdet'],
+    story: 'morˢ er startet af Johanne og Mathias, med kæmpemæssig og uvurderlig hjælp fra løber-Laurits, kusine-Kirstine, Malthe(mus) og lillebror Jeppe – som også er medejer i dag. Uden dem, ingen morˢ.',
+    ambition: 'Vores ambition er at skabe et nørdet, hyggeligt og uformelt kaffested med plads til alle.',
+    ideas: 'Har du en idé, eller noget vi kan gøre bedre?',
+    write: 'Skriv til os',
+    subject: 'Idé til morˢ',
+    photos: [
+      'Gennemgang af sensorik, dufte og smag inden åbningen',
+      'Holdet samlet om bordet',
+      'Holdet samlet før åbningen',
+      'Holdet samlet før åbningen, med grin',
+    ],
+  },
+  en: {
+    title: ['The barist', 'A', '-team'],
+    story: 'morˢ was started by Johanne and Mathias, with huge and invaluable help from runner Laurits, cousin Kirstine, Malthe(mus) and little brother Jeppe – who is also a co-owner today. Without them, no morˢ.',
+    ambition: 'Our ambition is to create a nerdy, cosy and informal coffee place with room for everyone.',
+    ideas: 'Got an idea, or something we could do better?',
+    write: 'Write to us',
+    subject: 'An idea for morˢ',
+    photos: [
+      'Going through sensory notes, aroma and taste before opening',
+      'The team gathered round the table',
+      'The team together before opening',
+      'The team together before opening, laughing',
+    ],
+  },
+}[lang];
+
+// Back to front in the pile.
+const photos = [sensorik, bordet, holdet2, holdet].map((src, i) => ({ src, alt: copy.photos[[0, 1, 3, 2][i]] }));
+const mailto = `mailto:${config.email}?subject=${encodeURIComponent(copy.subject)}`;
+---
+
+<section class="bg-warm-white py-20 md:py-28">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-5xl mx-auto grid gap-12 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-14 md:items-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <PhotoStack photos={photos} class="w-72 sm:w-80 mx-auto md:order-none" />
+
+      <div>
+        <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-6">
+          {copy.title[0]}<span class="text-gold">{copy.title[1]}</span>{copy.title[2]}
+        </h2>
+        <div class="space-y-4 font-body font-light text-ink-light leading-relaxed">
+          <p class="text-ink">{copy.story}</p>
+          <p>{copy.ambition}</p>
+        </div>
+        <p class="mt-8 font-body font-light text-sm text-ink-muted">
+          {copy.ideas}
+          {' '}<a href={mailto} class="text-deep-red underline decoration-deep-red/30 underline-offset-2 hover:decoration-deep-red">{copy.write}</a>
+        </p>
+      </div>
+    </div>
+  </Container>
+</section>

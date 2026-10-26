@@ -8,13 +8,16 @@ import doer from '../assets/mors-doer.jpg';
 import baren from '../assets/mors-baren.jpg';
 import cafe from '../assets/mors-cafe.jpg';
 import PageLayout from '../layouts/PageLayout.astro';
+import PageHero from '../components/shared/PageHero.astro';
 import { t } from '../i18n/ui';
 import Container from '../components/shared/Container.astro';
+import AboutHouse from '../components/about/AboutHouse.astro';
+import AboutTeam from '../components/about/AboutTeam.astro';
 
 const lang = 'da';
 
 const gallery = [
-  { src: bindingsvaerk, title: 'Fredet bindingsværk fra 1600-tallet' },
+  { src: bindingsvaerk, title: 'Fredet bindingsværk fra 1702' },
   { src: bagBaren,      title: 'Bag baren' },
   { src: morgenmad,     title: 'Morgenmad i solen' },
   { src: doer,          title: 'Døren står åben' },
@@ -29,31 +32,10 @@ const gallery = [
   lang={lang}
   canonicalPath="/om"
 >
-  <!-- Hero -->
-  <section class="relative min-h-[60vh] md:min-h-[75vh] overflow-hidden">
-    <Picture
-      src={founders}
-      formats={['avif', 'webp']}
-      widths={[640, 960, 1280, 1920, 2400]}
-      sizes="100vw"
-      alt="Mathias og Johanne, grundlæggerne af morˢ"
-      fetchpriority="high"
-      decoding="async"
-      class="absolute inset-0 w-full h-full object-cover"
-    />
-    <div class="absolute inset-0 bg-deep-red/30 mix-blend-multiply"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"></div>
-    <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-warm-white/50"></div>
-    <Container>
-      <div class="relative min-h-[60vh] md:min-h-[75vh] flex items-end pb-16 md:pb-24">
-        <div data-animate-on-scroll class="opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-          <h1 class="font-mors font-medium text-5xl md:text-7xl text-warm-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
-            Om morˢ
-          </h1>
-        </div>
-      </div>
-    </Container>
-  </section>
+  <PageHero title="Om morˢ" image={{ src: founders, alt: 'Mathias og Johanne, to af grundlæggerne af morˢ' }} />
+
+  <AboutTeam lang={lang} />
+  <AboutHouse lang={lang} />
 
   <!-- Gallery -->
   <section class="bg-warm-white py-24 md:py-40">

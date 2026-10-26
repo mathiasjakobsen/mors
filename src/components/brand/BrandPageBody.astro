@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n/ui';
 import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
 import { brandLogos } from '../../data/brand-assets';
 import { brandFonts } from '../../data/brand-fonts';
 
@@ -18,9 +19,11 @@ const copy = {
       lead: 'Hvert mærke findes i standardfarven samt sort og hvid. Brug SVG hvor du kan — PNG og JPG ligger klar til de steder, der ikke understøtter vektor.',
       logo: { name: 'Logo', desc: 'Mærket. Brug det hvor pladsen er smal — favicon, social og kompakte beholdere.' },
       wordmark: { name: 'Ordmærke', desc: 'Skriften morˢ. Brug det som primær identitet på alt fra menuer til skilte.' },
+      illustration: { name: 'Huset', desc: 'Stregtegningen af bindingsværkshuset på Klostergade 58. Til tryk, plakater og der, hvor huset skal fortælle historien.' },
       downloadAll: 'Download alle som ZIP',
       downloadAriaLogo: 'Download logo som',
       downloadAriaWordmark: 'Download ordmærke som',
+      downloadAriaIllustration: 'Download illustrationen af huset som',
     },
     fonts: {
       title: 'Typografi',
@@ -39,9 +42,11 @@ const copy = {
       lead: 'Each mark comes in the default colour plus black and white. Use SVG wherever you can — PNG and JPG are there for tools that don\'t support vectors.',
       logo: { name: 'Logo', desc: 'The mark. Use it where space is tight — favicons, social, compact containers.' },
       wordmark: { name: 'Wordmark', desc: 'The morˢ lettering. Use as the primary identity on menus, signage, and headers.' },
+      illustration: { name: 'The house', desc: 'The line drawing of the half-timbered house at Klostergade 58. For print, posters, and wherever the house should tell the story.' },
       downloadAll: 'Download all as ZIP',
       downloadAriaLogo: 'Download logo as',
       downloadAriaWordmark: 'Download wordmark as',
+      downloadAriaIllustration: 'Download the house illustration as',
     },
     fonts: {
       title: 'Typography',
@@ -68,27 +73,24 @@ const logoMeta = {
     aspect: 'aspect-[4/3]',
     ariaPrefix: copy.logos.downloadAriaWordmark,
   },
+  illustration: {
+    name: copy.logos.illustration.name,
+    desc: copy.logos.illustration.desc,
+    aspect: 'aspect-[4/3]',
+    ariaPrefix: copy.logos.downloadAriaIllustration,
+  },
 };
 
 const logoCards = brandLogos.map((logo) => ({ ...logoMeta[logo.id], id: logo.id, colorways: logo.colorways }));
 ---
 
-<!-- Hero -->
-<section class="bg-cream py-32 md:py-48">
-  <Container>
-    <div data-animate-on-scroll class="max-w-3xl opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-      <p class="font-body text-xs uppercase tracking-[0.3em] text-deep-red mb-6">{copy.hero.eyebrow}</p>
-      <h1 class="font-mors font-medium text-5xl md:text-7xl text-deep-red mb-8">{copy.hero.title}</h1>
-      <p class="font-body font-light text-xl text-ink-light leading-relaxed">{copy.hero.subtitle}</p>
-    </div>
-  </Container>
-</section>
+<PageHero eyebrow={copy.hero.eyebrow} title={copy.hero.title} lead={copy.hero.subtitle} />
 
 <!-- Logos -->
 <section class="bg-warm-white py-24 md:py-40">
   <Container>
     <div data-animate-on-scroll class="max-w-3xl mb-20 md:mb-28 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">{copy.logos.title}</h2>
+      <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-6">{copy.logos.title}</h2>
       <p class="font-body font-light text-lg text-ink-light leading-relaxed">{copy.logos.lead}</p>
     </div>
 
@@ -153,7 +155,7 @@ const logoCards = brandLogos.map((logo) => ({ ...logoMeta[logo.id], id: logo.id,
 <section class="bg-cream py-24 md:py-40">
   <Container>
     <div data-animate-on-scroll class="max-w-3xl mb-20 md:mb-28 opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out">
-      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red mb-6">{copy.fonts.title}</h2>
+      <h2 class="font-display font-bold text-lg md:text-xl uppercase text-deep-red mb-6">{copy.fonts.title}</h2>
       <p class="font-body font-light text-lg text-ink-light leading-relaxed">{copy.fonts.lead}</p>
     </div>
 
