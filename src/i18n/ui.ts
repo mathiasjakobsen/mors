@@ -33,6 +33,9 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/om': { da: '/om', en: '/en/about' },
     '/kontakt': { da: '/kontakt', en: '/en/contact' },
     '/job': { da: '/job', en: '/en/jobs' },
+    '/events': { da: '/events', en: '/en/events' },
+    '/stempelkort': { da: '/stempelkort', en: '/en/stamp-card' },
+    '/erhverv': { da: '/erhverv', en: '/en/business' },
     '/brand': { da: '/brand', en: '/en/brand' },
     '/en/': { da: '/', en: '/en/' },
     '/en/menu': { da: '/menu', en: '/en/menu' },
@@ -42,6 +45,9 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/en/about': { da: '/om', en: '/en/about' },
     '/en/contact': { da: '/kontakt', en: '/en/contact' },
     '/en/jobs': { da: '/job', en: '/en/jobs' },
+    '/en/events': { da: '/events', en: '/en/events' },
+    '/en/stamp-card': { da: '/stempelkort', en: '/en/stamp-card' },
+    '/en/business': { da: '/erhverv', en: '/en/business' },
     '/en/brand': { da: '/brand', en: '/en/brand' },
   };
 
@@ -61,18 +67,23 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
 /**
  * Navigation items for a given language.
  *
+ * `inHeader` is false for items that only live in the footer.
+ *
  * `match` is the section root the item stands for, which is not always its
  * `href`: the crafts link points at one category, but every craft page under
  * it should still mark the item as current.
  */
 export function getNavItems(lang: Lang) {
   return [
-    { label: t(lang, 'nav.menu'),      href: lang === 'da' ? '/menu' : '/en/menu',                          match: lang === 'da' ? '/menu' : '/en/menu' },
-    { label: t(lang, 'nav.beans'),     href: lang === 'da' ? '/kaffe' : '/en/coffee',                       match: lang === 'da' ? '/kaffe' : '/en/coffee' },
-    { label: t(lang, 'nav.products'),  href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/', match: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
-    { label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard',                  match: lang === 'da' ? '/gavekort' : '/en/giftcard' },
-    { label: t(lang, 'nav.about'),     href: lang === 'da' ? '/om' : '/en/about',                           match: lang === 'da' ? '/om' : '/en/about' },
-    { label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
+    { key: 'menu',      inHeader: true,  label: t(lang, 'nav.menu'),      href: lang === 'da' ? '/menu' : '/en/menu',                          match: lang === 'da' ? '/menu' : '/en/menu' },
+    { key: 'giftcards', inHeader: true,  label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard',                  match: lang === 'da' ? '/gavekort' : '/en/giftcard' },
+    { key: 'beans',     inHeader: true,  label: t(lang, 'nav.beans'),     href: lang === 'da' ? '/kaffe' : '/en/coffee',                       match: lang === 'da' ? '/kaffe' : '/en/coffee' },
+    { key: 'products',  inHeader: true,  label: t(lang, 'nav.products'),  href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/', match: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
+    { key: 'events',    inHeader: true,  label: t(lang, 'nav.events'),    href: lang === 'da' ? '/events' : '/en/events',                       match: lang === 'da' ? '/events' : '/en/events' },
+    { key: 'about',     inHeader: false, label: t(lang, 'nav.about'),     href: lang === 'da' ? '/om' : '/en/about',                           match: lang === 'da' ? '/om' : '/en/about' },
+    { key: 'contact',   inHeader: false, label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
+    { key: 'stampcard', inHeader: false, label: t(lang, 'nav.stampcard'), href: lang === 'da' ? '/stempelkort' : '/en/stamp-card',             match: lang === 'da' ? '/stempelkort' : '/en/stamp-card' },
+    { key: 'business',  inHeader: false, label: t(lang, 'nav.business'),  href: lang === 'da' ? '/erhverv' : '/en/business',                   match: lang === 'da' ? '/erhverv' : '/en/business' },
   ];
 }
 

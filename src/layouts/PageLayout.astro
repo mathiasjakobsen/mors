@@ -14,9 +14,13 @@ interface Props {
   jsonLd?: object;
   noindex?: boolean;
   preloadImage?: string;
+  /** The first section runs up under a transparent, logo-only header (front page hero). */
+  overlayHeader?: boolean;
 }
 
-const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex, preloadImage } = Astro.props;
+const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex, preloadImage, overlayHeader = false } = Astro.props;
+// The stamp card pages already are what the pop-up points to.
+const showStampCardTeaser = !['/stempelkort', '/en/stamp-card'].includes(canonicalPath);
 ---
 
 <BaseLayout
@@ -29,10 +33,10 @@ const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex, prelo
   noindex={noindex}
   preloadImage={preloadImage}
 >
-  <Header lang={lang} />
-  <main id="main-content" class="flex-1 pt-20 md:pt-20">
+  <Header lang={lang} overHero={overlayHeader} />
+  <main id="main-content" class:list={['flex-1', !overlayHeader && 'pt-20']}>
     <slot />
   </main>
   <Footer lang={lang} />
-  <StampCardTeaser lang={lang} />
+  {showStampCardTeaser && <StampCardTeaser lang={lang} />}
 </BaseLayout>

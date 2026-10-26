@@ -3,13 +3,15 @@ import type { Lang } from '../../i18n/ui';
 import { getNavItems, getLocalizedPath, isNavItemActive } from '../../i18n/ui';
 import { config } from '../../config';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import NavCount from './NavCount.astro';
+import { upcomingEvents } from '../../data/events';
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const navItems = getNavItems(lang);
+const navItems = getNavItems(lang).filter((item) => item.inHeader);
 const homePath = getLocalizedPath(lang, '/');
 const currentPath = Astro.url.pathname;
 ---
@@ -26,8 +28,8 @@ const currentPath = Astro.url.pathname;
 >
   <!-- Header -->
   <div class="flex items-center justify-between px-6 h-20">
-    <a href={homePath} class="font-display font-black text-3xl text-deep-red tracking-wide">
-      morˢ
+    <a href={homePath} class="flex items-center" aria-label="morˢ">
+      <img src="/brand/mors-wordmark.svg" alt="morˢ" class="h-8 w-auto" width="115" height="32" />
     </a>
     <button
       type="button"
@@ -50,7 +52,7 @@ const currentPath = Astro.url.pathname;
           href={item.href}
           aria-current={isActive ? 'page' : undefined}
           class:list={[
-            'mobile-nav-link font-display text-4xl md:text-5xl font-bold hover:text-deep-red transition-all duration-500 py-3',
+            'mobile-nav-link inline-flex items-center gap-3 font-body font-medium text-xl sm:text-2xl uppercase tracking-[0.2em] leading-tight hover:text-deep-red transition-all duration-500 py-2',
             `stagger-${i + 1}`,
             // Emitting both colours leaves the winner to Tailwind's output
             // order, so the current page picks exactly one.
@@ -59,6 +61,7 @@ const currentPath = Astro.url.pathname;
           style={`opacity: 0; transform: translateY(20px); transition-delay: ${i * 0.08}s;`}
         >
           {item.label}
+          {item.key === 'events' && <NavCount count={upcomingEvents().length} large />}
         </a>
       );
     })}

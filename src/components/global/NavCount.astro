@@ -1,0 +1,25 @@
+---
+// Small count pill next to a nav item, e.g. how many events are on. Renders
+// nothing at zero.
+interface Props {
+  count: number;
+  /** Larger pill for the full-screen mobile menu. */
+  large?: boolean;
+}
+
+const { count, large = false } = Astro.props;
+// Danish uses the English loanword too, so one label serves both languages.
+const label = `${count} ${count === 1 ? 'event' : 'events'}`;
+---
+
+{count > 0 && (
+  <span
+    class:list={[
+      'inline-block text-center rounded-full bg-deep-red text-cream font-body font-semibold tracking-normal tabular-nums',
+      large ? 'min-w-[1.5rem] h-6 px-1.5 text-xs leading-6' : 'min-w-[1.125rem] h-[1.125rem] px-1 text-[10px] leading-[1.125rem]',
+    ]}
+  >
+    <span aria-hidden="true">{count}</span>
+    <span class="sr-only">({label})</span>
+  </span>
+)}

@@ -4,33 +4,48 @@ import { getNavItems, getLocalizedPath, isNavItemActive } from '../../i18n/ui';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import MobileMenu from './MobileMenu.astro';
 import BrandContextMenu from './BrandContextMenu.astro';
+import NavCount from './NavCount.astro';
+import { upcomingEvents } from '../../data/events';
 
 interface Props {
   lang: Lang;
+  /** Over a photo hero: transparent and white until the page scrolls. */
+  overHero?: boolean;
 }
 
-const { lang } = Astro.props;
-const navItems = getNavItems(lang);
+const { lang, overHero = false } = Astro.props;
+const navItems = getNavItems(lang).filter((item) => item.inHeader);
 const homePath = getLocalizedPath(lang, '/');
 const currentPath = Astro.url.pathname;
 ---
 
-<header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
+<header id="site-header" data-over-hero={overHero || undefined} class="is-top fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
       <a href={homePath} class="flex items-center group" data-brand-logo aria-label="morˢ">
-        <img
-          src="/brand/mors-wordmark.svg"
-          alt="morˢ"
-          class="h-8 w-auto transition-opacity group-hover:opacity-80"
-          width="115"
-          height="32"
-        />
+        <span class="relative">
+          <img
+            src="/brand/mors-wordmark.svg"
+            alt="morˢ"
+            class="header-logo-dark h-8 w-auto transition-opacity duration-500 group-hover:opacity-80"
+            width="115"
+            height="32"
+          />
+          {overHero && (
+            <img
+              src="/brand/mors-wordmark-white.svg"
+              alt=""
+              class="header-logo-light absolute inset-0 h-8 w-auto opacity-0 transition-opacity duration-500"
+              width="115"
+              height="32"
+            />
+          )}
+        </span>
       </a>
 
       <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center md:gap-6 lg:gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
+      <nav class="header-light hidden lg:flex items-center lg:gap-8 xl:gap-10" aria-label={lang === 'da' ? 'Hovednavigation' : 'Main navigation'}>
         {navItems.map((item) => {
           const isActive = isNavItemActive(currentPath, item.match);
           return (
@@ -38,7 +53,7 @@ const currentPath = Astro.url.pathname;
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
               class:list={[
-                'font-body text-xs font-medium uppercase tracking-[0.2em] hover:text-deep-red transition-colors',
+                'inline-flex items-center gap-1.5 font-body text-xs font-medium uppercase tracking-[0.2em] hover:text-deep-red transition-colors',
                 // One colour utility, never two: `text-ink/70` and
                 // `text-deep-red` have equal specificity, so emitting both
                 // leaves the winner up to Tailwind's output order.
@@ -46,20 +61,21 @@ const currentPath = Astro.url.pathname;
               ]}
             >
               {item.label}
+              {item.key === 'events' && <NavCount count={upcomingEvents().length} />}
             </a>
           );
         })}
       </nav>
 
       <!-- Right side -->
-      <div class="flex items-center gap-5">
+      <div class="header-light flex items-center gap-5">
         <LanguageSwitcher lang={lang} currentPath={currentPath} />
 
         <!-- Mobile menu toggle -->
         <button
           type="button"
           id="mobile-menu-toggle"
-          class="md:hidden flex items-center justify-center w-10 h-10 text-ink hover:text-deep-red transition-colors"
+          class="lg:hidden flex items-center justify-center w-10 h-10 text-ink hover:text-deep-red transition-colors"
           aria-label={lang === 'da' ? 'Abn menu' : 'Open menu'}
           aria-expanded="false"
         >
@@ -73,6 +89,20 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <MobileMenu lang={lang} />
+
+<style>
+  /* Over a photo hero, before scrolling: no background, white logo and
+     links. The cream background and brown colours come in once it scrolls. */
+  #site-header[data-over-hero].is-top .header-logo-dark { opacity: 0; }
+  #site-header[data-over-hero].is-top .header-logo-light { opacity: 1; }
+  #site-header[data-over-hero].is-top .header-light,
+  #site-header[data-over-hero].is-top .header-light :global(a),
+  #site-header[data-over-hero].is-top .header-light :global(button) {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+  }
+</style>
 <BrandContextMenu lang={lang} />
 
 <script>
@@ -85,7 +115,9 @@ const currentPath = Astro.url.pathname;
 
   function updateHeader() {
     if (!header) return;
-    if (window.scrollY > 40) {
+    const top = window.scrollY <= 10;
+    header.classList.toggle('is-top', top);
+    if (!top) {
       header.classList.remove('bg-transparent');
       header.classList.add('bg-cream/95', 'backdrop-blur-sm', 'shadow-sm');
     } else {
