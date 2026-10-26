@@ -26,11 +26,11 @@ for (const h of hours) {
 const scheduleJson = JSON.stringify(schedule);
 ---
 
-<section class="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden">
+<section class="relative min-h-[calc(100svh-5rem)] md:min-h-screen flex flex-col items-center justify-center bg-cream overflow-hidden">
   <!-- Live open/closed indicator -->
   <div
     id="open-indicator"
-    class="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-20 opacity-0 transition-opacity duration-500"
+    class="relative md:absolute md:top-28 md:left-1/2 md:-translate-x-1/2 z-20 opacity-0 transition-opacity duration-500"
     data-open-label={openLabel}
     data-closed-label={closedLabel}
     data-opens-at-label={opensAtLabel}
@@ -68,8 +68,8 @@ const scheduleJson = JSON.stringify(schedule);
   </div>
 
   <!-- Content -->
-  <div class="relative z-10 text-center px-6 py-32 md:py-40">
-    <figure class="w-1/3 mx-auto">
+  <div class="relative z-10 w-full text-center px-6 pt-10 pb-20 md:py-40">
+    <figure data-teaser-avoid class="w-3/4 max-w-sm sm:w-1/2 sm:max-w-none lg:w-1/3 mx-auto">
       <img
         class="wordmark"
         src="/brand/mors-wordmark.svg"
@@ -80,35 +80,38 @@ const scheduleJson = JSON.stringify(schedule);
       />
     </figure>
 
-    <p class="opacity-0 animate-fade-up [animation-delay:0.2s] mt-8 font-display font-bold text-base md:text-lg text-ink max-w-lg mx-auto uppercase tracking-[0.2em]">
+    <p data-teaser-avoid class="w-fit opacity-0 animate-fade-up [animation-delay:0.2s] mt-8 font-display font-bold text-sm md:text-lg text-ink max-w-lg mx-auto uppercase tracking-[0.12em] md:tracking-[0.2em] text-balance">
       {t(lang, 'hero.tagline')}
     </p>
 
-    <p class="opacity-0 animate-fade-up [animation-delay:0.3s] mt-12 font-body text-sm md:text-base uppercase tracking-[0.3em] text-deep-red">
+    <p data-teaser-avoid class="w-fit mx-auto opacity-0 animate-fade-up [animation-delay:0.3s] mt-6 md:mt-12 font-body text-xs md:text-base uppercase tracking-[0.25em] md:tracking-[0.3em] text-deep-red">
       Klostergade 58, Aarhus
     </p>
 
-    <div class="opacity-0 animate-fade-up [animation-delay:0.4s] mt-12 flex flex-wrap items-center justify-center gap-6">
+    <div class="opacity-0 animate-fade-up [animation-delay:0.4s] mt-10 md:mt-12 mx-auto flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
       <CTAButton
         href={contactHref}
         variant="primary"
         label={t(lang, 'hero.cta.visit')}
+        data-teaser-avoid
       />
       <CTAButton
         href="#hours"
         variant="outline"
         label={t(lang, 'hero.cta.hours')}
+        data-teaser-avoid
       />
       <CTAButton
         href={`tel:${config.phoneTel}`}
         variant="secondary"
         label={t(lang, 'hero.cta.call')}
+        data-teaser-avoid
       />
     </div>
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
+  <div class="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
     <svg class="w-6 h-6 text-ink/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7" />
     </svg>

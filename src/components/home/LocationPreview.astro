@@ -36,7 +36,9 @@ const contactHref = lang === 'da' ? '/kontakt' : '/en/contact';
 
         <div class="w-12 h-px bg-deep-red/20 mx-auto"></div>
 
-        <OpeningHours lang={lang} compact={false} />
+        <div class="max-w-xs mx-auto">
+          <OpeningHours lang={lang} compact={false} />
+        </div>
 
         <div class="pt-4">
           <CTAButton

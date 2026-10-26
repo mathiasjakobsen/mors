@@ -17,7 +17,10 @@ const { lang } = Astro.props;
 const modules = qrPattern();
 const SLOTS = 10;
 const STAMPED = 1;
-const text = t(lang, 'stampcard.teaser.text');
+// Split after the dash: in the compact layout the line always breaks there
+// (two lines next to the card); otherwise the <br> is hidden and it wraps on
+// its own.
+const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
 ---
 
 <div id="stampcard-teaser" class="st print:hidden" hidden>
@@ -25,7 +28,7 @@ const text = t(lang, 'stampcard.teaser.text');
     <!-- Every character is rendered up front and revealed one by one, so the
          line breaks are fixed before typing starts and nothing reflows. -->
     <p class="st-note font-mors font-medium text-deep-red" aria-hidden="true">
-      {[...text].map((ch) => <span class="st-ch">{ch}</span>)}
+      {[...line1].map((ch) => <span class="st-ch">{ch}</span>)}<br class="st-br" />{[...line2].map((ch) => <span class="st-ch">{ch}</span>)}
     </p>
 
     <svg class="st-arrow text-deep-red" viewBox="0 0 120 90" fill="none" aria-hidden="true">
@@ -80,7 +83,7 @@ const text = t(lang, 'stampcard.teaser.text');
             })}
           </svg>
 
-          <p class="text-[10px] font-light mt-3 text-white/85">{t(lang, 'stampcard.teaser.rules')}</p>
+          <p class="st-rules text-[10px] font-light mt-3 text-white/85">{t(lang, 'stampcard.teaser.rules')}</p>
 
           <div class="mt-3 mx-auto w-[58%] rounded-md bg-white p-1.5">
             <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} class="block w-full h-auto" aria-hidden="true" shape-rendering="crispEdges">
@@ -113,9 +116,15 @@ const text = t(lang, 'stampcard.teaser.text');
     width: var(--card-w);
     pointer-events: none;
   }
-  @media (max-width: 639px) {
-    .st { --card-w: 150px; --peek: 22%; bottom: 92px; }
-  }
+  /* Compact layout (set by the script: below lg, or wherever the full layout
+     would land on the page's [data-teaser-avoid] content): a smaller card, low,
+     with the line and arrow to its left instead of above. It all tucks away
+     while the page scrolls so it never sits on what is being read. */
+  .st.is-compact { --card-w: 120px; --peek: 22%; bottom: 24px; }
+  .st.is-compact.is-in.is-tucked .st-slide { transform: translateX(88%); }
+  .st.is-compact .st-note, .st.is-compact .st-arrow { transition: opacity 0.2s ease; }
+  .st.is-compact.is-tucked .st-note, .st.is-compact.is-tucked .st-arrow,
+  .st.is-compact.is-quiet .st-note, .st.is-compact.is-quiet .st-arrow { opacity: 0; }
 
   /* Outer layer: slides in from off-screen, and further out on hover. */
   .st-slide {
@@ -161,9 +170,8 @@ const text = t(lang, 'stampcard.teaser.text');
     padding: 14px;
     box-shadow: 0 24px 40px -14px rgba(26, 26, 26, 0.5), 0 2px 6px rgba(26, 26, 26, 0.2);
   }
-  @media (max-width: 639px) {
-    .st-pass { padding: 10px; }
-  }
+  .st.is-compact .st-pass { padding: 10px; }
+  .st.is-compact .st-rules { display: none; }
   .st-gold { color: #d4b078; }
 
   /* Annotation: typed line, and an arrow curving down into the card. */
@@ -184,10 +192,16 @@ const text = t(lang, 'stampcard.teaser.text');
     width: 96px;
     height: auto;
   }
-  @media (max-width: 639px) {
-    .st-note { width: 150px; font-size: 18px; bottom: calc(100% + 41px); }
-    .st-arrow { width: 64px; bottom: calc(100% - 9px); right: calc(100% - 4px); }
+  .st.is-compact .st-note {
+    right: calc(100% + 30px);
+    bottom: calc(14% + 26px);
+    width: max-content;
+    font-size: 15px;
+    /* A cream halo keeps it legible over whatever it lands on. */
+    text-shadow: 0 0 6px #F5F0E8, 0 0 12px #F5F0E8;
   }
+  .st.is-compact .st-arrow { right: calc(100% + 2px); bottom: 14%; width: 44px; }
+  .st:not(.is-compact) .st-br { display: none; }
   .st-arrow path { stroke-dasharray: 1; stroke-dashoffset: 1; }
   .st.is-drawn .st-arrow-shaft { transition: stroke-dashoffset 0.7s ease-out; stroke-dashoffset: 0; }
   .st.is-drawn .st-arrow-head { transition: stroke-dashoffset 0.25s ease-out 0.65s; stroke-dashoffset: 0; }
@@ -236,19 +250,67 @@ const text = t(lang, 'stampcard.teaser.text');
     var chars = el.querySelectorAll('.st-ch');
 
     el.hidden = false;
+
+    // Pick the layout by measuring, not by breakpoint alone: where would the
+    // card, line and arrow rest, and does that land on any [data-teaser-avoid]
+    // element (page coordinates, as those scroll and the teaser does not)?
+    // The full layout is used when it fits (never below lg), else compact. If
+    // even compact does not fit, the teaser waits until the hero is scrolled
+    // past.
+    var slide = el.querySelector('.st-slide');
+    var parts = ['.st-note', '.st-arrow', '.st-card'].map(function (q) { return el.querySelector(q); });
+    function collides(asCompact) {
+      el.classList.toggle('is-compact', asCompact);
+      slide.style.transition = 'none';
+      slide.style.transform = 'translateX(var(--peek))';
+      var mine = parts.map(function (n) { return n.getBoundingClientRect(); });
+      slide.style.transform = '';
+      void slide.offsetWidth;
+      slide.style.transition = '';
+      return Array.prototype.some.call(document.querySelectorAll('[data-teaser-avoid]'), function (a) {
+        var r = a.getBoundingClientRect();
+        var top = r.top + window.scrollY, bottom = r.bottom + window.scrollY;
+        return mine.some(function (m) {
+          return m.left < r.right && m.right > r.left && m.top < bottom && m.bottom > top;
+        });
+      });
+    }
+    var compact, waitForScroll;
+    function layout() {
+      compact = window.matchMedia('(max-width: 1023px)').matches || collides(false);
+      waitForScroll = compact && collides(true);
+      el.classList.toggle('is-compact', compact);
+    }
+    layout();
+    var resized;
+    window.addEventListener('resize', function () {
+      clearTimeout(resized);
+      resized = setTimeout(layout, 200);
+    });
     el.querySelector('[data-st-close]').addEventListener('click', function () {
       el.remove();
       try { localStorage.setItem(KEY, '1'); } catch (e) {}
     });
 
-    if (reduced) {
-      chars.forEach(function (c) { c.classList.add('is-shown'); });
-      el.classList.add('is-in', 'is-drawn');
-      return;
-    }
+    // Tucked while scrolling; only has a visual effect when compact (see CSS).
+    // There the line and arrow are said once: the first scroll after they
+    // have been typed out fades them for good, so they never sit on content.
+    var idle, said = false;
+    window.addEventListener('scroll', function () {
+      if (said) el.classList.add('is-quiet');
+      el.classList.add('is-tucked');
+      clearTimeout(idle);
+      idle = setTimeout(function () { el.classList.remove('is-tucked'); }, 700);
+    }, { passive: true });
 
-    // Card slides in, then the arrow draws, then the line types itself out.
-    setTimeout(function () {
+    function start() {
+      if (reduced) {
+        chars.forEach(function (c) { c.classList.add('is-shown'); });
+        el.classList.add('is-in', 'is-drawn');
+        said = true;
+        return;
+      }
+      // Card slides in, then the arrow draws, then the line types itself out.
       requestAnimationFrame(function () { el.classList.add('is-in'); });
       setTimeout(function () { el.classList.add('is-drawn'); }, 700);
       setTimeout(function () {
@@ -259,10 +321,22 @@ const text = t(lang, 'stampcard.teaser.text');
           chars[i].classList.add('is-shown', 'is-caret');
           if (++i >= chars.length) {
             clearInterval(tick);
-            setTimeout(function () { el.classList.remove('is-typing'); }, 1600);
+            setTimeout(function () { el.classList.remove('is-typing'); said = true; }, 1600);
           }
         }, 45);
       }, 1500);
-    }, 2000);
+    }
+
+    if (waitForScroll) {
+      var onScroll = function () {
+        if (window.scrollY < window.innerHeight * 0.6) return;
+        window.removeEventListener('scroll', onScroll);
+        start();
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    } else {
+      setTimeout(start, 2000);
+    }
   })();
 </script>

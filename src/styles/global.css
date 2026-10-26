@@ -79,6 +79,11 @@
     letter-spacing: 0.2em;
   }
 
+  /* The 0.2em above suits Roboto caps; the brush face keeps its own spacing. */
+  .font-mors {
+    letter-spacing: normal;
+  }
+
   p {
     line-height: 1.7;
   }
