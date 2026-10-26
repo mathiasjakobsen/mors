@@ -1,0 +1,16 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import StampCardPageBody from '../../components/pages/StampCardPageBody.astro';
+import { t } from '../../i18n/ui';
+
+const lang = 'en';
+---
+
+<PageLayout
+  title={t(lang, 'seo.stampcard.title')}
+  description={t(lang, 'seo.stampcard.description')}
+  lang={lang}
+  canonicalPath="/en/stamp-card"
+>
+  <StampCardPageBody lang={lang} />
+</PageLayout>

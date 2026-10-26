@@ -2,7 +2,7 @@
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
-import { QR_SIZE, qrPattern } from '../../lib/qr-pattern';
+import StampCardVisual from '../shared/StampCardVisual.astro';
 
 interface Props {
   lang: Lang;
@@ -10,13 +10,9 @@ interface Props {
 
 const { lang } = Astro.props;
 
-// A stamp card peeking in from the right edge, drawn like the real Wallet pass
-// (EDB's Loyalty::AppleStampPass colours and its 10-slot stamp strip), with a
+// A stamp card (see StampCardVisual) peeking in from the right edge, with a
 // hand-drawn arrow and typed-out line pointing at it. Clicking it opens the
 // sign-up promo in EDB. Dismissal is remembered per browser.
-const modules = qrPattern();
-const SLOTS = 10;
-const STAMPED = 1;
 // Split after the dash: in the compact layout the line always breaks there
 // (two lines next to the card); otherwise the <br> is hidden and it wraps on
 // its own.
@@ -64,41 +60,7 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
       data-umami-event="stampcard-teaser-click"
     >
       <div class="st-wiggle">
-        <!-- Pass face. Colours are the pkpass background/label colours. -->
-        <div class="st-pass">
-          <div class="flex items-start justify-between gap-3">
-            <img
-              src="/brand/mors-wordmark-white.svg"
-              alt=""
-              width="64"
-              height="18"
-              class="h-[18px] w-auto mt-0.5"
-            />
-            <div class="text-right leading-tight">
-              <p class="text-[8px] uppercase tracking-[0.18em] st-gold">{t(lang, 'stampcard.teaser.stamps')}</p>
-              <p class="text-base tabular-nums">{STAMPED}/{SLOTS}</p>
-            </div>
-          </div>
-
-          <svg viewBox="0 0 220 34" class="mt-4 block w-full h-auto" aria-hidden="true">
-            {Array.from({ length: SLOTS }, (_, i) => {
-              const cx = 11 + i * 22;
-              return i < STAMPED
-                ? <circle cx={cx} cy="17" r="8" fill="#d4b078" />
-                : <circle cx={cx} cy="17" r="7" fill="none" stroke="#d4b078" stroke-width="2" opacity="0.45" />;
-            })}
-          </svg>
-
-          <p class="st-rules text-[10px] font-light mt-3 text-white/85">{t(lang, 'stampcard.teaser.rules')}</p>
-
-          <div class="mt-3 mx-auto w-[58%] rounded-md bg-white p-1.5">
-            <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} class="block w-full h-auto" aria-hidden="true" shape-rendering="crispEdges">
-              {modules.map((m) => (
-                <rect x={m.x} y={m.y} width="1" height="1" fill="#2D1D14" />
-              ))}
-            </svg>
-          </div>
-        </div>
+        <StampCardVisual lang={lang} />
       </div>
     </a>
 
@@ -123,7 +85,6 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
      while the page scrolls so it never sits on what is being read. */
   .st.is-compact { --card-w: 120px; --peek: 22%; bottom: 24px; }
   .st.is-compact.is-in.is-tucked .st-slide { transform: translateX(88%); }
-  .st.is-compact .st-note, .st.is-compact .st-arrow { transition: opacity 0.2s ease; }
   .st.is-compact.is-tucked .st-note, .st.is-compact.is-tucked .st-arrow,
   .st.is-compact.is-quiet .st-note, .st.is-compact.is-quiet .st-arrow { opacity: 0; }
 
@@ -164,16 +125,8 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
     94% { transform: rotate(calc(var(--tilt) - 1.5deg)); }
   }
 
-  .st-pass {
-    background: #2D1D14;
-    color: rgb(251, 246, 238);
-    border-radius: 16px;
-    padding: 14px;
-    box-shadow: 0 24px 40px -14px rgba(26, 26, 26, 0.5), 0 2px 6px rgba(26, 26, 26, 0.2);
-  }
-  .st.is-compact .st-pass { padding: 10px; }
-  .st.is-compact .st-rules { display: none; }
-  .st-gold { color: #d4b078; }
+  .st.is-compact :global(.stamp-pass) { padding: 10px; }
+  .st.is-compact :global(.stamp-rules) { display: none; }
 
   /* Annotation: typed line, and an arrow curving down into the card. */
   .st-note {
@@ -203,6 +156,12 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
   }
   .st.is-compact .st-arrow { right: calc(100% + 2px); bottom: 14%; width: 44px; }
   .st:not(.is-compact) .st-br { display: none; }
+
+  /* Over a photo ([data-teaser-on-dark], e.g. the front page hero) the line
+     and arrow turn white; over cream they stay brown. */
+  .st-note, .st-arrow { transition: color 0.3s ease, opacity 0.2s ease; }
+  .st.is-on-dark .st-note, .st.is-on-dark .st-arrow { color: #fff; }
+  .st.is-on-dark .st-note { text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45); }
   .st-arrow path { stroke-dasharray: 1; stroke-dashoffset: 1; }
   .st.is-drawn .st-arrow-shaft { transition: stroke-dashoffset 0.7s ease-out; stroke-dashoffset: 0; }
   .st.is-drawn .st-arrow-head { transition: stroke-dashoffset 0.25s ease-out 0.65s; stroke-dashoffset: 0; }
@@ -282,10 +241,28 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
       el.classList.toggle('is-compact', compact);
     }
     layout();
+    // White over a photo, brown over cream: look at what sits under the
+    // middle of the line (the teaser itself has pointer-events: none, so
+    // elementFromPoint sees through it).
+    var note = el.querySelector('.st-note');
+    var toneQueued = false;
+    function tone() {
+      toneQueued = false;
+      var r = note.getBoundingClientRect();
+      var under = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      el.classList.toggle('is-on-dark', !!(under && under.closest('[data-teaser-on-dark]')));
+    }
+    function queueTone() {
+      if (toneQueued) return;
+      toneQueued = true;
+      requestAnimationFrame(tone);
+    }
+    window.addEventListener('scroll', queueTone, { passive: true });
+
     var resized;
     window.addEventListener('resize', function () {
       clearTimeout(resized);
-      resized = setTimeout(layout, 200);
+      resized = setTimeout(function () { layout(); tone(); }, 200);
     });
     el.querySelector('[data-st-close]').addEventListener('click', function () {
       el.remove();
@@ -307,11 +284,13 @@ const [line1, line2 = ''] = t(lang, 'stampcard.teaser.text').split(/(?<=– )/);
       if (reduced) {
         chars.forEach(function (c) { c.classList.add('is-shown'); });
         el.classList.add('is-in', 'is-drawn');
+        tone();
         said = true;
         return;
       }
       // Card slides in, then the arrow draws, then the line types itself out.
       requestAnimationFrame(function () { el.classList.add('is-in'); });
+      setTimeout(tone, 950);
       setTimeout(function () { el.classList.add('is-drawn'); }, 700);
       setTimeout(function () {
         el.classList.add('is-typing');

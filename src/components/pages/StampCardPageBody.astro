@@ -1,0 +1,75 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { config } from '../../config';
+import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
+import CTAButton from '../shared/CTAButton.astro';
+import StampCardVisual from '../shared/StampCardVisual.astro';
+
+// Short, mostly for search: what the stamp card is, how it works in three
+// steps, and the same sign-up the pop-up links to. Only claims what the pass
+// and the staff handbook in EDB say (Wallet, updates itself, show it on every
+// visit, 10 stamps = 1 free coffee).
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  da: {
+    title: 'Stempelkort',
+    lead: 'Stempelkortet koster ikke noget. Saml stempler i telefonen, og få hver 10. kaffe gratis.',
+    steps: [
+      'Hent kortet, helt gratis. Det ryger direkte i Apple eller Google Wallet, og du skal hverken have en app eller en konto.',
+      'Vis QR-koden, når du køber kaffe, så får du et stempel.',
+      'Når du har 10, giver vi en kaffe.',
+    ],
+    note: 'Kortet holder selv styr på stemplerne.',
+    cta: 'Hent dit gratis stempelkort',
+  },
+  en: {
+    title: 'Stamp card',
+    lead: 'The stamp card costs nothing. Collect stamps on your phone and get every 10th coffee free.',
+    steps: [
+      'Get the card, completely free. It goes straight into Apple or Google Wallet, with no app and no account.',
+      'Show the QR code when you buy a coffee and you get a stamp.',
+      'Once you have 10, the next coffee is on us.',
+    ],
+    note: 'The card keeps track of the stamps itself.',
+    cta: 'Get your free stamp card',
+  },
+}[lang];
+---
+
+<PageHero title={copy.title} lead={copy.lead} />
+
+<section class="bg-warm-white py-20 md:py-28">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-4xl mx-auto grid gap-12 md:grid-cols-2 md:gap-16 md:items-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <a href={config.stampCardSignupUrl} class="group block w-72 sm:w-80 mx-auto" aria-label={copy.cta} data-umami-event="stampcard-page-card-click">
+        <div class="-rotate-6 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-0 group-hover:-translate-y-1.5">
+          <StampCardVisual lang={lang} size="lg" />
+        </div>
+      </a>
+
+      <div>
+        <ol class="space-y-4">
+          {copy.steps.map((step, i) => (
+            <li class="flex gap-4">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-deep-red/25 font-display font-semibold text-deep-red">{i + 1}</span>
+              <p class="pt-1 font-body font-light text-ink-light leading-relaxed">{step}</p>
+            </li>
+          ))}
+        </ol>
+        <p class="mt-6 font-body font-light text-sm text-ink-muted">{copy.note}</p>
+        <div class="mt-8">
+          <CTAButton href={config.stampCardSignupUrl} variant="primary" label={copy.cta} data-umami-event="stampcard-page-cta-click" />
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

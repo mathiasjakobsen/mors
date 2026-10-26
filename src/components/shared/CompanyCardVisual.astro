@@ -1,0 +1,83 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { QR_SIZE, qrPattern } from '../../lib/qr-pattern';
+
+// A company card ("Firmakort") drawn like the one EDB issues: the company in
+// the header, a "Din fordel" box listing the agreed benefits, and a QR code.
+// The company and the benefits here are examples, not a real agreement.
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const modules = qrPattern();
+
+const copy = {
+  da: {
+    kind: 'Firmakort',
+    company: 'Jeres firma A/S',
+    companyLabel: 'Firma',
+    benefitsLabel: 'Din fordel',
+    benefits: ['15 % på alt', 'Fredagsboller til kontoret'],
+    show: 'Vis QR-koden i kaffebaren',
+  },
+  en: {
+    kind: 'Company card',
+    company: 'Your company Ltd',
+    companyLabel: 'Company',
+    benefitsLabel: 'Your perk',
+    benefits: ['15 % off everything', 'Friday buns for the office'],
+    show: 'Show the QR code in the coffee bar',
+  },
+}[lang];
+const initials = copy.company.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+---
+
+<!-- Pass face. Colours are the pkpass background/label colours. -->
+<div class="company-pass">
+  <div class="flex items-start justify-between gap-3">
+    <img src="/brand/mors-wordmark-white.svg" alt="" width="64" height="18" class="h-7 w-auto mt-0.5" />
+    <div class="text-right leading-tight min-w-0">
+      <p class="text-[11px] uppercase tracking-[0.18em] text-[#d4b078]">{copy.kind}</p>
+      <p class="text-base font-semibold truncate">{copy.company}</p>
+    </div>
+  </div>
+
+  <div class="mt-6 flex items-center gap-3">
+    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white font-display font-bold text-sm text-[#2D1D14]">{initials}</span>
+    <div class="min-w-0">
+      <p class="text-[10px] uppercase tracking-[0.18em] text-[#d4b078]">{copy.companyLabel}</p>
+      <p class="text-lg font-semibold leading-tight truncate">{copy.company}</p>
+    </div>
+  </div>
+
+  <div class="mt-5 rounded-xl bg-white/[0.06] ring-1 ring-white/10 p-4">
+    <p class="text-[10px] uppercase tracking-[0.18em] text-[#d4b078]">{copy.benefitsLabel}</p>
+    <ul class="mt-2 space-y-1.5">
+      {copy.benefits.map((b) => (
+        <li class="flex items-start gap-2 text-sm font-medium"><span class="text-[#d4b078]" aria-hidden="true">★</span><span>{b}</span></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="mt-5 mx-auto w-[46%] rounded-md bg-white p-2">
+    <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} class="block w-full h-auto" aria-hidden="true" shape-rendering="crispEdges">
+      {modules.map((m) => (
+        <rect x={m.x} y={m.y} width="1" height="1" fill="#2D1D14" />
+      ))}
+    </svg>
+  </div>
+  <p class="mt-2 text-center text-[11px] text-[#d4b078]/90">{copy.show}</p>
+</div>
+
+<style>
+  .company-pass {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 40%),
+      #2D1D14;
+    color: rgb(251, 246, 238);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 24px 40px -14px rgba(26, 26, 26, 0.5), 0 2px 6px rgba(26, 26, 26, 0.2);
+  }
+</style>

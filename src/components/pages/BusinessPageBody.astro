@@ -1,0 +1,91 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { config } from '../../config';
+import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
+import CompanyCardVisual from '../shared/CompanyCardVisual.astro';
+
+// Short, mostly for search: the kinds of agreements we make with companies,
+// an example company card, and an invitation to write. Grounded in what EDB
+// supports: company cards with a discount in Wallet, purchases the company
+// pays for, and invoicing.
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  da: {
+    title: 'Erhvervsaftale',
+    lead: 'Skal kollegerne have ordentlig kaffe? Vi laver gerne en aftale med jer, uanset om I er tre eller tre hundrede.',
+    offers: [
+      { title: 'Rabat til alle', body: 'Alle hos jer får et firmakort i telefonen. Det viser rabatten, og så klarer vi resten i kaffebaren.' },
+      { title: 'Firmaet betaler', body: 'Kollegerne henter kaffen, og regningen går til firmaet. I får en faktura, og ingen skal gemme kvitteringer.' },
+      { title: 'Fredagsboller', body: 'Boller og kaffe til fredagsmødet. Sig hvor mange I er, så finder vi ud af resten.' },
+    ],
+    examples: 'Et par eksempler på, hvad vi kan lave sammen:',
+    more: 'Det er kun eksempler. Har I en anden idé, eller vil I blande det hele, så er vi helt åbne for det.',
+    cardCaption: 'Eksempel på et firmakort',
+    ask: 'Skriv og fortæl, hvor mange I er, og hvad I har i tankerne. Så finder vi ud af det sammen.',
+    subject: 'Erhvervsaftale',
+  },
+  en: {
+    title: 'Business',
+    lead: 'Should your colleagues be drinking proper coffee? We are happy to set something up, whether you are three people or three hundred.',
+    offers: [
+      { title: 'A discount for everyone', body: 'Everyone gets a company card on their phone. It shows the discount, and we take care of the rest in the coffee bar.' },
+      { title: 'The company pays', body: 'Colleagues pick up their coffee and the bill goes to the company. You get an invoice, and nobody has to keep receipts.' },
+      { title: 'Friday buns', body: 'Buns and coffee for the Friday meeting. Tell us how many you are and we will sort out the rest.' },
+    ],
+    examples: 'A few examples of what we can do together:',
+    more: 'These are only examples. If you have another idea, or want a mix of everything, we are completely open to it.',
+    cardCaption: 'Example of a company card',
+    ask: 'Write and tell us how many you are and what you have in mind. We will work it out together.',
+    subject: 'Business agreement',
+  },
+}[lang];
+
+const mailto = `mailto:${config.email}?subject=${encodeURIComponent(copy.subject)}`;
+---
+
+<PageHero title={copy.title} lead={copy.lead} />
+
+<section class="bg-warm-white py-20 md:py-28">
+  <Container>
+    <div
+      data-animate-on-scroll
+      class="max-w-4xl mx-auto grid gap-14 md:grid-cols-2 md:gap-16 md:items-center opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+    >
+      <figure class="w-72 sm:w-80 mx-auto">
+        <div class="rotate-3 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:rotate-0 hover:-translate-y-1.5">
+          <CompanyCardVisual lang={lang} />
+        </div>
+        <figcaption class="mt-6 text-center font-body text-xs uppercase tracking-[0.2em] text-ink-muted">{copy.cardCaption}</figcaption>
+      </figure>
+
+      <div>
+        <p class="mb-5 font-body font-light text-ink-light">{copy.examples}</p>
+        <ul class="divide-y divide-ink/10">
+          {copy.offers.map((offer) => (
+            <li class="py-5 first:pt-0 last:pb-0">
+              <h2 class="font-display font-semibold text-xl tracking-normal text-deep-red">{offer.title}</h2>
+              <p class="mt-1.5 font-body font-light text-ink-light leading-relaxed">{offer.body}</p>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-6 font-body font-light text-sm text-ink-muted leading-relaxed">{copy.more}</p>
+      </div>
+    </div>
+
+    <div class="mt-20 text-center">
+      <a
+        href={mailto}
+        class="inline-block font-display font-medium text-3xl sm:text-4xl md:text-5xl text-deep-red break-all underline decoration-deep-red/25 decoration-2 underline-offset-[0.2em] hover:decoration-deep-red transition-colors"
+      >
+        {config.email}
+      </a>
+      <p class="mt-6 font-body font-light text-ink-light">{copy.ask}</p>
+    </div>
+  </Container>
+</section>

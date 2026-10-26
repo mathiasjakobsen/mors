@@ -1,0 +1,63 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { QR_SIZE, qrPattern } from '../../lib/qr-pattern';
+
+// The stamp card drawn like the real Wallet pass (EDB's Loyalty::AppleStampPass
+// colours and its 10-slot stamp strip), with one stamp on it and a decorative
+// QR code. Used by the stamp card pop-up and the /stempelkort page.
+interface Props {
+  lang: Lang;
+  size?: 'sm' | 'lg';
+}
+
+const { lang, size = 'sm' } = Astro.props;
+const lg = size === 'lg';
+const modules = qrPattern();
+const SLOTS = 10;
+const STAMPED = 1;
+---
+
+<!-- Pass face. Colours are the pkpass background/label colours. -->
+<div class:list={['stamp-pass', lg && 'stamp-pass-lg']}>
+  <div class="flex items-start justify-between gap-3">
+    <img src="/brand/mors-wordmark-white.svg" alt="" width="64" height="18" class:list={['w-auto mt-0.5', lg ? 'h-7' : 'h-[18px]']} />
+    <div class="text-right leading-tight">
+      <p class:list={['uppercase tracking-[0.18em] text-[#d4b078]', lg ? 'text-[11px]' : 'text-[8px]']}>{t(lang, 'stampcard.teaser.stamps')}</p>
+      <p class:list={['tabular-nums', lg ? 'text-2xl' : 'text-base']}>{STAMPED}/{SLOTS}</p>
+    </div>
+  </div>
+
+  <svg viewBox="0 0 220 34" class:list={['block w-full h-auto', lg ? 'mt-6' : 'mt-4']} aria-hidden="true">
+    {Array.from({ length: SLOTS }, (_, i) => {
+      const cx = 11 + i * 22;
+      return i < STAMPED
+        ? <circle cx={cx} cy="17" r="8" fill="#d4b078" />
+        : <circle cx={cx} cy="17" r="7" fill="none" stroke="#d4b078" stroke-width="2" opacity="0.45" />;
+    })}
+  </svg>
+
+  <p class:list={['stamp-rules font-light text-white/85', lg ? 'text-sm mt-4' : 'text-[10px] mt-3']}>{t(lang, 'stampcard.teaser.rules')}</p>
+
+  <div class:list={['mx-auto w-[58%] rounded-md bg-white', lg ? 'mt-5 p-2.5' : 'mt-3 p-1.5']}>
+    <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} class="block w-full h-auto" aria-hidden="true" shape-rendering="crispEdges">
+      {modules.map((m) => (
+        <rect x={m.x} y={m.y} width="1" height="1" fill="#2D1D14" />
+      ))}
+    </svg>
+  </div>
+</div>
+
+<style>
+  .stamp-pass {
+    background: #2D1D14;
+    color: rgb(251, 246, 238);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 24px 40px -14px rgba(26, 26, 26, 0.5), 0 2px 6px rgba(26, 26, 26, 0.2);
+  }
+  .stamp-pass-lg {
+    border-radius: 22px;
+    padding: 24px;
+  }
+</style>
