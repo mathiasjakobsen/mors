@@ -6,7 +6,7 @@ import { getHoursSummary } from '../../data/hours';
 import SocialLinks from '../shared/SocialLinks.astro';
 import NavCount from './NavCount.astro';
 import { upcomingEvents } from '../../data/events';
-import { getViden } from '../../lib/content';
+import { getViden, LEGAL_PATHS } from '../../lib/content';
 import { getBrewGuides } from '../../lib/api';
 
 interface Props {
@@ -231,6 +231,14 @@ const smileyDate =
       <p class="text-cream/60 text-xs font-body font-light">
         &copy; {new Date().getFullYear()} {config.legalName} (CVR: {config.cvr}). {lang === 'da' ? 'Alle rettigheder forbeholdes.' : 'All rights reserved.'}
       </p>
+      <nav class="flex items-center gap-6" aria-label={lang === 'da' ? 'Politikker' : 'Policies'}>
+        <a href={LEGAL_PATHS.privacy[lang]} class="text-cream/60 hover:text-cream text-xs font-body font-light transition-colors">
+          {lang === 'da' ? 'Privatlivspolitik' : 'Privacy policy'}
+        </a>
+        <a href={LEGAL_PATHS.cookies[lang]} class="text-cream/60 hover:text-cream text-xs font-body font-light transition-colors">
+          {lang === 'da' ? 'Cookiepolitik' : 'Cookie policy'}
+        </a>
+      </nav>
     </div>
   </div>
 </footer>

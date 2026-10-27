@@ -12,6 +12,12 @@ export const SECTION_ROOTS = {
   brewguides: { da: '/bryggeguides', en: '/en/brewguides' },
 } as const;
 
+/** Where the legal pages live, per language. */
+export const LEGAL_PATHS = {
+  privacy: { da: '/privatlivspolitik', en: '/en/privacy-policy' },
+  cookies: { da: '/cookiepolitik', en: '/en/cookie-policy' },
+} as const;
+
 export function videnPath(lang: Lang, slug: string): string {
   return `${SECTION_ROOTS.viden[lang]}/${slug}`;
 }

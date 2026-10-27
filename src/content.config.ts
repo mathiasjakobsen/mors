@@ -30,4 +30,18 @@ const viden = defineCollection({
   }),
 });
 
-export const collections = { viden };
+// Legal pages (privacy and cookie policy). Plain markdown so they can be
+// edited without touching code; each language version links the other via
+// `translationKey`, like viden.
+const legal = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/legal' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    lang: z.enum(['da', 'en']),
+    translationKey: z.string(),
+    updatedAt: z.coerce.date(),
+  }),
+});
+
+export const collections = { viden, legal };

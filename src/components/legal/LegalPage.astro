@@ -1,0 +1,49 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { Lang } from '../../i18n/ui';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHero from '../shared/PageHero.astro';
+import Container from '../shared/Container.astro';
+import { LEGAL_PATHS } from '../../lib/content';
+
+// A legal page (privacy, cookies): the markdown entry in the shop's own
+// words, with the date it was last updated under the title.
+interface Props {
+  lang: Lang;
+  translationKey: keyof typeof LEGAL_PATHS;
+}
+
+const { lang, translationKey } = Astro.props;
+const [entry] = await getCollection('legal', ({ data }) => data.lang === lang && data.translationKey === translationKey);
+if (!entry) throw new Error(`Missing legal page: ${translationKey} (${lang})`);
+const { Content } = await render(entry);
+const otherLang: Lang = lang === 'da' ? 'en' : 'da';
+
+const updated = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(entry.data.updatedAt);
+---
+
+<PageLayout
+  title={`${entry.data.title} | morˢ`}
+  description={entry.data.description}
+  lang={lang}
+  canonicalPath={LEGAL_PATHS[translationKey][lang]}
+  alternatePath={LEGAL_PATHS[translationKey][otherLang]}
+>
+  <PageHero
+    title={entry.data.title}
+    lead={`${lang === 'da' ? 'Senest opdateret' : 'Last updated'} ${updated}`}
+  />
+
+  <section class="bg-warm-white py-16 md:py-24">
+    <Container>
+      <article class="prose-mors max-w-2xl mx-auto">
+        <Content />
+      </article>
+    </Container>
+  </section>
+</PageLayout>
