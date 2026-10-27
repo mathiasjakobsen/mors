@@ -37,6 +37,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/stempelkort': { da: '/stempelkort', en: '/en/stamp-card' },
     '/erhverv': { da: '/erhverv', en: '/en/business' },
     '/brand': { da: '/brand', en: '/en/brand' },
+    '/morgenmad-i-aarhus': { da: '/morgenmad-i-aarhus', en: '/en/breakfast-in-aarhus' },
     '/en/': { da: '/', en: '/en/' },
     '/en/menu': { da: '/menu', en: '/en/menu' },
     '/en/coffee': { da: '/kaffe', en: '/en/coffee' },
@@ -49,6 +50,7 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/en/stamp-card': { da: '/stempelkort', en: '/en/stamp-card' },
     '/en/business': { da: '/erhverv', en: '/en/business' },
     '/en/brand': { da: '/brand', en: '/en/brand' },
+    '/en/breakfast-in-aarhus': { da: '/morgenmad-i-aarhus', en: '/en/breakfast-in-aarhus' },
   };
 
   const cleanPath = currentPath.replace(/\/$/, '') || '/';
@@ -83,6 +85,7 @@ export function getNavItems(lang: Lang) {
     { key: 'about',     inHeader: false, label: t(lang, 'nav.about'),     href: lang === 'da' ? '/om' : '/en/about',                           match: lang === 'da' ? '/om' : '/en/about' },
     { key: 'contact',   inHeader: false, label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
     { key: 'stampcard', inHeader: false, label: t(lang, 'nav.stampcard'), href: lang === 'da' ? '/stempelkort' : '/en/stamp-card',             match: lang === 'da' ? '/stempelkort' : '/en/stamp-card' },
+    { key: 'breakfast', inHeader: false, label: t(lang, 'nav.breakfast'), href: lang === 'da' ? '/morgenmad-i-aarhus' : '/en/breakfast-in-aarhus', match: lang === 'da' ? '/morgenmad-i-aarhus' : '/en/breakfast-in-aarhus' },
     { key: 'business',  inHeader: false, label: t(lang, 'nav.business'),  href: lang === 'da' ? '/erhverv' : '/en/business',                   match: lang === 'da' ? '/erhverv' : '/en/business' },
   ];
 }

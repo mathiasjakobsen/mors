@@ -1,0 +1,90 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { getMenuCategories } from '../../lib/api';
+import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
+import CTAButton from '../shared/CTAButton.astro';
+import OpeningHours from '../shared/OpeningHours.astro';
+import morgenmad from '../../assets/mors-morgenmad.jpg';
+
+// Everyday breakfast, not brunch: what's in the kaffebar in the morning and
+// when. Item names come from the POS (pastries + food), so they stay the
+// shop's own words.
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const BREAKFAST_CATEGORY_SLUGS = ['pastries', 'food'];
+const categories = (await getMenuCategories()).filter((c) => BREAKFAST_CATEGORY_SLUGS.includes(c.id));
+
+const copy = {
+  da: {
+    title: 'Morgenmad i Aarhus C',
+    lead: 'En god kop kaffe, sprødt bagværk og yoghurt med granola. Fra kl. 7.30 på hverdage og 8.30 i weekenden.',
+    alt: 'Yoghurt med granola, te og juice i vindueskarmen foran kaffebaren morˢ på Klostergade',
+    introTitle: 'Ikke brunch – bare en god start på dagen',
+    intro: [
+      'Hos morˢ er morgenmaden enkel og hverdagsagtig. Tag en croissant og en flat white med på vej til arbejde, eller sæt dig ved et af bordene i bindingsværkshuset fra 1702 og få dagen godt i gang.',
+      'Kaffen er specialty kaffe fra IDEAL Kafferisteri – som espresso, cappuccino eller filterkaffe – og bagværket ligger klar fra morgenstunden.',
+    ],
+    listTitle: 'Til morgenkaffen',
+    priceSuffix: 'kr.',
+    menuCta: 'Se hele menuen',
+    menuHref: '/menu',
+    visitCta: 'Find vej',
+    visitHref: '/kontakt',
+  },
+  en: {
+    title: 'Breakfast in Aarhus C',
+    lead: 'A good cup of coffee, crisp pastries and yoghurt with granola. From 7.30 on weekdays and 8.30 at weekends.',
+    alt: 'Yoghurt with granola, tea and juice on the windowsill outside the morˢ coffee bar on Klostergade',
+    introTitle: 'Not brunch – just a good start to the day',
+    intro: [
+      'Breakfast at morˢ is simple and everyday. Grab a croissant and a flat white on the way to work, or sit down at one of the tables in our half-timbered house from 1702 and start the day properly.',
+      'The coffee is specialty coffee from IDEAL Kafferisteri – espresso, cappuccino or filter – and the pastries are ready from early morning.',
+    ],
+    listTitle: 'With your morning coffee',
+    priceSuffix: 'DKK',
+    menuCta: 'See the full menu',
+    menuHref: '/en/menu',
+    visitCta: 'Find us',
+    visitHref: '/en/contact',
+  },
+}[lang];
+---
+
+<PageHero title={copy.title} lead={copy.lead} image={{ src: morgenmad, alt: copy.alt }} />
+
+<section class="bg-warm-white py-20 md:py-28">
+  <Container>
+    <div class="max-w-2xl mx-auto">
+      <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red text-center">{copy.introTitle}</h2>
+      <div class="mt-8 space-y-5">
+        {copy.intro.map((p) => (
+          <p class="font-body font-light text-lg leading-relaxed text-ink-light">{p}</p>
+        ))}
+      </div>
+
+      <h2 class="mt-20 mb-8 font-display font-bold text-lg md:text-xl uppercase text-deep-red text-center">{copy.listTitle}</h2>
+      <div class="space-y-5">
+        {categories.flatMap((c) => c.items).map((item) => (
+          <div class="flex items-baseline gap-3">
+            <span class="font-body text-ink">{item.name[lang]}</span>
+            <span class="flex-1 border-b border-dotted border-ink/10 translate-y-[-4px]" />
+            <span class="font-body text-ink whitespace-nowrap">{item.price} {copy.priceSuffix}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-20 grid gap-12 sm:grid-cols-2 sm:items-start">
+        <OpeningHours lang={lang} />
+        <div class="flex flex-col gap-3 sm:items-end">
+          <CTAButton href={copy.menuHref} variant="primary" label={copy.menuCta} />
+          <CTAButton href={copy.visitHref} variant="outline" label={copy.visitCta} />
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
