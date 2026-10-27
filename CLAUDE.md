@@ -5,12 +5,22 @@ deployed to GitHub Pages on every push to `master`.
 
 ## Brand vocabulary — read this before writing any customer-facing copy
 
-**morˢ is a kaffebar. Never call it a café.** In Danish it is "kaffebaren", in
-English "the coffee bar". This applies to UI strings, SEO descriptions, e-mail
-and PDF copy — anywhere a customer might read it. Where something happens —
-buying, ordering, showing a QR code — say "i kaffebaren" ("in the coffee bar"),
+**morˢ is a kaffebar first.** In Danish it is "kaffebaren", in English "the
+coffee bar" (or "coffee shop"). That is the primary category in headings,
+titles and UI strings — anywhere a customer might read it.
+
+**"Café" is allowed as a secondary word**, because it is what most people
+search for. Use it alongside "kaffebar", never instead of it: "kaffebar og
+café", "the coffee bar (or café, if you like)", an `alternateName` in the
+JSON-LD. Never make "café" the headline category of a page.
+
+Where something happens — buying, ordering, showing a QR code — say "i kaffebaren" ("in the coffee bar"),
 not "ved baren" or "i baren", and never "disken". "Bag baren" is fine when it
 means working behind the counter.
+
+morˢ is **not a bakery**: say bagværk / baked goods / pastries. It serves
+everyday **breakfast (morgenmad)**, not brunch. The tagline is spelled
+**"Useriøst"**.
 
 The exceptions are technical or external, and they stay as they are:
 `CafeOrCoffeeShop` (a schema.org type), the `cafe-latte` menu id and the
