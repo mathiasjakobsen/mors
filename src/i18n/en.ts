@@ -146,7 +146,9 @@ export default {
 
   // Footer
   'footer.tagline': 'Speciality coffee and baked goods',
-  'footer.navigation': 'Navigation',
+  'footer.group.bar': 'The coffee bar',
+  'footer.group.shop': 'Shop',
+  'footer.group.learn': 'Learn about coffee',
   'footer.followUs': 'Follow us',
   'footer.est': 'Est. 2026',
 

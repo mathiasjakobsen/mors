@@ -146,7 +146,9 @@ export default {
 
   // Footer
   'footer.tagline': 'Useriøst god kaffe og sprødt bagværk',
-  'footer.navigation': 'Navigation',
+  'footer.group.bar': 'Kaffebaren',
+  'footer.group.shop': 'Butik',
+  'footer.group.learn': 'Lær om kaffe',
   'footer.followUs': 'Følg os',
   'footer.est': 'Est. 2026',
 

@@ -21,6 +21,25 @@ const emptySections = new Set([
   ...((await getViden(lang)).length ? [] : ['knowledge']),
 ]);
 const navItems = getNavItems(lang).filter((item) => item.key !== 'contact' && !emptySections.has(item.key));
+
+// The footer groups the nav into what happens in the kaffebar, what you can
+// buy, and what you can read. Item order inside a group follows this list.
+// Footer columns: (1) brand + Findsmiley, (2) kaffebar + shop,
+// (3) learn, "featured on" and social, (4) hours and contact.
+const toGroup = (label: string, keys: string[]) => ({
+  label,
+  items: keys
+    .map((key) => navItems.find((item) => item.key === key))
+    .filter((item): item is (typeof navItems)[number] => !!item),
+});
+const barAndShopGroups = [
+  toGroup(t(lang, 'footer.group.bar'), ['menu', 'breakfast', 'events', 'stampcard', 'about']),
+  toGroup(t(lang, 'footer.group.shop'), ['beans', 'products', 'giftcards', 'business']),
+];
+const learnGroup = toGroup(t(lang, 'footer.group.learn'), ['brewguides', 'knowledge']);
+
+const heading = 'font-body text-xs uppercase tracking-[0.2em] text-cream/50';
+const link = 'inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors w-fit';
 const homePath = getLocalizedPath(lang, '/');
 const hoursSummary = getHoursSummary(lang);
 const jobsPath = lang === 'da' ? '/job' : '/en/jobs';
@@ -41,9 +60,9 @@ const smileyDate =
 
 <footer data-teaser-on-dark class="bg-ink text-cream relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-32 relative z-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16 lg:gap-x-12">
       <!-- Column 1: Brand -->
-      <div>
+      <div class="col-span-2 lg:col-span-1">
         <a href={homePath} class="inline-block" aria-label="morˢ">
           <img
             src="/brand/mors-wordmark.svg"
@@ -93,32 +112,100 @@ const smileyDate =
         </div>
       </div>
 
-      <!-- Column 2: Navigation + Hours -->
-      <div>
-        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mb-6">{t(lang, 'footer.navigation')}</h3>
-        <nav class="flex flex-col gap-3" aria-label="Footer navigation">
-          {navItems.map((item) => (
-            <a
-              href={item.href}
-              class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors w-fit"
-            >
-              {item.label}
-              {item.key === 'events' && <NavCount count={upcomingEvents().length} />}
-            </a>
-          ))}
-        </nav>
+      <!-- Column 2: the kaffebar and the shop -->
+      <div class="flex flex-col gap-12">
+        {barAndShopGroups.map((group) => (
+          <div>
+            <h3 class:list={[heading, 'mb-6']}>{group.label}</h3>
+            <nav class="flex flex-col gap-3" aria-label={group.label}>
+              {group.items.map((item) => (
+                <a href={item.href} class={link}>
+                  {item.label}
+                  {item.key === 'events' && <NavCount count={upcomingEvents().length} />}
+                </a>
+              ))}
+            </nav>
+          </div>
+        ))}
+      </div>
 
-        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mt-12 mb-4">{t(lang, 'hours.title')}</h3>
+      <!-- Column 3: learn about coffee, where we're featured, social -->
+      <div class="flex flex-col gap-12">
+        {learnGroup.items.length > 0 && (
+          <div>
+            <h3 class:list={[heading, 'mb-6']}>{learnGroup.label}</h3>
+            <nav class="flex flex-col gap-3" aria-label={learnGroup.label}>
+              {learnGroup.items.map((item) => (
+                <a href={item.href} class={link}>{item.label}</a>
+              ))}
+            </nav>
+          </div>
+        )}
+
+        <div>
+          <h3 class:list={[heading, 'mb-4']}>{lang === 'da' ? 'Anbefalet på' : 'Featured on'}</h3>
+          <ul class="flex flex-col gap-2">
+            <li>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=mors%2C+Klostergade+58%2C+8000+Aarhus"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
+              >
+                Google
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                  <path d="M3 11l8-8" />
+                  <path d="M5 3h6v6" />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.tripadvisor.dk/Restaurant_Review-g15152405-d34392839-Reviews-Mors-Edslev_Aarhus_East_Jutland_Jutland.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
+              >
+                Tripadvisor
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                  <path d="M3 11l8-8" />
+                  <path d="M5 3h6v6" />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://europeancoffeetrip.com/cafe/mors-aarhus/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
+              >
+                European Coffee Trip
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                  <path d="M3 11l8-8" />
+                  <path d="M5 3h6v6" />
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class:list={[heading, 'mb-6']}>{t(lang, 'footer.followUs')}</h3>
+          <SocialLinks lang={lang} variant="light" />
+        </div>
+      </div>
+
+      <!-- Column 4: opening hours and contact -->
+      <div class="col-span-2 lg:col-span-1">
+        <h3 class:list={[heading, 'mb-4']}>{t(lang, 'hours.title')}</h3>
         <div class="flex flex-col gap-1.5">
           {hoursSummary.map((line) => (
             <span class="text-cream/60 font-body font-light">{line}</span>
           ))}
         </div>
-      </div>
 
-      <!-- Column 3: Contact + Social -->
-      <div>
-        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mb-6">{t(lang, 'contact.title')}</h3>
+        <h3 class:list={[heading, 'mt-12 mb-6']}>{t(lang, 'contact.title')}</h3>
         <address class="not-italic text-cream/70 font-body font-light leading-loose">
           <p>{config.address.street}</p>
           <p>{config.address.zip} {config.address.city}</p>
@@ -134,57 +221,6 @@ const smileyDate =
             <a href={jobsPath} class="hover:text-cream transition-colors">{config.jobEmail}</a>
           </p>
         </address>
-
-        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mt-12 mb-6">{t(lang, 'footer.followUs')}</h3>
-        <SocialLinks lang={lang} variant="light" />
-
-        <h3 class="font-body text-xs uppercase tracking-[0.2em] text-cream/50 mt-12 mb-4">
-          {lang === 'da' ? 'Anbefalet på' : 'Featured on'}
-        </h3>
-        <ul class="flex flex-col gap-2">
-          <li>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=mors%2C+Klostergade+58%2C+8000+Aarhus"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
-            >
-              Google
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
-                <path d="M3 11l8-8" />
-                <path d="M5 3h6v6" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.tripadvisor.dk/Restaurant_Review-g15152405-d34392839-Reviews-Mors-Edslev_Aarhus_East_Jutland_Jutland.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
-            >
-              Tripadvisor
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
-                <path d="M3 11l8-8" />
-                <path d="M5 3h6v6" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://europeancoffeetrip.com/cafe/mors-aarhus/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-cream/70 font-body font-light hover:text-cream transition-colors group"
-            >
-              European Coffee Trip
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
-                <path d="M3 11l8-8" />
-                <path d="M5 3h6v6" />
-              </svg>
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   </div>
