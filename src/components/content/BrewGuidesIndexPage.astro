@@ -1,0 +1,76 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import ContentIndexPage from './ContentIndexPage.astro';
+import type { BrewGuide } from '../../lib/api';
+import { SECTION_ROOTS, getViden, videnPath } from '../../lib/content';
+
+// The brew guides overview: every guide with its key numbers, then the
+// basics behind all of them. Each basic links its viden article once that
+// is published.
+interface Props {
+  lang: Lang;
+  guides: BrewGuide[];
+}
+
+const { lang, guides } = Astro.props;
+const otherLang: Lang = lang === 'da' ? 'en' : 'da';
+
+const articles = await getViden(lang);
+const articleHref = (key: string) => {
+  const entry = articles.find((e) => e.data.translationKey === key);
+  return entry ? videnPath(lang, entry.data.slug) : undefined;
+};
+const meta = (g: BrewGuide) => [g.ratioText, g.waterTempC && `${g.waterTempC} °C`].filter(Boolean).join(' · ');
+
+const copy = {
+  da: {
+    lead: 'Opskrifterne vi selv brygger efter bag baren – med ratio, kværning, temperatur og tid på hvert trin.',
+    basicsTitle: 'Det grundlæggende',
+    more: 'Læs mere',
+    basics: [
+      { title: 'Friske bønner – men ikke for friske', body: 'Lyst ristet kaffe skal hvile nogle dage efter ristning, så kuldioxiden kan slippe ud. Derefter er den bedst de næste uger. Kværn lige før du brygger.' },
+      { title: 'Kværning og tid hænger sammen', body: 'Finere kværning og længere tid trækker mere ud. Smager kaffen surt og tyndt, er der trukket for lidt ud; smager den bittert og tørt, for meget.', key: 'brewing-methods' },
+      { title: 'Vandet er 98 % af koppen', body: 'Blødt, filtreret vand uden klor giver en klarere og sødere kop end hårdt vand fra hanen.', key: 'water' },
+    ],
+  },
+  en: {
+    lead: 'The recipes we brew by behind the bar – with ratio, grind, temperature and a time for every step.',
+    basicsTitle: 'The basics',
+    more: 'Read more',
+    basics: [
+      { title: 'Fresh beans – but not too fresh', body: 'Light-roasted coffee needs a few days of rest after roasting so the carbon dioxide can escape. After that it is at its best for the next few weeks. Grind just before you brew.' },
+      { title: 'Grind and time go together', body: 'A finer grind and a longer brew extract more. If the coffee tastes sour and thin, too little was extracted; if it tastes bitter and drying, too much.', key: 'brewing-methods' },
+      { title: 'Water is 98% of the cup', body: 'Soft, filtered water without chlorine gives a clearer, sweeter cup than hard tap water.', key: 'water' },
+    ],
+  },
+}[lang];
+---
+
+<ContentIndexPage
+  lang={lang}
+  title={t(lang, 'seo.brewguides.title')}
+  description={t(lang, 'seo.brewguides.description')}
+  heading={t(lang, 'nav.brewguides')}
+  lead={copy.lead}
+  canonicalPath={SECTION_ROOTS.brewguides[lang]}
+  alternatePath={SECTION_ROOTS.brewguides[otherLang]}
+  items={guides.map((g) => ({ href: `${SECTION_ROOTS.brewguides[lang]}/${g.public.slug[lang]}`, title: g.name, description: g.summary, meta: meta(g) }))}
+>
+  <div class="max-w-2xl mx-auto mt-20">
+    <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red text-center">{copy.basicsTitle}</h2>
+    <div class="mt-10 space-y-8">
+      {copy.basics.map((b) => {
+        const href = b.key && articleHref(b.key);
+        return (
+          <div>
+            <h3 class="font-display font-bold text-lg uppercase text-deep-red">{b.title}</h3>
+            <p class="mt-2 font-body font-light text-ink-light leading-relaxed">
+              {b.body}{href && <> <a href={href} class="text-deep-red underline decoration-deep-red/30 underline-offset-4 hover:decoration-deep-red">{copy.more} &rarr;</a></>}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</ContentIndexPage>

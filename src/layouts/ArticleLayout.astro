@@ -1,0 +1,94 @@
+---
+import type { Lang } from '../i18n/ui';
+import PageLayout from './PageLayout.astro';
+import PageHero from '../components/shared/PageHero.astro';
+import Container from '../components/shared/Container.astro';
+import ImagePlaceholder from '../components/shared/ImagePlaceholder.astro';
+import { config } from '../config';
+import { breadcrumbSchema } from '../utils/jsonld';
+
+// One layout for every content page (viden articles, brew guides): hero with
+// a link back to the section, an optional hero photo placeholder, the body
+// in a readable column, and links on to the pages that sell what the
+// article talks about. Breadcrumb JSON-LD is built here; the page passes its
+// own Article/HowTo node as `jsonLd`.
+interface Props {
+  lang: Lang;
+  /** <title>; the h1 is `heading`. */
+  title: string;
+  heading: string;
+  description: string;
+  lead?: string;
+  eyebrow?: string;
+  canonicalPath: string;
+  alternatePath: string | null;
+  section: { label: string; href: string };
+  jsonLd?: object;
+  heroBrief?: string;
+  imagesNeeded?: string[];
+}
+
+const {
+  lang, title, heading, description, lead, eyebrow, canonicalPath, alternatePath,
+  section, jsonLd, heroBrief, imagesNeeded = [],
+} = Astro.props;
+
+const breadcrumbs = breadcrumbSchema([
+  { name: config.name, url: `${config.siteUrl}${lang === 'da' ? '/' : '/en/'}` },
+  { name: section.label, url: `${config.siteUrl}${section.href}` },
+  { name: heading, url: `${config.siteUrl}${canonicalPath}` },
+]);
+
+const related = lang === 'da'
+  ? [
+      { href: '/kaffe', label: 'Køb kaffebønnerne i kaffebaren' },
+      { href: '/morgenmad-i-aarhus', label: 'Morgenmad i Aarhus C' },
+      { href: '/menu', label: 'Se menuen' },
+    ]
+  : [
+      { href: '/en/coffee', label: 'Buy the beans in the coffee bar' },
+      { href: '/en/breakfast-in-aarhus', label: 'Breakfast in Aarhus C' },
+      { href: '/en/menu', label: 'See the menu' },
+    ];
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  lang={lang}
+  canonicalPath={canonicalPath}
+  alternatePath={alternatePath}
+  jsonLd={jsonLd ? [breadcrumbs, jsonLd] : breadcrumbs}
+>
+  <PageHero title={heading} lead={lead} eyebrow={eyebrow} back={{ href: section.href, label: section.label }} />
+
+  <section class="bg-warm-white py-16 md:py-24">
+    <Container>
+      <div class="max-w-2xl mx-auto">
+        {heroBrief && <ImagePlaceholder brief={heroBrief} class="aspect-[3/2] mb-12" />}
+
+        <article class="prose-mors">
+          <slot />
+        </article>
+
+        {imagesNeeded.length > 0 && (
+          <div class="mt-12 grid gap-4 sm:grid-cols-2">
+            {imagesNeeded.map((brief) => <ImagePlaceholder brief={brief} class="aspect-square" />)}
+          </div>
+        )}
+
+        <nav class="mt-16 pt-10 border-t border-deep-red/10" aria-label={lang === 'da' ? 'Videre herfra' : 'Further reading'}>
+          <ul class="flex flex-col gap-3">
+            {related.map((r) => (
+              <li>
+                <a href={r.href} class="font-body font-medium text-deep-red underline decoration-deep-red/30 underline-offset-4 hover:decoration-deep-red transition-colors">
+                  {r.label} &rarr;
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </Container>
+  </section>
+</PageLayout>

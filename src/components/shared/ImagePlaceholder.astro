@@ -1,0 +1,25 @@
+---
+// Stand-in for a photo we haven't shot yet. `brief` says what the photo
+// should show, so the list of images to create can be read straight off the
+// pages in dev. Production builds render nothing: an empty box on a live
+// page looks broken, a missing photo doesn't.
+interface Props {
+  brief: string;
+  class?: string;
+}
+
+const { brief, class: className = 'aspect-[3/2]' } = Astro.props;
+const show = import.meta.env.DEV;
+---
+
+{show && (
+  <div
+    class:list={['flex items-center justify-center rounded-mors border-2 border-dashed border-deep-red/25 bg-cream-dark p-6 text-center', className]}
+    data-image-brief={brief}
+  >
+    <p class="max-w-sm font-body text-sm text-ink-muted">
+      <span class="block mb-1 text-xs uppercase tracking-[0.2em] text-deep-red">Billede mangler</span>
+      {brief}
+    </p>
+  </div>
+)}

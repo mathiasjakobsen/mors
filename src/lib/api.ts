@@ -25,6 +25,14 @@ import {
   productCategories as productsFallback,
   type ProductCategory,
 } from '../data/products';
+import {
+  brewGuidesFallback,
+  PUBLIC_BREW_GUIDES,
+  type BrewGuidePublic,
+  type BrewGuideRecipe,
+  type BrewGuideTranslation,
+} from '../data/brew-guides';
+import type { Lang } from '../i18n/ui';
 
 const API_ROOT = (
   process.env.MORS_API_URL ||
@@ -275,4 +283,129 @@ function toGiftCard(p: ApiProduct): GiftCard {
     clips:   clipCount(p),
     inStock: p.in_stock,
   };
+}
+
+// ---- Brew guides -------------------------------------------------------
+//
+// A separate feed (/api/v1/brew_guides) of the recipes the bar brews by.
+// Only the ones allowlisted in PUBLIC_BREW_GUIDES are returned; EDB serves
+// staff workflows from the same endpoint.
+
+interface ApiBrewGuide {
+  slug: string;
+  name: string;
+  summary?: string;
+  ratio_text?: string;
+  grind?: string;
+  water_temp_c?: number | null;
+  total_seconds?: number;
+  steps?: { id: string; label: string; seconds: number; pour_g: number | null }[];
+  translations?: Record<string, {
+    name?: string;
+    summary?: string;
+    ratio_text?: string;
+    grind?: string;
+    steps?: Record<string, string>;
+  }>;
+}
+
+/** A public guide, its copy already in the requested language. */
+export interface BrewGuide extends BrewGuideRecipe {
+  public: BrewGuidePublic;
+  /** Languages the guide is published in (Danish, plus complete translations). */
+  langs: Lang[];
+}
+
+let cachedBrewGuides: Promise<BrewGuideRecipe[]> | null = null;
+
+async function fetchBrewGuides(): Promise<BrewGuideRecipe[]> {
+  const url = `${API_ROOT}/brew_guides`;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctl.signal });
+    if (!res.ok) {
+      console.warn(`[mors-api] ${url} → ${res.status}; using local fallback`);
+      return brewGuidesFallback;
+    }
+    const data = (await res.json()) as { brew_guides?: ApiBrewGuide[] };
+    if (!data.brew_guides?.length) return brewGuidesFallback;
+    return data.brew_guides.map(toBrewGuideRecipe);
+  } catch (err) {
+    console.warn(`[mors-api] ${url} fetch failed (${(err as Error).message}); using local fallback`);
+    return brewGuidesFallback;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function toBrewGuideRecipe(g: ApiBrewGuide): BrewGuideRecipe {
+  const steps = (g.steps || []).map((s) => ({
+    id: s.id,
+    label: s.label,
+    seconds: s.seconds,
+    pourG: s.pour_g ?? null,
+  }));
+  return {
+    edbSlug:      g.slug,
+    name:         g.name,
+    summary:      g.summary || '',
+    ratioText:    g.ratio_text || '',
+    grind:        g.grind || '',
+    waterTempC:   g.water_temp_c ?? null,
+    totalSeconds: g.total_seconds || steps.reduce((sum, s) => sum + s.seconds, 0),
+    steps,
+    translations: g.translations?.en ? { en: toTranslation(g.translations.en) } : undefined,
+  };
+}
+
+function toTranslation(t: NonNullable<ApiBrewGuide['translations']>[string]): BrewGuideTranslation {
+  return {
+    name:      t.name || '',
+    summary:   t.summary || '',
+    ratioText: t.ratio_text || '',
+    grind:     t.grind || '',
+    steps:     t.steps || {},
+  };
+}
+
+/** A translation counts only when it covers the name, the summary and every step. */
+function isComplete(r: BrewGuideRecipe, t?: BrewGuideTranslation): t is BrewGuideTranslation {
+  return !!t?.name && !!t.summary && r.steps.every((s) => t.steps[s.id]);
+}
+
+function localize(r: BrewGuideRecipe, lang: Lang): BrewGuideRecipe {
+  if (lang === 'da') return r;
+  const t = r.translations?.[lang];
+  if (!isComplete(r, t)) return r;
+  return {
+    ...r,
+    name:      t.name,
+    summary:   t.summary,
+    ratioText: t.ratioText || r.ratioText,
+    grind:     t.grind || r.grind,
+    steps:     r.steps.map((s) => ({ ...s, label: t.steps[s.id] })),
+  };
+}
+
+/**
+ * Public brew guides that have a URL in `lang`, in that language.
+ *
+ * Danish is EDB's own copy. Another language needs a complete translation
+ * in EDB; a guide without one is left out rather than shown in Danish under
+ * an English URL.
+ */
+export async function getBrewGuides(lang: Lang): Promise<BrewGuide[]> {
+  cachedBrewGuides ??= fetchBrewGuides();
+  const recipes = await cachedBrewGuides;
+  return recipes
+    .filter((r) => PUBLIC_BREW_GUIDES[r.edbSlug])
+    .map((r) => {
+      const pub = PUBLIC_BREW_GUIDES[r.edbSlug];
+      const langs = (['da', 'en'] as Lang[]).filter(
+        (l) => pub.slug[l] && (l === 'da' || isComplete(r, r.translations?.[l])),
+      );
+      return { ...localize(r, lang), public: pub, langs };
+    })
+    .filter((g) => g.langs.includes(lang));
 }

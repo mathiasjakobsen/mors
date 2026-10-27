@@ -1,0 +1,136 @@
+---
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { pageUrl } from '../../utils/url';
+import { BUSINESS_ID } from '../../utils/jsonld';
+import { SECTION_ROOTS, getViden, videnPath } from '../../lib/content';
+import type { BrewGuide } from '../../lib/api';
+
+// One brew guide: the recipe exactly as EDB has it (name, summary, ratio,
+// grind, temperature, timed steps), framed by the shared article layout,
+// plus what the site adds per guide: equipment, how to adjust the taste,
+// and links on to the viden articles that explain the why.
+interface Props {
+  guide: BrewGuide;
+  lang: Lang;
+}
+
+const { guide, lang } = Astro.props;
+const slug = guide.public.slug[lang]!;
+const canonicalPath = `${SECTION_ROOTS.brewguides[lang]}/${slug}`;
+const otherLang: Lang = lang === 'da' ? 'en' : 'da';
+const alternatePath = guide.langs.includes(otherLang)
+  ? `${SECTION_ROOTS.brewguides[otherLang]}/${guide.public.slug[otherLang]}`
+  : null;
+
+const fmt = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+const isoDuration = (seconds: number) => `PT${Math.floor(seconds / 60)}M${seconds % 60}S`;
+
+const labels = {
+  da: { ratio: 'Ratio', grind: 'Kværning', temp: 'Vandtemperatur', time: 'Tid i alt', equipment: 'Det skal du bruge', steps: 'Sådan gør vi', total: 'i alt på vægten', adjust: 'Smager det forkert?', beans: 'Hvilke bønner?', beansBody: 'Vi brygger med de bønner, vi har i kaffebaren lige nu. Spørg bag baren, så finder vi en, der passer til din smag.', more: 'Læs mere' },
+  en: { ratio: 'Ratio', grind: 'Grind', temp: 'Water temperature', time: 'Total time', equipment: 'What you need', steps: 'How we do it', total: 'total on the scale', adjust: 'Tastes off?', beans: 'Which beans?', beansBody: 'We brew with the beans we have in the coffee bar right now. Ask behind the bar and we will find one that suits your taste.', more: 'Read more' },
+}[lang];
+
+// Only link articles that are published, or a live guide would link a 404.
+const READ_MORE_KEYS = ['water', 'brewing-methods', 'processing'];
+const readMore = (await getViden(lang))
+  .filter((e) => READ_MORE_KEYS.includes(e.data.translationKey))
+  .map((e) => ({ href: videnPath(lang, e.data.slug), title: e.data.title }));
+const equipment = guide.public.equipment[lang] ?? [];
+const timed = guide.public.timed;
+
+const facts = [
+  { label: labels.ratio, value: guide.ratioText },
+  { label: labels.grind, value: guide.grind },
+  ...(guide.waterTempC ? [{ label: labels.temp, value: `${guide.waterTempC} °C` }] : []),
+  ...(timed ? [{ label: labels.time, value: fmt(guide.totalSeconds) }] : []),
+].filter((f) => f.value);
+
+const howTo = {
+  '@type': 'HowTo',
+  name: guide.public.seoTitle[lang]?.split(' | ')[0] ?? guide.name,
+  description: guide.summary,
+  inLanguage: lang === 'da' ? 'da-DK' : 'en',
+  ...(timed ? { totalTime: isoDuration(guide.totalSeconds) } : {}),
+  tool: equipment.map((name) => ({ '@type': 'HowToTool', name })),
+  step: guide.steps.map((s, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    name: s.label,
+    text: s.label,
+  })),
+  mainEntityOfPage: pageUrl(canonicalPath),
+  author: { '@id': BUSINESS_ID },
+  publisher: { '@id': BUSINESS_ID },
+};
+---
+
+<ArticleLayout
+  lang={lang}
+  title={guide.public.seoTitle[lang] ?? guide.name}
+  heading={guide.name}
+  description={guide.summary}
+  lead={guide.summary}
+  eyebrow={guide.public.brewer}
+  canonicalPath={canonicalPath}
+  alternatePath={alternatePath}
+  section={{ label: t(lang, 'nav.brewguides'), href: SECTION_ROOTS.brewguides[lang] }}
+  jsonLd={howTo}
+  heroBrief={guide.public.heroBrief}
+  imagesNeeded={guide.public.imagesNeeded}
+>
+  <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-mors border border-deep-red/10 bg-deep-red/10">
+    {facts.map((f) => (
+      <div class="bg-cream p-5">
+        <dt class="font-body text-xs uppercase tracking-[0.2em] text-ink-muted">{f.label}</dt>
+        <dd class="mt-1 font-body font-medium text-ink">{f.value}</dd>
+      </div>
+    ))}
+  </dl>
+
+  {equipment.length > 0 && (
+    <>
+      <h2>{labels.equipment}</h2>
+      <ul>
+        {equipment.map((item) => <li>{item}</li>)}
+      </ul>
+    </>
+  )}
+
+  <h2>{labels.steps}</h2>
+  <ol class="!list-none !pl-0 !space-y-0 divide-y divide-deep-red/10">
+    {guide.steps.map((s, i) => (
+      <li class="flex gap-5 py-5">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-deep-red/25 font-display font-semibold text-base text-deep-red">{i + 1}</span>
+        <div class="flex-1">
+          <p class="text-ink">{s.label}</p>
+          {(timed || s.pourG != null) && (
+            <p class="mt-1 text-sm text-ink-muted">
+              {[timed && fmt(s.seconds), s.pourG != null && `${s.pourG} g ${labels.total}`].filter(Boolean).join(' · ')}
+            </p>
+          )}
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  {guide.public.adjust[lang] && (
+    <>
+      <h2>{labels.adjust}</h2>
+      <p>{guide.public.adjust[lang]}</p>
+    </>
+  )}
+
+  <h2>{labels.beans}</h2>
+  <p>{labels.beansBody}</p>
+
+  {readMore.length > 0 && (
+    <>
+      <h2>{labels.more}</h2>
+      <ul>
+        {readMore.map((r) => <li><a href={r.href}>{r.title}</a></li>)}
+      </ul>
+    </>
+  )}
+</ArticleLayout>

@@ -106,3 +106,47 @@
   }
 }
 
+
+/* Long-form copy (viden articles, brew guides): markdown has no classes, so
+   the typography is set on the container. Headings stay Roboto caps like the
+   rest of the site's secondary headings. */
+@layer components {
+  .prose-mors {
+    @apply font-body font-light text-lg leading-relaxed text-ink-light;
+  }
+  .prose-mors > * + * {
+    @apply mt-5;
+  }
+  .prose-mors h2 {
+    @apply mt-14 font-display font-bold text-xl md:text-2xl uppercase text-deep-red;
+    letter-spacing: 0.08em;
+  }
+  .prose-mors h3 {
+    @apply mt-10 font-display font-bold text-lg uppercase text-deep-red;
+    letter-spacing: 0.08em;
+  }
+  .prose-mors strong {
+    @apply font-medium text-ink;
+  }
+  .prose-mors a {
+    @apply text-deep-red underline decoration-deep-red/30 underline-offset-4 hover:decoration-deep-red;
+  }
+  .prose-mors ul {
+    @apply list-disc pl-6 space-y-2;
+  }
+  .prose-mors ol {
+    @apply list-decimal pl-6 space-y-2;
+  }
+  .prose-mors blockquote {
+    @apply border-l-2 border-deep-red/30 pl-5 italic;
+  }
+  .prose-mors table {
+    @apply w-full text-base;
+  }
+  .prose-mors th {
+    @apply text-left font-medium text-ink border-b border-ink/10 py-2 pr-4;
+  }
+  .prose-mors td {
+    @apply border-b border-ink/5 py-2 pr-4 align-top;
+  }
+}

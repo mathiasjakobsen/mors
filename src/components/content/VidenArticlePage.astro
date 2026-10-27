@@ -1,0 +1,48 @@
+---
+import { render } from 'astro:content';
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { pageUrl } from '../../utils/url';
+import { BUSINESS_ID } from '../../utils/jsonld';
+import { SECTION_ROOTS, videnPath, getVidenTranslation, type VidenEntry } from '../../lib/content';
+
+interface Props {
+  entry: VidenEntry;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const lang = data.lang as Lang;
+const { Content } = await render(entry);
+const translation = await getVidenTranslation(entry);
+const canonicalPath = videnPath(lang, data.slug);
+
+const article = {
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  inLanguage: lang === 'da' ? 'da-DK' : 'en',
+  datePublished: data.publishedAt.toISOString().slice(0, 10),
+  dateModified: (data.updatedAt ?? data.publishedAt).toISOString().slice(0, 10),
+  mainEntityOfPage: pageUrl(canonicalPath),
+  author: { '@id': BUSINESS_ID },
+  publisher: { '@id': BUSINESS_ID },
+};
+---
+
+<ArticleLayout
+  lang={lang}
+  title={`${data.title} | morˢ kaffebar, Aarhus`}
+  heading={data.title}
+  description={data.description}
+  lead={data.lead}
+  canonicalPath={canonicalPath}
+  alternatePath={translation ? videnPath(translation.data.lang, translation.data.slug) : null}
+  section={{ label: t(lang, 'nav.knowledge'), href: SECTION_ROOTS.viden[lang] }}
+  jsonLd={article}
+  heroBrief={data.heroBrief}
+  imagesNeeded={data.imagesNeeded}
+>
+  <Content />
+</ArticleLayout>

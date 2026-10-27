@@ -1,0 +1,26 @@
+---
+import ContentIndexPage from '../../../components/content/ContentIndexPage.astro';
+import { t } from '../../../i18n/ui';
+import { getViden, videnPath, SECTION_ROOTS } from '../../../lib/content';
+
+// Only built once the section has something published: an empty index is a
+// thin page, and noindex pages don't belong in the sitemap.
+export async function getStaticPaths() {
+  const entries = await getViden('en');
+  return entries.length ? [{ params: { index: undefined }, props: { entries } }] : [];
+}
+
+const lang = 'en';
+const { entries } = Astro.props;
+---
+
+<ContentIndexPage
+  lang={lang}
+  title={t(lang, 'seo.knowledge.title')}
+  description={t(lang, 'seo.knowledge.description')}
+  heading={t(lang, 'nav.knowledge')}
+  lead="What we have learned behind the bar about beans, water and brewing methods – written down so you can use it at home."
+  canonicalPath={SECTION_ROOTS.viden.en}
+  alternatePath={SECTION_ROOTS.viden.da}
+  items={entries.map((e) => ({ href: videnPath(lang, e.data.slug), title: e.data.title, description: e.data.description }))}
+/>

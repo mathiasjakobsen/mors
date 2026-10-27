@@ -1,0 +1,52 @@
+---
+import type { Lang } from '../../i18n/ui';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHero from '../shared/PageHero.astro';
+import Container from '../shared/Container.astro';
+
+// Index of a content section (viden, bryggeguides): a plain list of titles
+// and one-line descriptions, then anything the section adds in the slot.
+// Routes only build it when `items` is non-empty.
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  heading: string;
+  lead: string;
+  canonicalPath: string;
+  alternatePath: string | null;
+  /** `meta`: a short line of key facts under the title, e.g. ratio and temperature. */
+  items: { href: string; title: string; description: string; meta?: string }[];
+}
+
+const { lang, title, description, heading, lead, canonicalPath, alternatePath, items } = Astro.props;
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  lang={lang}
+  canonicalPath={canonicalPath}
+  alternatePath={alternatePath}
+>
+  <PageHero title={heading} lead={lead} />
+
+  <section class="bg-warm-white py-16 md:py-24">
+    <Container>
+      <ul class="max-w-2xl mx-auto divide-y divide-deep-red/10">
+        {items.map((item) => (
+          <li>
+            <a href={item.href} class="group block py-8">
+              <h2 class="font-display font-bold text-xl uppercase text-deep-red group-hover:text-deep-red-dark transition-colors">
+                {item.title} <span aria-hidden="true" class="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
+              </h2>
+              {item.meta && <p class="mt-2 font-body text-xs uppercase tracking-[0.2em] text-ink-muted">{item.meta}</p>}
+              <p class="mt-2 font-body font-light text-ink-light leading-relaxed">{item.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <slot />
+    </Container>
+  </section>
+</PageLayout>

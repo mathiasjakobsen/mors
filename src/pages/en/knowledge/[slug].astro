@@ -1,0 +1,13 @@
+---
+import VidenArticlePage from '../../../components/content/VidenArticlePage.astro';
+import { getViden } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getViden('en');
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<VidenArticlePage entry={entry} />

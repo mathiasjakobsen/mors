@@ -1,0 +1,15 @@
+---
+import BrewGuidesIndexPage from '../../components/content/BrewGuidesIndexPage.astro';
+import { getBrewGuides } from '../../lib/api';
+
+// Only built once the section has something published: an empty index is a
+// thin page, and noindex pages don't belong in the sitemap.
+export async function getStaticPaths() {
+  const guides = await getBrewGuides('da');
+  return guides.length ? [{ params: { index: undefined }, props: { guides } }] : [];
+}
+
+const { guides } = Astro.props;
+---
+
+<BrewGuidesIndexPage lang="da" guides={guides} />

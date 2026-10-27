@@ -1,0 +1,13 @@
+---
+import BrewGuidePage from '../../../components/content/BrewGuidePage.astro';
+import { getBrewGuides } from '../../../lib/api';
+
+export async function getStaticPaths() {
+  const guides = await getBrewGuides('en');
+  return guides.map((guide) => ({ params: { slug: guide.public.slug.en! }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+---
+
+<BrewGuidePage guide={guide} lang="en" />

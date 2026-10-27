@@ -38,6 +38,8 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/erhverv': { da: '/erhverv', en: '/en/business' },
     '/brand': { da: '/brand', en: '/en/brand' },
     '/morgenmad-i-aarhus': { da: '/morgenmad-i-aarhus', en: '/en/breakfast-in-aarhus' },
+    '/viden': { da: '/viden', en: '/en/knowledge' },
+    '/bryggeguides': { da: '/bryggeguides', en: '/en/brewguides' },
     '/en/': { da: '/', en: '/en/' },
     '/en/menu': { da: '/menu', en: '/en/menu' },
     '/en/coffee': { da: '/kaffe', en: '/en/coffee' },
@@ -51,6 +53,8 @@ export function getAlternatePath(lang: Lang, currentPath: string): string {
     '/en/business': { da: '/erhverv', en: '/en/business' },
     '/en/brand': { da: '/brand', en: '/en/brand' },
     '/en/breakfast-in-aarhus': { da: '/morgenmad-i-aarhus', en: '/en/breakfast-in-aarhus' },
+    '/en/knowledge': { da: '/viden', en: '/en/knowledge' },
+    '/en/brewguides': { da: '/bryggeguides', en: '/en/brewguides' },
   };
 
   const cleanPath = currentPath.replace(/\/$/, '') || '/';
@@ -86,6 +90,9 @@ export function getNavItems(lang: Lang) {
     { key: 'contact',   inHeader: false, label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
     { key: 'stampcard', inHeader: false, label: t(lang, 'nav.stampcard'), href: lang === 'da' ? '/stempelkort' : '/en/stamp-card',             match: lang === 'da' ? '/stempelkort' : '/en/stamp-card' },
     { key: 'breakfast', inHeader: false, label: t(lang, 'nav.breakfast'), href: lang === 'da' ? '/morgenmad-i-aarhus' : '/en/breakfast-in-aarhus', match: lang === 'da' ? '/morgenmad-i-aarhus' : '/en/breakfast-in-aarhus' },
+    // Content sections: footer only, and only once they have something published (see Footer).
+    { key: 'brewguides', inHeader: false, label: t(lang, 'nav.brewguides'), href: lang === 'da' ? '/bryggeguides' : '/en/brewguides',          match: lang === 'da' ? '/bryggeguides' : '/en/brewguides' },
+    { key: 'knowledge', inHeader: false, label: t(lang, 'nav.knowledge'), href: lang === 'da' ? '/viden' : '/en/knowledge',                    match: lang === 'da' ? '/viden' : '/en/knowledge' },
     { key: 'business',  inHeader: false, label: t(lang, 'nav.business'),  href: lang === 'da' ? '/erhverv' : '/en/business',                   match: lang === 'da' ? '/erhverv' : '/en/business' },
   ];
 }

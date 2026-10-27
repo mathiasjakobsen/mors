@@ -6,6 +6,8 @@ import { getHoursSummary } from '../../data/hours';
 import SocialLinks from '../shared/SocialLinks.astro';
 import NavCount from './NavCount.astro';
 import { upcomingEvents } from '../../data/events';
+import { getViden } from '../../lib/content';
+import { getBrewGuides } from '../../lib/api';
 
 interface Props {
   lang: Lang;
@@ -13,7 +15,12 @@ interface Props {
 
 const { lang } = Astro.props;
 // Contact details are right next to it in the footer, so no link to the contact page.
-const navItems = getNavItems(lang).filter((item) => item.key !== 'contact');
+// Content sections only show up once something in them is published.
+const emptySections = new Set([
+  ...((await getBrewGuides(lang)).length ? [] : ['brewguides']),
+  ...((await getViden(lang)).length ? [] : ['knowledge']),
+]);
+const navItems = getNavItems(lang).filter((item) => item.key !== 'contact' && !emptySections.has(item.key));
 const homePath = getLocalizedPath(lang, '/');
 const hoursSummary = getHoursSummary(lang);
 const jobsPath = lang === 'da' ? '/job' : '/en/jobs';
