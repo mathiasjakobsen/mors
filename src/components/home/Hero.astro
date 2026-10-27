@@ -2,6 +2,7 @@
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { hours } from '../../data/hours';
+import { config } from '../../config';
 import CTAButton from '../shared/CTAButton.astro';
 import { getImage } from 'astro:assets';
 import type { HeroBackground } from '../../data/hero';
@@ -129,12 +130,14 @@ const scheduleJson = JSON.stringify(schedule);
     </div>
   </div>
 
-  <!-- Address, just above the scroll arrow (near the bottom edge on phones,
-       which have no arrow). -->
+  <!-- What and where, just above the scroll arrow (near the bottom edge on
+       phones, which have no arrow). The street address is an <address>: it
+       is the business's own contact address, for the page as a whole. -->
   <div class="absolute inset-x-0 bottom-8 md:bottom-20 z-10 px-6 text-center">
-    <p data-teaser-avoid class:list={['w-fit mx-auto opacity-0 animate-fade-up [animation-delay:0.3s] font-body font-semibold text-xs md:text-base uppercase tracking-[0.25em] md:tracking-[0.3em]', photo ? 'text-cream/85' : 'text-deep-red']}>
-      Klostergade 58, Aarhus
-    </p>
+    <div data-teaser-avoid class:list={['w-fit mx-auto opacity-0 animate-fade-up [animation-delay:0.3s] font-body font-semibold text-xs md:text-base uppercase tracking-[0.25em] md:tracking-[0.3em] leading-relaxed', photo ? 'text-cream/85' : 'text-deep-red']}>
+      <p>{t(lang, 'hero.addressLead')}</p>
+      <address class="not-italic">{config.address.street}, {config.address.city}</address>
+    </div>
   </div>
 
   <!-- Scroll indicator -->

@@ -13,6 +13,9 @@ const aboutHref = lang === 'da' ? '/om' : '/en/about';
 const heading = lang === 'da'
   ? 'Kaffebar i Aarhus hyggeligste bindingsværkshus.'
   : "A coffee bar in Aarhus' coziest half-timbered house.";
+const lead = lang === 'da'
+  ? 'Specialty kaffe fra IDEAL Kafferisteri, sprødt bagværk og morgenmad fra morgenstunden, i et bindingsværkshus fra 1702 midt i Aarhus C. Kald det en kaffebar eller en café – bare kom indenfor.'
+  : 'Specialty coffee from IDEAL Kafferisteri, crisp pastries and breakfast from early morning, in a half-timbered house from 1702 in the middle of Aarhus C. Call it a coffee bar or a café – just come on in.';
 const cta = lang === 'da' ? 'Kig indenfor' : 'Step inside';
 const alt = lang === 'da'
   ? 'Gæster ved bordene inde i kaffebaren morˢ på Klostergade, Aarhus'
@@ -40,6 +43,9 @@ const alt = lang === 'da'
             <h2 class="font-mors font-medium text-3xl md:text-5xl text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
               {heading}
             </h2>
+            <p class="mt-4 max-w-xl font-body font-light text-base md:text-lg leading-relaxed text-cream/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.35)]">
+              {lead}
+            </p>
             <span class="inline-flex items-center gap-2 mt-6 font-body text-xs font-medium uppercase tracking-[0.2em] text-cream">
               {cta}
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1">

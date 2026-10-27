@@ -1,7 +1,6 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import { t } from '../i18n/ui';
-import { cafeSchema } from '../utils/jsonld';
 import Hero from '../components/home/Hero.astro';
 import GiftCardsPreview from '../components/home/GiftCardsPreview.astro';
 import Founders from '../components/home/Founders.astro';
@@ -17,7 +16,6 @@ const lang = 'da';
   description={t(lang, 'seo.home.description')}
   lang={lang}
   canonicalPath="/"
-  jsonLd={cafeSchema(lang)}
   preloadImage="/brand/mors-wordmark-white.svg"
   overlayHeader
 >

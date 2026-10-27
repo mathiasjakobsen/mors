@@ -5,11 +5,16 @@ import { getAlternatePath } from '../../i18n/ui';
 interface Props {
   lang: Lang;
   currentPath: string;
+  /** See BaseLayout: a known translation, or `null` for none (→ that language's front page). */
+  alternatePath?: string | null;
 }
 
-const { lang, currentPath } = Astro.props;
+const { lang, currentPath, alternatePath } = Astro.props;
 const otherLang: Lang = lang === 'da' ? 'en' : 'da';
-const otherPath = getAlternatePath(otherLang, currentPath);
+const otherPath =
+  alternatePath === undefined
+    ? getAlternatePath(otherLang, currentPath)
+    : alternatePath ?? (otherLang === 'da' ? '/' : '/en/');
 const label = otherLang === 'da' ? 'DA' : 'EN';
 ---
 

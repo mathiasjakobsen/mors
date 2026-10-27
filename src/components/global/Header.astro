@@ -11,9 +11,10 @@ interface Props {
   lang: Lang;
   /** Over a photo hero: transparent and white until the page scrolls. */
   overHero?: boolean;
+  alternatePath?: string | null;
 }
 
-const { lang, overHero = false } = Astro.props;
+const { lang, overHero = false, alternatePath } = Astro.props;
 const navItems = getNavItems(lang).filter((item) => item.inHeader);
 const homePath = getLocalizedPath(lang, '/');
 const currentPath = Astro.url.pathname;
@@ -69,7 +70,7 @@ const currentPath = Astro.url.pathname;
 
       <!-- Right side -->
       <div class="header-light flex items-center gap-5">
-        <LanguageSwitcher lang={lang} currentPath={currentPath} />
+        <LanguageSwitcher lang={lang} currentPath={currentPath} alternatePath={alternatePath} />
 
         <!-- Mobile menu toggle -->
         <button
@@ -88,7 +89,7 @@ const currentPath = Astro.url.pathname;
   </div>
 </header>
 
-<MobileMenu lang={lang} />
+<MobileMenu lang={lang} alternatePath={alternatePath} />
 
 <style>
   /* Over a photo hero, before scrolling: no background, white logo and

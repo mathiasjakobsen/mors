@@ -8,9 +8,10 @@ import { upcomingEvents } from '../../data/events';
 
 interface Props {
   lang: Lang;
+  alternatePath?: string | null;
 }
 
-const { lang } = Astro.props;
+const { lang, alternatePath } = Astro.props;
 const navItems = getNavItems(lang).filter((item) => item.inHeader);
 const homePath = getLocalizedPath(lang, '/');
 const currentPath = Astro.url.pathname;
@@ -67,7 +68,7 @@ const currentPath = Astro.url.pathname;
     })}
 
     <div class="mt-8 mobile-nav-link" style={`opacity: 0; transform: translateY(20px); transition-delay: ${navItems.length * 0.08}s;`}>
-      <LanguageSwitcher lang={lang} currentPath={currentPath} />
+      <LanguageSwitcher lang={lang} currentPath={currentPath} alternatePath={alternatePath} />
     </div>
   </nav>
 

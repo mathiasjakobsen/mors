@@ -2,6 +2,8 @@
 import type { Lang } from '../i18n/ui';
 import { getAlternatePath } from '../i18n/ui';
 import { config } from '../config';
+import { siteGraph } from '../utils/jsonld';
+import { pageUrl } from '../utils/url';
 import '../styles/global.css';
 
 interface Props {
@@ -10,21 +12,27 @@ interface Props {
   lang: Lang;
   canonicalPath: string;
   ogImage?: string;
-  jsonLd?: object;
+  /** Page-specific JSON-LD, merged into the site graph (business + WebPage). */
+  jsonLd?: object | object[];
   noindex?: boolean;
+  /**
+   * The other language's version of this page, when the static map in
+   * getAlternatePath can't know it (content entries). `null` means the page
+   * has no translation: no hreflang pair is emitted.
+   */
+  alternatePath?: string | null;
   /** Above-the-fold LCP image to preload, e.g. the homepage wordmark. */
   preloadImage?: string;
 }
 
-const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex = false, preloadImage } = Astro.props;
+const { title, description, lang, canonicalPath, ogImage, jsonLd, noindex = false, preloadImage, alternatePath } = Astro.props;
 
 const siteUrl = config.siteUrl;
-const canonicalUrl = `${siteUrl}${canonicalPath}`;
+const canonicalUrl = pageUrl(canonicalPath);
 const ogImageUrl = ogImage ? `${siteUrl}${ogImage}` : `${siteUrl}/og-default.jpg`;
 const ogLocale = lang === 'da' ? 'da_DK' : 'en_US';
 const altLang = lang === 'da' ? 'en' : 'da';
-const altPath = getAlternatePath(altLang as Lang, canonicalPath);
-const altUrl = `${siteUrl}${altPath}`;
+const altPath = alternatePath === undefined ? getAlternatePath(altLang as Lang, canonicalPath) : alternatePath;
 const daPath = lang === 'da' ? canonicalPath : altPath;
 const enPath = lang === 'en' ? canonicalPath : altPath;
 ---
@@ -67,9 +75,13 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
     <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Hreflang -->
-    <link rel="alternate" hreflang="da" href={`${siteUrl}${daPath}`} />
-    <link rel="alternate" hreflang="en" href={`${siteUrl}${enPath}`} />
-    <link rel="alternate" hreflang="x-default" href={`${siteUrl}${daPath}`} />
+    {altPath && (
+      <>
+        <link rel="alternate" hreflang="da" href={pageUrl(daPath!)} />
+        <link rel="alternate" hreflang="en" href={pageUrl(enPath!)} />
+        <link rel="alternate" hreflang="x-default" href={pageUrl(daPath!)} />
+      </>
+    )}
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -91,9 +103,7 @@ const enPath = lang === 'en' ? canonicalPath : altPath;
     ></script>
 
     <!-- JSON-LD -->
-    {jsonLd && (
-      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    )}
+    <script type="application/ld+json" set:html={JSON.stringify(siteGraph(lang, canonicalUrl, title, jsonLd))} />
   </head>
   <body class="bg-cream text-ink font-body min-h-screen flex flex-col antialiased">
     <a
