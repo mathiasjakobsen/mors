@@ -21,7 +21,12 @@ export default {
           muted: '#6B635C',
         },
         gold: '#C4943E',
-        sage: '#7A8B6F',
+        sage: {
+          DEFAULT: '#7A8B6F',
+          // Readable sage for small text and icons on cream/warm-white
+          // (~6.9:1). Used for the "open now" state in the hero.
+          dark: '#4A5E40',
+        },
         'warm-white': '#FDFBF7',
       },
       fontFamily: {
