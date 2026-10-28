@@ -92,6 +92,7 @@ export default {
   'events.public.soon': 'Next date coming soon.',
   'events.public.notify': 'Let me know',
   'events.public.signup': 'Sign up',
+  'events.public.perPerson': 'kr. per person',
   'events.public.signupSubject': 'Sign-up',
   'events.private.title': 'Host your own event',
   'events.private.banner': 'Want to host your own event at morˢ?',

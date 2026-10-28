@@ -87,6 +87,11 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
                 <p class="font-body font-medium text-sm text-ink mt-4">
                   {event.date ? <time datetime={event.date}>{eventDate(event.date, event.time)}</time> : t(lang, 'events.public.soon')}
                 </p>
+                {(event.duration || event.priceKr) && (
+                  <p class="font-body font-light text-sm text-ink-light mt-1">
+                    {[event.duration?.[lang], event.priceKr && `${event.priceKr} ${t(lang, 'events.public.perPerson')}`].filter(Boolean).join(' · ')}
+                  </p>
+                )}
               </div>
               <a
                 href={mailto(`${t(lang, event.cta === 'signup' ? 'events.public.signupSubject' : 'events.public.notify')}: ${event.title[lang]}`)}

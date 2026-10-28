@@ -92,6 +92,7 @@ export default {
   'events.public.soon': 'Næste dato annonceres snart.',
   'events.public.notify': 'Giv mig besked',
   'events.public.signup': 'Tilmeld',
+  'events.public.perPerson': 'kr. pr. person',
   'events.public.signupSubject': 'Tilmelding',
   'events.private.title': 'Hold jeres eget event',
   'events.private.banner': 'Vil I holde jeres eget event hos morˢ?',

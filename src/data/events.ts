@@ -11,6 +11,10 @@ export interface PublicEvent {
   date?: string;
   /** Start and end, 24-hour "HH:MM", when set. Only shown with a date. */
   time?: { from: string; to: string };
+  /** Length, e.g. "2 timer". */
+  duration?: Record<Lang, string>;
+  /** Price per person in kr., incl. VAT. */
+  priceKr?: number;
   /** "signup" is a solid "Tilmeld" button; "notify" an outline "Giv mig
    *  besked" for events without a date yet. Both are e-mails to hej@. */
   cta: 'signup' | 'notify';
@@ -24,18 +28,6 @@ export interface PublicEvent {
  */
 const publicEvents: PublicEvent[] = [
   {
-    id: 'juleklippe-aften',
-    kind: { da: 'Julehygge', en: 'Christmas' },
-    title: { da: 'Juleklippe-aften', en: 'Christmas paper-cutting evening' },
-    body: {
-      da: 'Vi finder sakse, karton og glanspapir frem og klipper julehjerter, stjerner og guirlander. Der er noget varmt i koppen og lidt sødt til, og du behøver ikke kunne flette et hjerte for at være med. Det lærer du nok.',
-      en: 'We bring out the scissors, card and glossy paper and cut Christmas hearts, stars and garlands. There is something warm in your cup and a little something sweet, and you do not need to know how to weave a heart to join. You will probably learn.',
-    },
-    date: '2026-11-27',
-    time: { from: '17:00', to: '20:00' },
-    cta: 'signup',
-  },
-  {
     id: 'baristakursus',
     kind: { da: 'Kursus', en: 'Course' },
     title: { da: 'Baristakursus', en: 'Barista course' },
@@ -43,6 +35,20 @@ const publicEvents: PublicEvent[] = [
       da: 'Lær at trække en god espresso og skumme mælken, så den bliver blank og blød. Bagefter øver vi latte art, til hjertet sidder (eller næsten sidder). Vi er kun få ad gangen, så der er god tid til spørgsmål og til at drikke det, du har lavet.',
       en: 'Learn to pull a good espresso and steam milk until it is glossy and soft. Then we practise latte art until the heart sits right (or nearly). We are only a few at a time, so there is plenty of time for questions, and for drinking what you have made.',
     },
+    duration: { da: '2 timer', en: '2 hours' },
+    priceKr: 350,
+    cta: 'notify',
+  },
+  {
+    id: 'pour-over-cupping',
+    kind: { da: 'Kursus', en: 'Course' },
+    title: { da: 'Pour over & cupping', en: 'Pour over & cupping' },
+    body: {
+      da: 'En aften om filterkaffe, så den bliver bedre derhjemme. Vi cupper et par af de bønner, vi har på hylden, og smager os frem til, hvad der er forskellen. Bagefter brygger vi pour over sammen og skruer på kværn, vand og tid, til du ved, hvad du skal gøre, når koppen smager forkert.',
+      en: 'An evening about filter coffee, so it gets better at home. We cup a few of the beans on our shelf and taste our way to what sets them apart. Then we brew pour over together and adjust grind, water and time until you know what to do when the cup tastes wrong.',
+    },
+    duration: { da: '2 timer', en: '2 hours' },
+    priceKr: 300,
     cta: 'notify',
   },
 ];
