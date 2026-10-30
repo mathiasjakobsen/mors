@@ -7,10 +7,9 @@ import { BUSINESS_ID } from '../../utils/jsonld';
 import { SECTION_ROOTS, getViden, videnPath } from '../../lib/content';
 import type { BrewGuide } from '../../lib/api';
 
-// One brew guide: the recipe exactly as EDB has it (name, summary, ratio,
-// grind, temperature, timed steps), framed by the shared article layout,
-// plus what the site adds per guide: equipment, how to adjust the taste,
-// and links on to the viden articles that explain the why.
+// One brew guide: the site's own copy over EDB's recipe (step order, times,
+// grams, temperature), framed by the shared article layout, with equipment,
+// how to adjust the taste, and links on to the viden articles.
 interface Props {
   guide: BrewGuide;
   lang: Lang;
@@ -38,27 +37,27 @@ const readMore = (await getViden(lang))
   .filter((e) => READ_MORE_KEYS.includes(e.data.translationKey))
   .map((e) => ({ href: videnPath(lang, e.data.slug), title: e.data.title }));
 const equipment = guide.public.equipment[lang] ?? [];
-const timed = guide.public.timed;
+const { copy } = guide;
 
 const facts = [
-  { label: labels.ratio, value: guide.ratioText },
-  { label: labels.grind, value: guide.grind },
+  { label: labels.ratio, value: copy.ratio },
+  { label: labels.grind, value: copy.grind },
   ...(guide.waterTempC ? [{ label: labels.temp, value: `${guide.waterTempC} °C` }] : []),
-  ...(timed ? [{ label: labels.time, value: fmt(guide.totalSeconds) }] : []),
+  ...(guide.totalSeconds ? [{ label: labels.time, value: fmt(guide.totalSeconds) }] : []),
 ].filter((f) => f.value);
 
 const howTo = {
   '@type': 'HowTo',
-  name: guide.public.seoTitle[lang]?.split(' | ')[0] ?? guide.name,
-  description: guide.summary,
+  name: guide.public.seoTitle[lang]?.split(' | ')[0] ?? copy.name,
+  description: copy.intro,
   inLanguage: lang === 'da' ? 'da-DK' : 'en',
-  ...(timed ? { totalTime: isoDuration(guide.totalSeconds) } : {}),
+  ...(guide.totalSeconds ? { totalTime: isoDuration(guide.totalSeconds) } : {}),
   tool: equipment.map((name) => ({ '@type': 'HowToTool', name })),
   step: guide.steps.map((s, i) => ({
     '@type': 'HowToStep',
     position: i + 1,
-    name: s.label,
-    text: s.label,
+    name: s.title,
+    text: s.text,
   })),
   mainEntityOfPage: pageUrl(canonicalPath),
   author: { '@id': BUSINESS_ID },
@@ -68,10 +67,10 @@ const howTo = {
 
 <ArticleLayout
   lang={lang}
-  title={guide.public.seoTitle[lang] ?? guide.name}
-  heading={guide.name}
-  description={guide.summary}
-  lead={guide.summary}
+  title={guide.public.seoTitle[lang] ?? copy.name}
+  heading={copy.name}
+  description={copy.intro}
+  lead={copy.intro}
   eyebrow={guide.public.brewer}
   canonicalPath={canonicalPath}
   alternatePath={alternatePath}
@@ -104,10 +103,11 @@ const howTo = {
       <li class="flex gap-5 py-5">
         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-deep-red/25 font-display font-semibold text-base text-deep-red">{i + 1}</span>
         <div class="flex-1">
-          <p class="text-ink">{s.label}</p>
-          {(timed || s.pourG != null) && (
+          <h3 class="!mt-1 !mb-0 font-display font-semibold text-lg text-deep-red">{s.title}</h3>
+          <p class="!mt-1 text-ink">{s.text}</p>
+          {(s.fromSeconds != null || s.pourG != null) && (
             <p class="mt-1 text-sm text-ink-muted">
-              {[timed && fmt(s.seconds), s.pourG != null && `${s.pourG} g ${labels.total}`].filter(Boolean).join(' · ')}
+              {[s.fromSeconds != null && `${fmt(s.fromSeconds)}–${fmt(s.toSeconds!)}`, s.pourG != null && `${s.pourG} g ${labels.total}`].filter(Boolean).join(' · ')}
             </p>
           )}
         </div>

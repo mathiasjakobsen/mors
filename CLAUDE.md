@@ -50,6 +50,12 @@ Product names and descriptions are the shop's own words from the POS — do not
 rewrite them in the site. If POS copy is wrong, it gets fixed in the staff PWA,
 not here.
 
+Brew guides are the exception. `/api/v1/brew_guides` serves the bar's recipes,
+written for staff, so the site takes only the recipe from it (step order,
+times, grams, water temperature). Every word a visitor reads on a guide is
+written in `src/data/brew-guides.ts`, and a guide whose EDB steps lack copy
+there is left out of the build rather than showing EDB's text.
+
 ## Language
 
 Code, comments, commits and docs are English. Customer-facing product copy is

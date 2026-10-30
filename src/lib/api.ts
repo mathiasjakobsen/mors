@@ -28,9 +28,10 @@ import {
 import {
   brewGuidesFallback,
   PUBLIC_BREW_GUIDES,
+  type BrewGuideCopy,
   type BrewGuidePublic,
   type BrewGuideRecipe,
-  type BrewGuideTranslation,
+  type BrewGuideStepCopy,
 } from '../data/brew-guides';
 import type { Lang } from '../i18n/ui';
 
@@ -293,26 +294,27 @@ function toGiftCard(p: ApiProduct): GiftCard {
 
 interface ApiBrewGuide {
   slug: string;
-  name: string;
-  summary?: string;
-  ratio_text?: string;
-  grind?: string;
   water_temp_c?: number | null;
-  total_seconds?: number;
-  steps?: { id: string; label: string; seconds: number; pour_g: number | null }[];
-  translations?: Record<string, {
-    name?: string;
-    summary?: string;
-    ratio_text?: string;
-    grind?: string;
-    steps?: Record<string, string>;
-  }>;
+  steps?: { id: string; seconds: number; pour_g: number | null }[];
 }
 
-/** A public guide, its copy already in the requested language. */
-export interface BrewGuide extends BrewGuideRecipe {
+/** One step of a guide: the visitor's copy, plus EDB's numbers when it has them. */
+export interface BrewGuidePageStep extends BrewGuideStepCopy {
+  /** Clock time from the first pour, on timed guides. */
+  fromSeconds: number | null;
+  toSeconds: number | null;
+  pourG: number | null;
+}
+
+/** A public guide in one language: the site's copy over EDB's recipe. */
+export interface BrewGuide {
   public: BrewGuidePublic;
-  /** Languages the guide is published in (Danish, plus complete translations). */
+  copy: BrewGuideCopy;
+  waterTempC: number | null;
+  /** From the first pour to the last step, on timed guides. */
+  totalSeconds: number | null;
+  steps: BrewGuidePageStep[];
+  /** Languages the guide is published in. */
   langs: Lang[];
 }
 
@@ -339,73 +341,78 @@ async function fetchBrewGuides(): Promise<BrewGuideRecipe[]> {
   }
 }
 
+// Only the recipe is taken from EDB. Its names, summaries and step labels are
+// written for staff and are never shown on the site.
 function toBrewGuideRecipe(g: ApiBrewGuide): BrewGuideRecipe {
-  const steps = (g.steps || []).map((s) => ({
-    id: s.id,
-    label: s.label,
-    seconds: s.seconds,
-    pourG: s.pour_g ?? null,
-  }));
   return {
-    edbSlug:      g.slug,
-    name:         g.name,
-    summary:      g.summary || '',
-    ratioText:    g.ratio_text || '',
-    grind:        g.grind || '',
-    waterTempC:   g.water_temp_c ?? null,
-    totalSeconds: g.total_seconds || steps.reduce((sum, s) => sum + s.seconds, 0),
+    edbSlug:    g.slug,
+    waterTempC: g.water_temp_c ?? null,
+    steps: (g.steps || []).map((s) => ({ id: s.id, seconds: s.seconds, pourG: s.pour_g ?? null })),
+  };
+}
+
+const warnedMissingCopy = new Set<string>();
+
+/** A language is published when it has a URL and copy for every step EDB has. */
+function hasCopy(r: BrewGuideRecipe, pub: BrewGuidePublic, lang: Lang): boolean {
+  const copy = pub.copy[lang];
+  if (!pub.slug[lang] || !copy) return false;
+  const missing = r.steps.filter((s) => !copy.steps[s.id]).map((s) => s.id);
+  if (missing.length) {
+    const key = `${r.edbSlug}:${lang}`;
+    if (!warnedMissingCopy.has(key)) console.warn(`[mors-api] brew guide ${r.edbSlug} (${lang}) has no copy for step(s) ${missing.join(', ')}; left out`);
+    warnedMissingCopy.add(key);
+    return false;
+  }
+  return true;
+}
+
+function toBrewGuide(r: BrewGuideRecipe, pub: BrewGuidePublic, lang: Lang, langs: Lang[]): BrewGuide {
+  const copy = pub.copy[lang]!;
+  // The clock starts at the first pour; prep before it is untimed.
+  const firstPour = r.steps.findIndex((s) => s.pourG != null);
+  let clock = 0;
+  const steps: BrewGuidePageStep[] = [
+    ...copy.prep.map((p) => ({ ...p, fromSeconds: null, toSeconds: null, pourG: null })),
+    ...r.steps.map((s, i) => {
+      const timed = pub.timed && firstPour >= 0 && i >= firstPour;
+      const from = clock;
+      if (timed) clock += s.seconds;
+      return {
+        ...copy.steps[s.id],
+        fromSeconds: timed ? from : null,
+        toSeconds: timed ? clock : null,
+        pourG: s.pourG,
+      };
+    }),
+  ];
+  return {
+    public: pub,
+    copy,
+    waterTempC: r.waterTempC,
+    totalSeconds: pub.timed && clock > 0 ? clock : null,
     steps,
-    translations: g.translations?.en ? { en: toTranslation(g.translations.en) } : undefined,
+    langs,
   };
 }
 
-function toTranslation(t: NonNullable<ApiBrewGuide['translations']>[string]): BrewGuideTranslation {
-  return {
-    name:      t.name || '',
-    summary:   t.summary || '',
-    ratioText: t.ratio_text || '',
-    grind:     t.grind || '',
-    steps:     t.steps || {},
-  };
+const brewGuidesByLang = new Map<Lang, Promise<BrewGuide[]>>();
+
+/** Public brew guides that are published in `lang`, in that language. */
+export function getBrewGuides(lang: Lang): Promise<BrewGuide[]> {
+  if (!brewGuidesByLang.has(lang)) brewGuidesByLang.set(lang, buildBrewGuides(lang));
+  return brewGuidesByLang.get(lang)!;
 }
 
-/** A translation counts only when it covers the name, the summary and every step. */
-function isComplete(r: BrewGuideRecipe, t?: BrewGuideTranslation): t is BrewGuideTranslation {
-  return !!t?.name && !!t.summary && r.steps.every((s) => t.steps[s.id]);
-}
-
-function localize(r: BrewGuideRecipe, lang: Lang): BrewGuideRecipe {
-  if (lang === 'da') return r;
-  const t = r.translations?.[lang];
-  if (!isComplete(r, t)) return r;
-  return {
-    ...r,
-    name:      t.name,
-    summary:   t.summary,
-    ratioText: t.ratioText || r.ratioText,
-    grind:     t.grind || r.grind,
-    steps:     r.steps.map((s) => ({ ...s, label: t.steps[s.id] })),
-  };
-}
-
-/**
- * Public brew guides that have a URL in `lang`, in that language.
- *
- * Danish is EDB's own copy. Another language needs a complete translation
- * in EDB; a guide without one is left out rather than shown in Danish under
- * an English URL.
- */
-export async function getBrewGuides(lang: Lang): Promise<BrewGuide[]> {
+async function buildBrewGuides(lang: Lang): Promise<BrewGuide[]> {
   cachedBrewGuides ??= fetchBrewGuides();
   const recipes = await cachedBrewGuides;
   return recipes
     .filter((r) => PUBLIC_BREW_GUIDES[r.edbSlug])
     .map((r) => {
       const pub = PUBLIC_BREW_GUIDES[r.edbSlug];
-      const langs = (['da', 'en'] as Lang[]).filter(
-        (l) => pub.slug[l] && (l === 'da' || isComplete(r, r.translations?.[l])),
-      );
-      return { ...localize(r, lang), public: pub, langs };
+      const langs = (['da', 'en'] as Lang[]).filter((l) => hasCopy(r, pub, l));
+      return langs.includes(lang) ? toBrewGuide(r, pub, lang, langs) : null;
     })
-    .filter((g) => g.langs.includes(lang));
+    .filter((g): g is BrewGuide => !!g);
 }

@@ -21,7 +21,7 @@ const articleHref = (key: string) => {
   const entry = articles.find((e) => e.data.translationKey === key);
   return entry ? videnPath(lang, entry.data.slug) : undefined;
 };
-const meta = (g: BrewGuide) => [g.ratioText, g.waterTempC && `${g.waterTempC} °C`].filter(Boolean).join(' · ');
+const meta = (g: BrewGuide) => [g.copy.ratio, g.waterTempC && `${g.waterTempC} °C`].filter(Boolean).join(' · ');
 
 const copy = {
   da: {
@@ -55,7 +55,7 @@ const copy = {
   lead={copy.lead}
   canonicalPath={SECTION_ROOTS.brewguides[lang]}
   alternatePath={SECTION_ROOTS.brewguides[otherLang]}
-  items={guides.map((g) => ({ href: `${SECTION_ROOTS.brewguides[lang]}/${g.public.slug[lang]}`, title: g.name, description: g.summary, meta: meta(g) }))}
+  items={guides.map((g) => ({ href: `${SECTION_ROOTS.brewguides[lang]}/${g.public.slug[lang]}`, title: g.copy.name, description: g.copy.intro, meta: meta(g) }))}
 >
   <div class="max-w-2xl mx-auto mt-20">
     <h2 class="font-mors font-medium text-3xl md:text-4xl text-deep-red text-center">{copy.basicsTitle}</h2>
