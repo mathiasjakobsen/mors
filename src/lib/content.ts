@@ -31,6 +31,18 @@ export async function getViden(lang: Lang): Promise<VidenEntry[]> {
   return entries.sort((a, b) => a.data.order - b.data.order);
 }
 
+/** The jobs page per language; each ad lives under it. */
+export const JOBS_ROOT = { da: '/job', en: '/en/jobs' } as const;
+
+export function jobPath(lang: Lang, slug: string): string {
+  return `${JOBS_ROOT[lang]}/${slug}`;
+}
+
+/** Open positions to list in one language. */
+export async function getJobs(lang: Lang): Promise<CollectionEntry<'jobs'>[]> {
+  return getCollection('jobs', ({ data }) => data.lang === lang);
+}
+
 /** The other language's version of an entry, if it exists and is published. */
 export async function getVidenTranslation(entry: VidenEntry): Promise<VidenEntry | undefined> {
   const other: Lang = entry.data.lang === 'da' ? 'en' : 'da';

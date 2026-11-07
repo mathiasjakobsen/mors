@@ -1,0 +1,13 @@
+---
+import JobPostPage from '../../components/jobs/JobPostPage.astro';
+import { getJobs } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getJobs('da');
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<JobPostPage entry={entry} />

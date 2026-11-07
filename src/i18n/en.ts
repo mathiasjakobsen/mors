@@ -116,6 +116,8 @@ export default {
   'jobs.open.positions': 'positions',
   'jobs.open.empty': 'No open positions right now.',
   'jobs.open.apply': 'Apply',
+  'jobs.open.read': 'Read the post',
+  'jobs.back': 'All positions',
   'jobs.unsolicited.title': 'Unsolicited applications',
   'jobs.unsolicited.body': 'Send your application and CV here. We will get back to you if we need you.',
   'jobs.unsolicited.subject': 'Unsolicited application',

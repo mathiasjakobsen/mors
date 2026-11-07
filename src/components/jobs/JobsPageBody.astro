@@ -2,7 +2,8 @@
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
-import { openPositions, applicationMailto } from '../../data/jobs';
+import { applicationMailto } from '../../data/jobs';
+import { getJobs, jobPath } from '../../lib/content';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import CTAButton from '../shared/CTAButton.astro';
@@ -13,7 +14,8 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const count = openPositions.length;
+const positions = await getJobs(lang);
+const count = positions.length;
 const countLabel = `${count} ${t(lang, count === 1 ? 'jobs.open.position' : 'jobs.open.positions')}`;
 const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'));
 ---
@@ -44,23 +46,23 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
         </p>
       ) : (
         <ul>
-          {openPositions.map((job) => (
+          {positions.map(({ data: job }) => (
             <li class="border-b border-ink/10 py-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
               <div>
                 <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red">
-                  {job.title[lang]}
+                  <a href={jobPath(lang, job.slug)} class="hover:underline underline-offset-4">{job.title}</a>
                 </h3>
                 <p class="font-body font-normal text-sm uppercase tracking-[0.15em] text-sage mt-2">
-                  {job.hours[lang]}
+                  {job.hours}
                 </p>
                 <p class="font-body font-light text-ink-light leading-relaxed mt-4 max-w-xl">
-                  {job.summary[lang]}
+                  {job.description}
                 </p>
               </div>
               <CTAButton
-                href={applicationMailto(job.title[lang])}
+                href={jobPath(lang, job.slug)}
                 variant="outline"
-                label={t(lang, 'jobs.open.apply')}
+                label={t(lang, 'jobs.open.read')}
                 class="shrink-0 self-start"
               />
             </li>

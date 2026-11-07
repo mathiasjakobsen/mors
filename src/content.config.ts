@@ -44,4 +44,27 @@ const legal = defineCollection({
   }),
 });
 
-export const collections = { viden, legal };
+// Open positions, shown on /job and /en/jobs. One markdown file per position
+// in src/content/jobs/{da,en}/: the body is the ad, the frontmatter holds the
+// list under it. A position only shows in the languages it has a file for, so
+// a job that requires Danish is left out of /en/jobs. With no files the page
+// says nothing is open, rather than leaving visitors to wonder.
+const jobs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/jobs' }),
+  schema: z.object({
+    title: z.string(),
+    /** The ad's own page: /job/<slug>. Descriptive, like viden's slugs. */
+    slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
+    /** Shown in the list on /job and as the meta description. */
+    description: z.string(),
+    /** Hours and type, e.g. "1–2 vagter om ugen". */
+    hours: z.string(),
+    lang: z.enum(['da', 'en']),
+    /** Where the apply button goes. Without it, an e-mail to job@. */
+    applyHref: z.string().optional(),
+    /** The practical bits under the ad, e.g. pay and start date. */
+    facts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
+  }),
+});
+
+export const collections = { viden, legal, jobs };

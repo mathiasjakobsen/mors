@@ -1,0 +1,70 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import type { Lang } from '../../i18n/ui';
+import { t } from '../../i18n/ui';
+import { config } from '../../config';
+import { applicationMailto } from '../../data/jobs';
+import { JOBS_ROOT, jobPath } from '../../lib/content';
+import { breadcrumbSchema } from '../../utils/jsonld';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Container from '../shared/Container.astro';
+import PageHero from '../shared/PageHero.astro';
+import CTAButton from '../shared/CTAButton.astro';
+
+// One job ad on its own page, so it has a link of its own to share.
+interface Props {
+  entry: CollectionEntry<'jobs'>;
+}
+
+const { entry } = Astro.props;
+const { data: job } = entry;
+const lang = job.lang as Lang;
+const { Content } = await render(entry);
+const canonicalPath = jobPath(lang, job.slug);
+
+const jsonLd = breadcrumbSchema([
+  { name: config.name, url: `${config.siteUrl}/` },
+  { name: t(lang, 'jobs.title'), url: `${config.siteUrl}${JOBS_ROOT[lang]}` },
+  { name: job.title, url: `${config.siteUrl}${canonicalPath}` },
+]);
+---
+
+<PageLayout
+  title={`${job.title} | ${t(lang, 'seo.jobs.title')}`}
+  description={job.description}
+  lang={lang}
+  canonicalPath={canonicalPath}
+  alternatePath={null}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    title={job.title}
+    lead={job.hours}
+    back={{ href: JOBS_ROOT[lang], label: t(lang, 'jobs.back') }}
+  />
+
+  <section class="bg-warm-white py-16 md:py-24">
+    <Container>
+      <div class="max-w-2xl mx-auto">
+        <div class="prose-mors text-base leading-relaxed">
+          <Content />
+        </div>
+
+        <dl class="mt-10 border-t border-ink/10">
+          {job.facts.map((fact) => (
+            <div class="grid grid-cols-[7rem_1fr] gap-4 border-b border-ink/10 py-3">
+              <dt class="font-body font-normal text-ink">{fact.label}</dt>
+              <dd class="font-body font-light text-ink-light">{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <CTAButton
+          href={job.applyHref ?? applicationMailto(job.title)}
+          label={t(lang, 'jobs.open.apply')}
+          class="mt-10"
+        />
+      </div>
+    </Container>
+  </section>
+</PageLayout>

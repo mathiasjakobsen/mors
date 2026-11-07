@@ -116,6 +116,8 @@ export default {
   'jobs.open.positions': 'stillinger',
   'jobs.open.empty': 'Ingen ledige stillinger lige nu.',
   'jobs.open.apply': 'Søg stillingen',
+  'jobs.open.read': 'Læs opslaget',
+  'jobs.back': 'Alle stillinger',
   'jobs.unsolicited.title': 'Uopfordret ansøgning',
   'jobs.unsolicited.body': 'Send din ansøgning og dit CV hertil. Vi vender tilbage, hvis vi får brug for dig.',
   'jobs.unsolicited.subject': 'Uopfordret ansøgning',
