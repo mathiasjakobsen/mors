@@ -6,7 +6,7 @@ import { getHoursSummary } from '../../data/hours';
 import SocialLinks from '../shared/SocialLinks.astro';
 import NavCount from './NavCount.astro';
 import { upcomingEvents } from '../../data/events';
-import { getViden, LEGAL_PATHS } from '../../lib/content';
+import { getViden, getJobs, LEGAL_PATHS } from '../../lib/content';
 import { getBrewGuides } from '../../lib/api';
 
 interface Props {
@@ -43,6 +43,8 @@ const link = 'inline-flex items-center gap-2 text-cream/70 font-body font-light 
 const homePath = getLocalizedPath(lang, '/');
 const hoursSummary = getHoursSummary(lang);
 const jobsPath = lang === 'da' ? '/job' : '/en/jobs';
+const openJobs = (await getJobs(lang)).length;
+const openJobsLabel = `${openJobs} ${t(lang, openJobs === 1 ? 'jobs.open.position' : 'jobs.open.positions')}`;
 
 // Danish keeps the compact DD-MM-YY the Fødevarestyrelsen reports use; English
 // spells the month out so DD-MM isn't misread as MM-DD.
@@ -215,10 +217,18 @@ const smileyDate =
           <p>
             <a href={`mailto:${config.email}`} class="hover:text-cream transition-colors">{config.email}</a>
           </p>
-          <!-- Leads to the jobs page, which explains what to send to job@. -->
+          <!-- Leads to the jobs page: open positions with a count when there are
+               any, otherwise job@, and the page explains what to send there. -->
           <p class="mt-3 italic text-cream/45">{t(lang, 'footer.jobs.prompt')}</p>
           <p>
-            <a href={jobsPath} class="hover:text-cream transition-colors">{config.jobEmail}</a>
+            {openJobs > 0 ? (
+              <a href={jobsPath} class="inline-flex items-center gap-2 hover:text-cream transition-colors">
+                {t(lang, 'jobs.open.title')}
+                <NavCount count={openJobs} label={openJobsLabel} />
+              </a>
+            ) : (
+              <a href={jobsPath} class="hover:text-cream transition-colors">{config.jobEmail}</a>
+            )}
           </p>
         </address>
       </div>

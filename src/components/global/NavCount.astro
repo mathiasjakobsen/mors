@@ -5,11 +5,13 @@ interface Props {
   count: number;
   /** Larger pill for the full-screen mobile menu. */
   large?: boolean;
+  /** Screen-reader label, e.g. "2 stillinger". Defaults to events. */
+  label?: string;
 }
 
 const { count, large = false } = Astro.props;
 // Danish uses the English loanword too, so one label serves both languages.
-const label = `${count} ${count === 1 ? 'event' : 'events'}`;
+const label = Astro.props.label ?? `${count} ${count === 1 ? 'event' : 'events'}`;
 ---
 
 {count > 0 && (
