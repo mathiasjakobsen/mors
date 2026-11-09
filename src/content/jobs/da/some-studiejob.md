@@ -1,13 +1,13 @@
 ---
 title: SoMe-ansvarlig studiejob for morˢ kaffebar
 slug: studiejob-some-aarhus
-description: Hjælp os med at fortælle om morˢ på Instagram (og TikTok). 4–6 timer om ugen ved siden af studiet, i kaffebaren i Aarhus C.
-hours: 4–6 timer om ugen
+description: Hjælp os med at fortælle om morˢ på Instagram (og TikTok). 3–4 timer om ugen ved siden af studiet, i kaffebaren i Aarhus C.
+hours: 3–4 timer om ugen
 lang: da
 applyHref: sms:+4593967688
 facts:
   - label: Timer
-    value: ~4–6 timer om ugen, og du kan i stor grad tilrettelægge timerne selv
+    value: ~3–4 timer om ugen, og du kan i stor grad tilrettelægge timerne selv
   - label: Løn
     value: 135 kr./timen
   - label: Tiltrædelse
