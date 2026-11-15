@@ -448,6 +448,8 @@ export interface TicketedEvent {
   /** Per person, incl. VAT. */
   priceKr: number;
   url: string;
+  /** Front to back. Originals on EDB; the events page resizes them at build. */
+  photos: { url: string; alt: string }[];
   dates: TicketDate[];
 }
 
@@ -457,6 +459,7 @@ interface ApiTicketedEvent {
   description: string | null;
   price_kr: number;
   url: string;
+  photos?: { url: string; alt: string }[];
   dates: { date: string; starts_at: string; ends_at: string | null; seats_left: number | null; sold_out: boolean; url: string }[];
 }
 
@@ -484,6 +487,7 @@ async function fetchTicketedEvents(): Promise<TicketedEvent[]> {
       description: e.description,
       priceKr: e.price_kr,
       url: e.url,
+      photos: e.photos ?? [],
       dates: e.dates.map((d) => ({
         date: d.date, startsAt: d.starts_at, endsAt: d.ends_at,
         seatsLeft: d.seats_left, soldOut: d.sold_out, url: d.url,
