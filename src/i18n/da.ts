@@ -101,6 +101,8 @@ export default {
   'events.public.fewSeats': 'Få pladser tilbage',
   'events.public.kind': 'Event',
   'events.public.danishOnly': '',
+  'events.video.title': 'Sådan er et baristakursus',
+  'events.video.play': 'Afspil video med lyd',
   'events.private.title': 'Hold jeres private event hos morˢ',
   'events.private.banner': 'Vil I holde jeres eget event hos morˢ?',
   'events.private.lead': 'Vi hjælper med planlægning, opdækning, rengøring og - efter aftale - barista og personale bag baren, som kan sørge for kaffe, drikke, mad og evt. servering.',

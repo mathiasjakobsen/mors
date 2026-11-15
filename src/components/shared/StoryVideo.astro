@@ -1,0 +1,115 @@
+---
+// A vertical (9:16, phone/story) video that never starts with sound on its
+// own. At rest it shows a short, silent loop — the GIF-like preview — with a
+// play button over it. Pressing play swaps in the full video with audio and
+// native controls; when it ends (or is paused at the very end) it falls back
+// to the silent loop.
+//
+// The full video is preload="none", so visitors who never press play only
+// download the poster and the few-hundred-kB preview. With reduced motion the
+// preview does not loop; the poster stands still until someone presses play.
+interface Props {
+  /** The full video, with audio (mp4/h264+aac plays everywhere). */
+  src: string;
+  /** Short, silent loop. Listed in order; the browser takes the first it can play. */
+  preview: { src: string; type: string }[];
+  /** Still frame shown before the preview has loaded. */
+  poster: string;
+  /** Accessible name for the play button, e.g. "Afspil video med lyd". */
+  playLabel: string;
+  /** What the video shows, for screen readers. */
+  label: string;
+  class?: string;
+}
+
+const { src, preview, poster, playLabel, label, class: className = '' } = Astro.props;
+---
+
+<figure
+  class:list={['story-video relative aspect-[9/16] overflow-hidden rounded-[1.75rem] bg-ink shadow-[0_18px_40px_-14px_rgba(26,26,26,0.5)]', className]}
+  data-story-video
+>
+  <video
+    class="story-preview absolute inset-0 h-full w-full object-cover"
+    poster={poster}
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    tabindex="-1"
+    data-preview
+  >
+    {preview.map((p) => <source src={p.src} type={p.type} />)}
+  </video>
+
+  <video
+    class="story-full absolute inset-0 h-full w-full object-cover"
+    src={src}
+    poster={poster}
+    playsinline
+    preload="none"
+    aria-label={label}
+    hidden
+    data-full
+  ></video>
+
+  <button
+    type="button"
+    class="story-play group absolute inset-0 flex items-center justify-center bg-ink/10 hover:bg-ink/20 transition-colors focus-visible:outline-none"
+    aria-label={playLabel}
+    data-play
+  >
+    <span class="flex h-16 w-16 items-center justify-center rounded-full bg-cream/90 text-deep-red shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-cream group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-ink">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="ml-1 h-7 w-7">
+        <path d="M7 4.5v15a1 1 0 0 0 1.52.85l12-7.5a1 1 0 0 0 0-1.7l-12-7.5A1 1 0 0 0 7 4.5Z" />
+      </svg>
+    </span>
+  </button>
+</figure>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('[data-story-video]').forEach((root) => {
+    const preview = root.querySelector<HTMLVideoElement>('[data-preview]')!;
+    const full = root.querySelector<HTMLVideoElement>('[data-full]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-play]')!;
+
+    // The silent loop only runs while it is on screen, and not at all with
+    // reduced motion. play() can reject (e.g. Low Power Mode); the poster
+    // then simply stays.
+    const loopPreview = () => {
+      if (!reduceMotion.matches && full.hidden) preview.play().catch(() => {});
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) loopPreview();
+      else preview.pause();
+    });
+    observer.observe(root);
+
+    const backToPreview = () => {
+      full.pause();
+      full.controls = false;
+      full.hidden = true;
+      preview.hidden = false;
+      play.classList.remove('hidden');
+      loopPreview();
+      play.focus({ preventScroll: true });
+    };
+
+    play.addEventListener('click', () => {
+      preview.pause();
+      preview.hidden = true;
+      play.classList.add('hidden');
+      full.hidden = false;
+      full.controls = true;
+      full.currentTime = 0;
+      // Started from the click, so the browser allows sound.
+      full.play().catch(backToPreview);
+      full.focus({ preventScroll: true });
+    });
+
+    full.addEventListener('ended', backToPreview);
+  });
+</script>
