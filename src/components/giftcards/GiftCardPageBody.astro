@@ -32,12 +32,12 @@ function money(amount: number): string {
 }
 
 
-// "Best per clip" is derived, not editorial: it flags the card with the lowest
-// price per clip, and only when there is something to compare it against.
-// Today's 4-clip and 10-clip cards tie at 37.50 kr., so ties go to the card
-// with the most clips — exactly one badge, on the bigger commitment.
+// The "most popular" badge goes on the card with the lowest price per clip,
+// and only when there is something to compare it against. Today's 4-clip and
+// 10-clip cards tie at 37.50 kr., so ties go to the card with the most clips —
+// exactly one badge, on the bigger commitment.
 const comparable = giftCards.filter((c) => !!c.clips && c.clips > 0);
-const bestValueId =
+const mostPopularId =
   comparable.length > 1
     ? comparable.reduce((best, c) => {
         const a = c.price / c.clips!;
@@ -102,13 +102,12 @@ const tilts = [-3, 2, -1.5];
 </PageHero>
 
 <!-- The cards, drawn as the Wallet passes they become (same as on the front
-     page, larger), with price and price per use underneath. -->
+     page, larger), with the price underneath. -->
 <section class="bg-warm-white py-20 md:py-28">
   <Container>
     <ProductGrid>
       {giftCards.map((card, i) => {
-        const perClip = card.clips && card.clips > 0 ? card.price / card.clips : null;
-        const isBest = card.id === bestValueId;
+        const isMostPopular = card.id === mostPopularId;
         return (
           <article
             data-animate-on-scroll
@@ -118,9 +117,9 @@ const tilts = [-3, 2, -1.5];
               stepDelays[i % 3],
             ]}
           >
-            {isBest && (
+            {isMostPopular && (
               <span class="absolute -top-3 left-5 z-10 bg-gold text-ink text-[10px] font-body font-semibold uppercase tracking-[0.18em] px-3 py-1 rounded-full shadow-sm">
-                {t(lang, 'giftcards.bestValue')}
+                {t(lang, 'giftcards.mostPopular')}
               </span>
             )}
 
@@ -132,15 +131,10 @@ const tilts = [-3, 2, -1.5];
               </p>
             )}
 
-            <div class="mt-6 flex items-baseline justify-between gap-3">
+            <div class="mt-6">
               <span class="font-display font-bold text-2xl text-ink whitespace-nowrap">
                 {money(card.price)}
               </span>
-              {perClip !== null && (
-                <span class="font-body font-light text-sm text-ink-muted whitespace-nowrap">
-                  {money(perClip)} {t(lang, 'giftcards.perClip')}
-                </span>
-              )}
             </div>
             {!card.inStock && (
               <p class="font-body font-normal text-xs uppercase tracking-[0.15em] text-ink-muted mt-3">
