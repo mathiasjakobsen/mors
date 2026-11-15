@@ -3,6 +3,7 @@ import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
 import { upcomingEvents } from '../../data/events';
+import { getTicketedEvents, type TicketedEvent } from '../../lib/api';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import PhotoStack from '../shared/PhotoStack.astro';
@@ -33,6 +34,50 @@ function eventDate(iso: string, time?: { from: string; to: string }): string {
   const clock = (hhmm: string) => (lang === 'da' ? hhmm.replace(':', '.') : hhmm);
   return `${s}, ${lang === 'da' ? 'kl. ' : ''}${clock(time.from)}–${clock(time.to)}`;
 }
+// Events staff sell tickets to in EDB (/api/v1/events). One whose slug matches
+// an id below keeps the site's own copy and gains its real dates and a buy
+// button; one the site does not know yet is listed with EDB's public copy.
+const ticketed = await getTicketedEvents();
+const ownIds = new Set(events.map((e) => e.id));
+
+interface Row {
+  key: string;
+  kind: string;
+  title: string;
+  body: string;
+  date?: string;
+  time?: { from: string; to: string };
+  duration?: string;
+  priceKr?: number;
+  cta: 'signup' | 'notify';
+  tickets?: TicketedEvent;
+}
+
+const rows: Row[] = [
+  ...events.map((e) => ({
+    key: e.id, kind: e.kind[lang], title: e.title[lang], body: e.body[lang], date: e.date, time: e.time,
+    duration: e.duration?.[lang], priceKr: e.priceKr, cta: e.cta,
+    tickets: ticketed.find((te) => te.slug === e.id),
+  })),
+  ...ticketed.filter((te) => !ownIds.has(te.slug)).map((te) => ({
+    key: te.slug, kind: t(lang, 'events.public.kind'), title: te.title, body: te.description ?? '',
+    cta: 'notify' as const, tickets: te,
+  })),
+].map((row) => (row.tickets ? { ...row, priceKr: row.tickets.priceKr } : row));
+
+// "Torsdag 19. november, kl. 17.00–19.00" from a ticket date's timestamps.
+function ticketDate(startsAt: string, endsAt: string | null): string {
+  const locale = lang === 'da' ? 'da-DK' : 'en-GB';
+  const tz = 'Europe/Copenhagen';
+  const day = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })
+    .format(new Date(startsAt));
+  const clock = (iso: string) => new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz })
+    .format(new Date(iso)).replace(':', lang === 'da' ? '.' : ':');
+  const time = endsAt ? `${clock(startsAt)}–${clock(endsAt)}` : clock(startsAt);
+  return `${day.charAt(0).toUpperCase()}${day.slice(1)}, ${lang === 'da' ? 'kl. ' : ''}${time}`;
+}
+const onSale = (row: Row) => !!row.tickets?.dates.some((d) => !d.soldOut);
+
 const cases = (['case1', 'case2', 'case3', 'case4'] as const).map((c) => t(lang, `events.${c}`));
 const eventPhotos = lang === 'da'
   ? [
@@ -64,46 +109,82 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
   </a>
 </PageHero>
 
-<!-- Our own events. Deliberately short: date and time when they are set;
-     sign-up and details go over e-mail. -->
+<!-- Our own events. Deliberately short. An event that sells tickets in EDB
+     shows its dates and a buy button; the rest sign up over e-mail. -->
 <section class="bg-warm-white py-16 md:py-20">
   <Container>
     <div
       data-animate-on-scroll
       class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
     >
-      {events.length === 0 ? (
+      {rows.length === 0 ? (
         <p class="mt-6 rounded-lg border border-dashed border-ink/15 px-8 py-8 text-center font-body font-light text-ink-light">
           {t(lang, 'events.public.empty')}
         </p>
       ) : (
         <ul class="divide-y divide-ink/10">
-          {events.map((event) => (
+          {rows.map((row) => (
             <li class="py-8 first:pt-0 last:pb-0 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-              <div>
-                <p class="inline-block rounded-full bg-sage/15 px-2.5 py-1 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-[#4d5c44]">{event.kind[lang]}</p>
-                <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mt-2">{event.title[lang]}</h3>
-                <p class="font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl">{event.body[lang]}</p>
-                <p class="font-body font-medium text-sm text-ink mt-4">
-                  {event.date ? <time datetime={event.date}>{eventDate(event.date, event.time)}</time> : t(lang, 'events.public.soon')}
-                </p>
-                {(event.duration || event.priceKr) && (
-                  <p class="font-body font-light text-sm text-ink-light mt-1">
-                    {[event.duration?.[lang], event.priceKr && `${event.priceKr} ${t(lang, 'events.public.perPerson')}`].filter(Boolean).join(' · ')}
+              <div class="min-w-0">
+                <p class="inline-block rounded-full bg-sage/15 px-2.5 py-1 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-[#4d5c44]">{row.kind}</p>
+                <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mt-2">{row.title}</h3>
+                {row.body && <p class="font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl">{row.body}</p>}
+                {row.tickets ? (
+                  <ul class="mt-4 space-y-1.5" aria-label={lang === 'da' ? 'Datoer' : 'Dates'}>
+                    {row.tickets.dates.map((d) => (
+                      <li class="font-body text-sm">
+                        {d.soldOut ? (
+                          <span class="text-ink-muted">
+                            <time datetime={d.startsAt} class="line-through decoration-ink/30">{ticketDate(d.startsAt, d.endsAt)}</time>
+                            {' · '}{t(lang, 'events.public.soldOut')}
+                          </span>
+                        ) : (
+                          <a href={d.url} class="font-medium text-ink underline decoration-deep-red/25 underline-offset-4 hover:decoration-deep-red">
+                            <time datetime={d.startsAt}>{ticketDate(d.startsAt, d.endsAt)}</time>
+                          </a>
+                        )}
+                        {!d.soldOut && d.seatsLeft !== null && d.seatsLeft <= 3 && (
+                          <span class="text-deep-red"> · {t(lang, 'events.public.fewSeats')}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="font-body font-medium text-sm text-ink mt-4">
+                    {row.date ? <time datetime={row.date}>{eventDate(row.date, row.time)}</time> : t(lang, 'events.public.soon')}
+                  </p>
+                )}
+                {(row.duration || row.priceKr) && (
+                  <p class="font-body font-light text-sm text-ink-light mt-2">
+                    {[row.duration, row.priceKr && `${row.priceKr.toLocaleString(lang === 'da' ? 'da-DK' : 'en-GB')} ${t(lang, 'events.public.perPerson')}`].filter(Boolean).join(' · ')}
                   </p>
                 )}
               </div>
-              <a
-                href={mailto(`${t(lang, event.cta === 'signup' ? 'events.public.signupSubject' : 'events.public.notify')}: ${event.title[lang]}`)}
-                class:list={[
-                  'shrink-0 self-start inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors',
-                  event.cta === 'signup'
-                    ? 'bg-deep-red text-cream hover:bg-ink'
-                    : 'border border-deep-red/30 text-deep-red hover:bg-deep-red hover:text-cream',
-                ]}
-              >
-                {t(lang, event.cta === 'signup' ? 'events.public.signup' : 'events.public.notify')}
-              </a>
+              <div class="shrink-0 self-start flex flex-col items-start md:items-end gap-2">
+                {onSale(row) ? (
+                  <a
+                    href={row.tickets!.url}
+                    class="inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors bg-deep-red text-cream hover:bg-ink"
+                  >
+                    {t(lang, 'events.public.buy')}<span class="sr-only">: {row.title}</span>
+                  </a>
+                ) : (
+                  <a
+                    href={mailto(`${t(lang, row.cta === 'signup' ? 'events.public.signupSubject' : 'events.public.notify')}: ${row.title}`)}
+                    class:list={[
+                      'inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors',
+                      row.cta === 'signup'
+                        ? 'bg-deep-red text-cream hover:bg-ink'
+                        : 'border border-deep-red/30 text-deep-red hover:bg-deep-red hover:text-cream',
+                    ]}
+                  >
+                    {t(lang, row.cta === 'signup' ? 'events.public.signup' : 'events.public.notify')}
+                  </a>
+                )}
+                {onSale(row) && t(lang, 'events.public.danishOnly') && (
+                  <p class="font-body font-light text-xs text-ink-muted">{t(lang, 'events.public.danishOnly')}</p>
+                )}
+              </div>
             </li>
           ))}
         </ul>

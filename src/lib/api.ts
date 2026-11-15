@@ -283,6 +283,7 @@ function toGiftCard(p: ApiProduct): GiftCard {
     price:   priceInclVat(p),
     clips:   clipCount(p),
     inStock: p.in_stock,
+    productId: p.id,
   };
 }
 
@@ -415,4 +416,83 @@ async function buildBrewGuides(lang: Lang): Promise<BrewGuide[]> {
       return langs.includes(lang) ? toBrewGuide(r, pub, lang, langs) : null;
     })
     .filter((g): g is BrewGuide => !!g);
+}
+
+// ---- Ticketed events ------------------------------------------------------
+//
+// Events staff have switched to "Sælg billetter" in EDB, with the dates still
+// on sale (/api/v1/events). Read at build time, so seats are a snapshot; EDB
+// rebuilds the site when an event changes or a date sells out, and the buy
+// page itself always has the live count. No fallback: without the feed the
+// events page simply shows its own list with the e-mail buttons.
+
+export interface TicketDate {
+  /** ISO date (YYYY-MM-DD). */
+  date: string;
+  /** ISO timestamps with offset. */
+  startsAt: string;
+  endsAt: string | null;
+  /** Null when the event has no seat limit. */
+  seatsLeft: number | null;
+  soldOut: boolean;
+  /** Buy page with this date preselected. */
+  url: string;
+}
+
+export interface TicketedEvent {
+  /** Matches a PublicEvent id in src/data/events.ts when the site has its own copy. */
+  slug: string;
+  /** EDB's public title and description, in Danish (EDB has no English copy). */
+  title: string;
+  description: string | null;
+  /** Per person, incl. VAT. */
+  priceKr: number;
+  url: string;
+  dates: TicketDate[];
+}
+
+interface ApiTicketedEvent {
+  slug: string;
+  title: string;
+  description: string | null;
+  price_kr: number;
+  url: string;
+  dates: { date: string; starts_at: string; ends_at: string | null; seats_left: number | null; sold_out: boolean; url: string }[];
+}
+
+let cachedEvents: Promise<TicketedEvent[]> | null = null;
+
+export function getTicketedEvents(): Promise<TicketedEvent[]> {
+  cachedEvents ??= fetchTicketedEvents();
+  return cachedEvents;
+}
+
+async function fetchTicketedEvents(): Promise<TicketedEvent[]> {
+  const url = `${API_ROOT}/events`;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctl.signal });
+    if (!res.ok) {
+      console.warn(`[mors-api] ${url} → ${res.status}; no ticketed events`);
+      return [];
+    }
+    const data = (await res.json()) as { events?: ApiTicketedEvent[] };
+    return (data.events || []).map((e) => ({
+      slug: e.slug,
+      title: e.title,
+      description: e.description,
+      priceKr: e.price_kr,
+      url: e.url,
+      dates: e.dates.map((d) => ({
+        date: d.date, startsAt: d.starts_at, endsAt: d.ends_at,
+        seatsLeft: d.seats_left, soldOut: d.sold_out, url: d.url,
+      })),
+    }));
+  } catch (err) {
+    console.warn(`[mors-api] ${url} fetch failed (${(err as Error).message}); no ticketed events`);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
 }

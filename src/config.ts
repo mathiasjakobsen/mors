@@ -12,6 +12,8 @@ export const config = {
   // must exist (and be active) in EDB → Promos; it also attributes every
   // sign-up from the site to that promo.
   stampCardSignupUrl: 'https://edb.mors.coffee/p/web',
+  // The online gift card shop in EDB. `?product=<EDB product id>` preselects a card.
+  giftCardShopUrl: 'https://edb.mors.coffee/gavekort',
   address: {
     street: 'Klostergade 58',
     city: 'Aarhus C',

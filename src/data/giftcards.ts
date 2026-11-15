@@ -9,6 +9,9 @@ export interface GiftCard {
   /** Total number of clips on the card, when it can be determined. */
   clips?: number;
   inStock: boolean;
+  /** EDB's product id, for a buy link that preselects this card in the online
+   *  shop (`?product=<id>`). Absent in the offline fallback. */
+  productId?: number;
 }
 
 /**

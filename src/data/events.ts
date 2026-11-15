@@ -22,6 +22,9 @@ export interface PublicEvent {
 
 /**
  * Our own events, shown on /events and /en/events and counted in the nav.
+ * An `id` that matches the slug of an event selling tickets in EDB
+ * (/api/v1/events) gets that event's real dates, price and a buy button on
+ * the page; the copy here stays the site's own.
  * Use `upcomingEvents()` rather than this list directly: it drops dated
  * events once their day has passed (as of the build, which runs on every
  * push) and puts dated ones first, soonest first.
