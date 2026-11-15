@@ -7,6 +7,7 @@ import { getTicketedEvents, type TicketedEvent } from '../../lib/api';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import PhotoStack from '../shared/PhotoStack.astro';
+import StoryVideo from '../shared/StoryVideo.astro';
 // Stand-ins until there are photos from an actual event: swap these for the
 // real ones (back to front), alt texts included.
 import cafe from '../../assets/mors-cafe.jpg';
@@ -110,13 +111,29 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
 </PageHero>
 
 <!-- Our own events. Deliberately short. An event that sells tickets in EDB
-     shows its dates and a buy button; the rest sign up over e-mail. -->
+     shows its dates and a buy button; the rest sign up over e-mail.
+     Beside them, a look inside a barista course: a vertical phone video that
+     loops silently like a GIF and only plays with sound on play. The files
+     in public/videos/ are placeholders; replace them in place (same names)
+     with the real cut, its silent preview loop and a poster. -->
 <section class="bg-warm-white py-16 md:py-20">
   <Container>
     <div
       data-animate-on-scroll
-      class="max-w-3xl mx-auto opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
+      class="max-w-5xl mx-auto grid gap-10 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start md:gap-14 lg:grid-cols-[17rem_minmax(0,1fr)] opacity-0 translate-y-[30px] transition-all duration-[800ms] ease-out"
     >
+      <StoryVideo
+        src="/videos/baristakursus.mp4"
+        preview={[
+          { src: '/videos/baristakursus-preview.webm', type: 'video/webm' },
+          { src: '/videos/baristakursus-preview.mp4', type: 'video/mp4' },
+        ]}
+        poster="/videos/baristakursus-poster.jpg"
+        playLabel={t(lang, 'events.video.play')}
+        label={t(lang, 'events.video.title')}
+        class="w-56 md:w-full mx-auto md:sticky md:top-28 -rotate-2"
+      />
+      <div class="min-w-0">
       {rows.length === 0 ? (
         <p class="mt-6 rounded-lg border border-dashed border-ink/15 px-8 py-8 text-center font-body font-light text-ink-light">
           {t(lang, 'events.public.empty')}
@@ -189,6 +206,7 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
           ))}
         </ul>
       )}
+      </div>
     </div>
   </Container>
 </section>
