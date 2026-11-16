@@ -14,6 +14,9 @@ export const config = {
   stampCardSignupUrl: 'https://edb.mors.coffee/p/web',
   // The online gift card shop in EDB. `?product=<EDB product id>` preselects a card.
   giftCardShopUrl: 'https://edb.mors.coffee/gavekort',
+  // "Giv mig besked" on an event: the visitor leaves an e-mail in EDB, at
+  // `<eventsUrl>/<event id>/følg`. The id need not be an EDB event yet.
+  eventsUrl: 'https://edb.mors.coffee/events',
   address: {
     street: 'Klostergade 58',
     city: 'Aarhus C',

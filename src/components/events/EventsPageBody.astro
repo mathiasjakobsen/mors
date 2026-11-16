@@ -21,6 +21,8 @@ interface Props {
 const { lang } = Astro.props;
 
 const mailto = (subject: string) => `mailto:${config.email}?subject=${encodeURIComponent(subject)}`;
+// "Giv mig besked" leaves an e-mail in EDB against the event id (EventFollow).
+const followUrl = (id: string) => `${config.eventsUrl}/${encodeURIComponent(id)}/følg`;
 const events = upcomingEvents();
 
 // "Fredag 27. november, kl. 17.00–20.00" / "Friday 27 November, 17:00–20:00".
@@ -182,7 +184,7 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
                   </a>
                 ) : (
                   <a
-                    href={mailto(`${t(lang, row.cta === 'signup' ? 'events.public.signupSubject' : 'events.public.notify')}: ${row.title}`)}
+                    href={row.cta === 'signup' ? mailto(`${t(lang, 'events.public.signupSubject')}: ${row.title}`) : followUrl(row.key)}
                     class:list={[
                       'inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors',
                       row.cta === 'signup'
