@@ -4,6 +4,7 @@ slug: barista-deltid-aarhus
 description: Vi mangler en hånd mere bag baren hos morˢ i Aarhus C. 1–2 vagter om ugen, til dig der går op i speciality coffee.
 hours: 1–2 vagter om ugen
 lang: da
+draft: true
 applyHref: sms:+4593967688
 facts:
   - label: Løn

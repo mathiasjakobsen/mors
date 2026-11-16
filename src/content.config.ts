@@ -64,6 +64,8 @@ const jobs = defineCollection({
     applyHref: z.string().optional(),
     /** The practical bits under the ad, e.g. pay and start date. */
     facts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
+    /** Drafts render in `astro dev` and are left out of production builds. */
+    draft: z.boolean().default(false),
   }),
 });
 

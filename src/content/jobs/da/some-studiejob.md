@@ -4,6 +4,7 @@ slug: studiejob-some-aarhus
 description: Hjælp os med at fortælle om morˢ på Instagram (og TikTok). 3–4 timer om ugen ved siden af studiet, i kaffebaren i Aarhus C.
 hours: 3–4 timer om ugen
 lang: da
+draft: true
 applyHref: sms:+4593967688
 facts:
   - label: Timer

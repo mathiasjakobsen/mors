@@ -38,9 +38,12 @@ export function jobPath(lang: Lang, slug: string): string {
   return `${JOBS_ROOT[lang]}/${slug}`;
 }
 
-/** Open positions to list in one language. */
+/** Open positions to list in one language, drafts included only in dev. */
 export async function getJobs(lang: Lang): Promise<CollectionEntry<'jobs'>[]> {
-  return getCollection('jobs', ({ data }) => data.lang === lang);
+  return getCollection(
+    'jobs',
+    ({ data }) => data.lang === lang && (import.meta.env.DEV || !data.draft),
+  );
 }
 
 /** The other language's version of an entry, if it exists and is published. */
