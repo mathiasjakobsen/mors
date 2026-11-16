@@ -50,6 +50,11 @@ Product names and descriptions are the shop's own words from the POS — do not
 rewrite them in the site. If POS copy is wrong, it gets fixed in the staff PWA,
 not here.
 
+Job ads come from EDB too (`/api/v1/jobs`, written in Admin → Stillinger), and
+applicants apply on EDB at `edb.mors.coffee/job/<slug>`, because the application
+is a video. The site only lists the published ads and links to the form. With no
+feed, /job says nothing is open.
+
 Brew guides are the exception. `/api/v1/brew_guides` serves the bar's recipes,
 written for staff, so the site takes only the recipe from it (step order,
 times, grams, water temperature). Every word a visitor reads on a guide is

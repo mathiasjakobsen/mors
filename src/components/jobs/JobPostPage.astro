@@ -1,25 +1,23 @@
 ---
-import { render, type CollectionEntry } from 'astro:content';
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
-import { applicationMailto } from '../../data/jobs';
 import { JOBS_ROOT, jobPath } from '../../lib/content';
+import type { JobPost } from '../../lib/api';
 import { breadcrumbSchema } from '../../utils/jsonld';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import CTAButton from '../shared/CTAButton.astro';
 
-// One job ad on its own page, so it has a link of its own to share.
+// One job ad on its own page, so it has a link of its own to share. The ad is
+// written in EDB; the apply button goes to its application form there.
 interface Props {
-  entry: CollectionEntry<'jobs'>;
+  job: JobPost;
 }
 
-const { entry } = Astro.props;
-const { data: job } = entry;
+const { job } = Astro.props;
 const lang = job.lang as Lang;
-const { Content } = await render(entry);
 const canonicalPath = jobPath(lang, job.slug);
 
 const jsonLd = breadcrumbSchema([
@@ -39,7 +37,7 @@ const jsonLd = breadcrumbSchema([
 >
   <PageHero
     title={job.title}
-    lead={job.hours}
+    lead={job.hours ?? undefined}
     back={{ href: JOBS_ROOT[lang], label: t(lang, 'jobs.back') }}
   />
 
@@ -47,7 +45,7 @@ const jsonLd = breadcrumbSchema([
     <Container>
       <div class="max-w-2xl mx-auto">
         <div class="prose-mors text-base leading-relaxed">
-          <Content />
+          <Fragment set:html={job.bodyHtml} />
         </div>
 
         <dl class="mt-10 border-t border-ink/10">
@@ -60,7 +58,7 @@ const jsonLd = breadcrumbSchema([
         </dl>
 
         <CTAButton
-          href={job.applyHref ?? applicationMailto(job.title)}
+          href={job.applyUrl}
           label={t(lang, 'jobs.open.apply')}
           class="mt-10"
         />

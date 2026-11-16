@@ -3,11 +3,11 @@ import JobPostPage from '../../components/jobs/JobPostPage.astro';
 import { getJobs } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const entries = await getJobs('da');
-  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+  const jobs = await getJobs('da');
+  return jobs.map((job) => ({ params: { slug: job.slug }, props: { job } }));
 }
 
-const { entry } = Astro.props;
+const { job } = Astro.props;
 ---
 
-<JobPostPage entry={entry} />
+<JobPostPage job={job} />

@@ -500,3 +500,70 @@ async function fetchTicketedEvents(): Promise<TicketedEvent[]> {
     clearTimeout(timer);
   }
 }
+
+// ---- Job ads --------------------------------------------------------------
+//
+// Ads are written in EDB (Admin → Stillinger) and the published ones served at
+// /api/v1/jobs. EDB rebuilds the site when an ad changes. Applicants apply on
+// EDB itself (applyUrl), because the application carries a video. No fallback:
+// without the feed the jobs page says nothing is open, rather than showing an
+// ad that may have closed.
+
+export interface JobPost {
+  slug: string;
+  title: string;
+  description: string;
+  hours: string | null;
+  lang: 'da' | 'en';
+  facts: { label: string; value: string }[];
+  /** EDB's Markdown rendered with raw HTML filtered out. */
+  bodyHtml: string;
+  applyUrl: string;
+}
+
+interface ApiJobPost {
+  slug: string;
+  title: string;
+  description: string;
+  hours: string | null;
+  lang: 'da' | 'en';
+  facts: { label: string; value: string }[];
+  body_html: string;
+  apply_url: string;
+}
+
+let cachedJobs: Promise<JobPost[]> | null = null;
+
+export function getJobPosts(): Promise<JobPost[]> {
+  cachedJobs ??= fetchJobPosts();
+  return cachedJobs;
+}
+
+async function fetchJobPosts(): Promise<JobPost[]> {
+  const url = `${API_ROOT}/jobs`;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctl.signal });
+    if (!res.ok) {
+      console.warn(`[mors-api] ${url} → ${res.status}; no job ads`);
+      return [];
+    }
+    const data = (await res.json()) as { jobs?: ApiJobPost[] };
+    return (data.jobs || []).map((j) => ({
+      slug: j.slug,
+      title: j.title,
+      description: j.description,
+      hours: j.hours,
+      lang: j.lang,
+      facts: j.facts ?? [],
+      bodyHtml: j.body_html,
+      applyUrl: j.apply_url,
+    }));
+  } catch (err) {
+    console.warn(`[mors-api] ${url} fetch failed (${(err as Error).message}); no job ads`);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}

@@ -3,6 +3,7 @@
 
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { Lang } from '../i18n/ui';
+import { getJobPosts, type JobPost } from './api';
 
 export type VidenEntry = CollectionEntry<'viden'>;
 
@@ -38,12 +39,9 @@ export function jobPath(lang: Lang, slug: string): string {
   return `${JOBS_ROOT[lang]}/${slug}`;
 }
 
-/** Open positions to list in one language, drafts included only in dev. */
-export async function getJobs(lang: Lang): Promise<CollectionEntry<'jobs'>[]> {
-  return getCollection(
-    'jobs',
-    ({ data }) => data.lang === lang && (import.meta.env.DEV || !data.draft),
-  );
+/** Open positions in one language: the ads published in EDB (see getJobPosts). */
+export async function getJobs(lang: Lang): Promise<JobPost[]> {
+  return (await getJobPosts()).filter((job) => job.lang === lang);
 }
 
 /** The other language's version of an entry, if it exists and is published. */

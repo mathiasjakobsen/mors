@@ -46,7 +46,7 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
         </p>
       ) : (
         <ul>
-          {positions.map(({ data: job }) => (
+          {positions.map((job) => (
             <li class="border-b border-ink/10 py-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
               <div>
                 <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red">
