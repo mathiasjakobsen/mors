@@ -17,6 +17,8 @@ export const SECTION_ROOTS = {
 export const LEGAL_PATHS = {
   privacy: { da: '/privatlivspolitik', en: '/en/privacy-policy' },
   cookies: { da: '/cookiepolitik', en: '/en/cookie-policy' },
+  // Ticket sales are Danish only, so the terms have no English page.
+  terms: { da: '/handelsbetingelser' },
 } as const;
 
 export function videnPath(lang: Lang, slug: string): string {

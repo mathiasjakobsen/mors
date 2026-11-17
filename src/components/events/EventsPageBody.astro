@@ -3,7 +3,7 @@ import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
 import { upcomingEvents } from '../../data/events';
-import { getTicketedEvents, type TicketedEvent } from '../../lib/api';
+import { getTicketedEvents, type TicketDate, type TicketedEvent } from '../../lib/api';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import PhotoStack from '../shared/PhotoStack.astro';
@@ -76,18 +76,25 @@ const rows: Row[] = [
 const photosOf = (row: Row) => [...(row.tickets?.photos ?? [])].reverse().map((p) => ({ src: p.url, alt: p.alt }));
 const photoColumn = rows.some((row) => photosOf(row).length > 0);
 
-// "Torsdag 19. november, kl. 17.00–19.00" from a ticket date's timestamps.
-function ticketDate(startsAt: string, endsAt: string | null): string {
+const onSale = (row: Row) => !!row.tickets?.dates.some((d) => !d.soldOut);
+
+// A date card's three lines: "tor", "14. jan", "18.30–20.30".
+function cardParts(startsAt: string, endsAt: string | null) {
   const locale = lang === 'da' ? 'da-DK' : 'en-GB';
   const tz = 'Europe/Copenhagen';
-  const day = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz })
-    .format(new Date(startsAt));
+  const at = new Date(startsAt);
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: tz }).format(at).replace('.', '');
+  const day = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: tz }).format(at).replace(/\.$/, '');
   const clock = (iso: string) => new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone: tz })
     .format(new Date(iso)).replace(':', lang === 'da' ? '.' : ':');
-  const time = endsAt ? `${clock(startsAt)}–${clock(endsAt)}` : clock(startsAt);
-  return `${day.charAt(0).toUpperCase()}${day.slice(1)}, ${lang === 'da' ? 'kl. ' : ''}${time}`;
+  return { weekday, day, time: endsAt ? `${clock(startsAt)}–${clock(endsAt)}` : clock(startsAt) };
 }
-const onSale = (row: Row) => !!row.tickets?.dates.some((d) => !d.soldOut);
+
+// "Kun 2 pladser tilbage" once a date is down to its last three seats.
+const FEW_SEATS = 3;
+const isFew = (d: TicketDate) => !d.soldOut && d.seatsLeft !== null && d.seatsLeft <= FEW_SEATS;
+const fewSeats = (left: number) =>
+  left === 1 ? t(lang, 'events.public.fewSeatsOne') : t(lang, 'events.public.fewSeats').replace('{n}', String(left));
 
 const cases = (['case1', 'case2', 'case3', 'case4'] as const).map((c) => t(lang, `events.${c}`));
 const eventPhotos = lang === 'da'
@@ -146,24 +153,43 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
                 <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mt-2">{row.title}</h3>
                 {row.body && <p class="font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl">{row.body}</p>}
                 {row.tickets ? (
-                  <ul class="mt-4 space-y-1.5" aria-label={lang === 'da' ? 'Datoer' : 'Dates'}>
-                    {row.tickets.dates.map((d) => (
-                      <li class="font-body text-sm">
-                        {d.soldOut ? (
-                          <span class="text-ink-muted">
-                            <time datetime={d.startsAt} class="line-through decoration-ink/30">{ticketDate(d.startsAt, d.endsAt)}</time>
-                            {' · '}{t(lang, 'events.public.soldOut')}
-                          </span>
-                        ) : (
-                          <a href={d.url} class="font-medium text-ink underline decoration-deep-red/25 underline-offset-4 hover:decoration-deep-red">
-                            <time datetime={d.startsAt}>{ticketDate(d.startsAt, d.endsAt)}</time>
-                          </a>
-                        )}
-                        {!d.soldOut && d.seatsLeft !== null && d.seatsLeft <= 3 && (
-                          <span class="text-deep-red"> · {t(lang, 'events.public.fewSeats')}</span>
-                        )}
-                      </li>
-                    ))}
+                  <!-- One small card per date. Cards in a row share a height; a date
+                       down to its last seats gets a red band along the bottom. -->
+                  <ul class="mt-5 grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(8.75rem,1fr))] gap-2.5" aria-label={t(lang, 'events.public.dates')}>
+                    {row.tickets.dates.map((d) => {
+                      const p = cardParts(d.startsAt, d.endsAt);
+                      const few = isFew(d);
+                      const body = (
+                        <Fragment>
+                          <span class="px-3.5 pt-3 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-ink-muted">{p.weekday}</span>
+                          <time datetime={d.startsAt} class:list={['px-3.5 font-display font-semibold text-lg leading-tight', d.soldOut ? 'text-ink-muted line-through decoration-ink/30' : 'text-deep-red']}>{p.day}</time>
+                          <span class="px-3.5 pb-3 font-body text-xs tabular-nums text-ink-light">{p.time}</span>
+                          {few && (
+                            <span class="mt-auto bg-deep-red px-3.5 py-1.5 font-body font-medium text-[11px] leading-snug text-cream">{fewSeats(d.seatsLeft!)}</span>
+                          )}
+                          {d.soldOut && (
+                            <span class="mt-auto border-t border-ink/10 px-3.5 py-1.5 font-body font-medium text-[11px] text-ink-muted">{t(lang, 'events.public.soldOut')}</span>
+                          )}
+                        </Fragment>
+                      );
+                      return (
+                        <li class="flex">
+                          {d.soldOut ? (
+                            <div class="flex w-full flex-col overflow-hidden rounded-mors border border-ink/10 bg-cream/40">{body}</div>
+                          ) : (
+                            <a
+                              href={d.url}
+                              class:list={[
+                                'flex w-full flex-col overflow-hidden rounded-mors border bg-warm-white transition-colors hover:border-deep-red focus-visible:border-deep-red focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-red',
+                                few ? 'border-deep-red/60' : 'border-ink/15',
+                              ]}
+                            >
+                              {body}
+                            </a>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <p class="font-body font-medium text-sm text-ink mt-4">

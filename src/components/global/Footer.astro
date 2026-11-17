@@ -248,6 +248,11 @@ const smileyDate =
         <a href={LEGAL_PATHS.cookies[lang]} class="text-cream/60 hover:text-cream text-xs font-body font-light transition-colors">
           {lang === 'da' ? 'Cookiepolitik' : 'Cookie policy'}
         </a>
+        {lang === 'da' && (
+          <a href={LEGAL_PATHS.terms.da} class="text-cream/60 hover:text-cream text-xs font-body font-light transition-colors">
+            Handelsbetingelser
+          </a>
+        )}
       </nav>
     </div>
   </div>

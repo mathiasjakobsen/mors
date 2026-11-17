@@ -18,6 +18,8 @@ const [entry] = await getCollection('legal', ({ data }) => data.lang === lang &&
 if (!entry) throw new Error(`Missing legal page: ${translationKey} (${lang})`);
 const { Content } = await render(entry);
 const otherLang: Lang = lang === 'da' ? 'en' : 'da';
+// A page in one language only (the terms) has no alternate.
+const paths: Partial<Record<Lang, string>> = LEGAL_PATHS[translationKey];
 
 const updated = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
   day: 'numeric',
@@ -31,8 +33,8 @@ const updated = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
   title={`${entry.data.title} | morˢ`}
   description={entry.data.description}
   lang={lang}
-  canonicalPath={LEGAL_PATHS[translationKey][lang]}
-  alternatePath={LEGAL_PATHS[translationKey][otherLang]}
+  canonicalPath={paths[lang]!}
+  alternatePath={paths[otherLang] ?? null}
 >
   <PageHero
     title={entry.data.title}
