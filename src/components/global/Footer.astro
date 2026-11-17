@@ -44,7 +44,6 @@ const homePath = getLocalizedPath(lang, '/');
 const hoursSummary = getHoursSummary(lang);
 const jobsPath = lang === 'da' ? '/job' : '/en/jobs';
 const openJobs = (await getJobs(lang)).length;
-const openJobsLabel = `${openJobs} ${t(lang, openJobs === 1 ? 'jobs.open.position' : 'jobs.open.positions')}`;
 
 // Danish keeps the compact DD-MM-YY the Fødevarestyrelsen reports use; English
 // spells the month out so DD-MM isn't misread as MM-DD.
@@ -217,17 +216,16 @@ const smileyDate =
           <p>
             <a href={`mailto:${config.email}`} class="hover:text-cream transition-colors">{config.email}</a>
           </p>
-          <!-- Leads to the jobs page: open positions with a count when there are
-               any, otherwise job@, and the page explains what to send there. -->
+          <!-- Open positions with a count lead to the jobs page; with none listed,
+               straight to the unsolicited application form in EDB. -->
           <p class="mt-3 italic text-cream/45">{t(lang, 'footer.jobs.prompt')}</p>
           <p>
             {openJobs > 0 ? (
-              <a href={jobsPath} class="inline-flex items-center gap-2 hover:text-cream transition-colors">
-                {t(lang, 'jobs.open.title')}
-                <NavCount count={openJobs} label={openJobsLabel} />
+              <a href={jobsPath} class="hover:text-cream transition-colors">
+                {t(lang, 'footer.jobs.open')} ({openJobs})
               </a>
             ) : (
-              <a href={jobsPath} class="hover:text-cream transition-colors">{config.jobEmail}</a>
+              <a href={config.unsolicitedApplicationUrl} class="hover:text-cream transition-colors">{t(lang, 'footer.jobs.apply')}</a>
             )}
           </p>
         </address>

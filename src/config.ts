@@ -6,8 +6,6 @@ export const config = {
   phone: '+45 93 96 76 88',
   phoneTel: '+4593967688',
   email: 'hej@mors.coffee',
-  // Applications go here, never to `email`, so they stay out of the main inbox.
-  jobEmail: 'job@mors.coffee',
   // Stamp card sign-up: a promo landing in the staff PWA. The `web` promo
   // must exist (and be active) in EDB → Promos; it also attributes every
   // sign-up from the site to that promo.

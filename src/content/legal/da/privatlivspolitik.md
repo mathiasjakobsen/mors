@@ -45,7 +45,7 @@ Når du betaler med kort, behandles betalingen af vores betalingsudbyder, SumUp.
 Skriver du til os på e-mail eller telefon, bruger vi oplysningerne til at svare dig. Vi sletter korrespondancen, når den ikke længere er relevant.\
 *Grundlag:* art. 6, stk. 1, litra f.
 
-**Jobansøgninger.** Sender du en ansøgning til [job@mors.coffee](mailto:job@mors.coffee), bruger vi den kun til at vurdere dig til en stilling. Får du ikke jobbet, sletter vi ansøgningen senest 6 måneder efter, medmindre du giver os lov til at gemme den længere.\
+**Jobansøgninger.** Sender du en ansøgning gennem vores [ansøgningsformular](https://edb.mors.coffee/job/uopfordret) eller et af vores jobopslag, bruger vi den kun til at vurdere dig til en stilling. Får du ikke jobbet, sletter vi ansøgningen senest 6 måneder efter, medmindre du giver os lov til at gemme den længere.\
 *Grundlag:* art. 6, stk. 1, litra b og f.
 
 ## Hvem deler vi oplysninger med?

@@ -87,11 +87,6 @@ const countLabel = `${count} ${t(lang, count === 1 ? 'jobs.open.position' : 'job
       </p>
 
       <CTAButton href={config.unsolicitedApplicationUrl} label={t(lang, 'jobs.unsolicited.cta')} />
-
-      <p class="mt-10 font-body font-light text-sm text-ink-muted leading-relaxed">
-        {t(lang, 'jobs.unsolicited.questions')}{' '}
-        <a href={`mailto:${config.jobEmail}`} class="underline underline-offset-4 hover:text-deep-red">{config.jobEmail}</a>
-      </p>
     </div>
   </Container>
 </section>

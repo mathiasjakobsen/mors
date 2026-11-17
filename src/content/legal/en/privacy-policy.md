@@ -45,7 +45,7 @@ When you pay by card, the payment is processed by our payment provider, SumUp. W
 If you contact us by e-mail or phone, we use the information to reply. We delete the correspondence when it is no longer relevant.\
 *Legal basis:* Art. 6(1)(f).
 
-**Job applications.** If you send an application to [job@mors.coffee](mailto:job@mors.coffee), we only use it to consider you for a position. If you do not get the job, we delete the application no later than 6 months afterwards, unless you allow us to keep it longer.\
+**Job applications.** If you apply through our [application form](https://edb.mors.coffee/job/uopfordret) or one of our job posts, we only use it to consider you for a position. If you do not get the job, we delete the application no later than 6 months afterwards, unless you allow us to keep it longer.\
 *Legal basis:* Art. 6(1)(b) and (f).
 
 ## Who do we share data with?

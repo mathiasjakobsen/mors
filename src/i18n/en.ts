@@ -133,8 +133,9 @@ export default {
   'jobs.unsolicited.title': 'Unsolicited applications',
   'jobs.unsolicited.body': 'No position that fits? Send us a short video and your CV. We keep your application and reach out if we need you.',
   'jobs.unsolicited.cta': 'Send an unsolicited application',
-  'jobs.unsolicited.questions': 'Questions? Write to',
   'footer.jobs.prompt': 'Looking for a job? ↘',
+  'footer.jobs.open': 'Open positions',
+  'footer.jobs.apply': 'Send an application',
 
   // About page
   'about.title': 'About morˢ',

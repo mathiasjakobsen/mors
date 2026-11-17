@@ -133,8 +133,9 @@ export default {
   'jobs.unsolicited.title': 'Uopfordret ansøgning',
   'jobs.unsolicited.body': 'Ingen stilling, der passer? Send os en kort video og dit CV. Vi gemmer din ansøgning og kontakter dig, hvis vi får brug for dig.',
   'jobs.unsolicited.cta': 'Send uopfordret ansøgning',
-  'jobs.unsolicited.questions': 'Spørgsmål? Skriv til',
   'footer.jobs.prompt': 'Søger du job? ↘',
+  'footer.jobs.open': 'Åbne stillinger',
+  'footer.jobs.apply': 'Send en ansøgning',
 
   // About page
   'about.title': 'Om morˢ',
