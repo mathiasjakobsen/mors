@@ -17,6 +17,9 @@ export const config = {
   // "Giv mig besked" on an event: the visitor leaves an e-mail in EDB, at
   // `<eventsUrl>/<event id>/følg`. The id need not be an EDB event yet.
   eventsUrl: 'https://edb.mors.coffee/events',
+  // Unsolicited applications: a hidden ad in EDB (status "Skjult") with the
+  // slug `uopfordret`, so it takes applications without being listed here.
+  unsolicitedApplicationUrl: 'https://edb.mors.coffee/job/uopfordret',
   address: {
     street: 'Klostergade 58',
     city: 'Aarhus C',

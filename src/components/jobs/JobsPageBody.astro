@@ -2,7 +2,6 @@
 import type { Lang } from '../../i18n/ui';
 import { t } from '../../i18n/ui';
 import { config } from '../../config';
-import { applicationMailto } from '../../data/jobs';
 import { getJobs, jobPath } from '../../lib/content';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
@@ -17,7 +16,6 @@ const { lang } = Astro.props;
 const positions = await getJobs(lang);
 const count = positions.length;
 const countLabel = `${count} ${t(lang, count === 1 ? 'jobs.open.position' : 'jobs.open.positions')}`;
-const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'));
 ---
 
 <PageHero title={t(lang, 'jobs.title')} lead={t(lang, 'jobs.lead')} />
@@ -73,8 +71,8 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
   </Container>
 </section>
 
-<!-- Unsolicited applications. The address is the headline, so nobody has to
-     go looking and fall back on the general inbox. -->
+<!-- Unsolicited applications go through the same video form in EDB as the
+     ads (config.unsolicitedApplicationUrl), so they land in Ansøgere. -->
 <section class="bg-cream py-24 md:py-32">
   <Container>
     <div
@@ -88,15 +86,11 @@ const unsolicitedMailto = applicationMailto(t(lang, 'jobs.unsolicited.subject'))
         {t(lang, 'jobs.unsolicited.body')}
       </p>
 
-      <a
-        href={unsolicitedMailto}
-        class="inline-block font-display font-medium text-3xl sm:text-4xl md:text-5xl text-deep-red break-all underline decoration-deep-red/25 decoration-2 underline-offset-[0.2em] hover:decoration-deep-red transition-colors"
-      >
-        {config.jobEmail}
-      </a>
+      <CTAButton href={config.unsolicitedApplicationUrl} label={t(lang, 'jobs.unsolicited.cta')} />
 
-      <p class="mt-10 font-body font-light text-sm text-ink-muted leading-relaxed max-w-xl mx-auto">
-        {t(lang, 'jobs.consent')}
+      <p class="mt-10 font-body font-light text-sm text-ink-muted leading-relaxed">
+        {t(lang, 'jobs.unsolicited.questions')}{' '}
+        <a href={`mailto:${config.jobEmail}`} class="underline underline-offset-4 hover:text-deep-red">{config.jobEmail}</a>
       </p>
     </div>
   </Container>

@@ -131,10 +131,10 @@ export default {
   'jobs.open.read': 'Læs opslaget',
   'jobs.back': 'Alle stillinger',
   'jobs.unsolicited.title': 'Uopfordret ansøgning',
-  'jobs.unsolicited.body': 'Send din ansøgning og dit CV hertil. Vi vender tilbage, hvis vi får brug for dig.',
-  'jobs.unsolicited.subject': 'Uopfordret ansøgning',
+  'jobs.unsolicited.body': 'Ingen stilling, der passer? Send os en kort video og dit CV. Vi gemmer din ansøgning og kontakter dig, hvis vi får brug for dig.',
+  'jobs.unsolicited.cta': 'Send uopfordret ansøgning',
+  'jobs.unsolicited.questions': 'Spørgsmål? Skriv til',
   'footer.jobs.prompt': 'Søger du job? ↘',
-  'jobs.consent': 'Når du sender en uopfordret ansøgning, giver du samtykke til, at vi gemmer din ansøgning og dit CV, så vi kan kontakte dig, hvis der senere opstår en stilling, der passer. Du kan altid trække samtykket tilbage ved at skrive til job@mors.coffee, så sletter vi dine oplysninger.',
 
   // About page
   'about.title': 'Om morˢ',
@@ -211,7 +211,7 @@ export default {
   'seo.business.title': 'Erhvervsaftale — kaffe til kontoret | morˢ, Aarhus',
   'seo.business.description': 'Erhvervsaftaler med kaffebaren morˢ i Aarhus C: rabat til medarbejderne, kaffe på firmaets regning og fredagsboller til kontoret.',
   'seo.jobs.title': 'Job i kaffebaren | morˢ, Aarhus C',
-  'seo.jobs.description': 'Ledige stillinger i kaffebaren morˢ på Klostergade 58 i Aarhus C. Uopfordrede ansøgninger sendes til job@mors.coffee.',
+  'seo.jobs.description': 'Ledige stillinger i kaffebaren morˢ på Klostergade 58 i Aarhus C. Send gerne en uopfordret ansøgning.',
   'seo.contact.title': 'Kontakt og åbningstider | morˢ, Aarhus C',
   'seo.contact.description': 'Find morˢ på Klostergade 58, 8000 Aarhus C. Se åbningstider, telefonnummer og hvordan du finder os.',
   'seo.breakfast.title': 'Morgenmad i Aarhus C — kaffe og bagværk | morˢ kaffebar',

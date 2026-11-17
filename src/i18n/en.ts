@@ -131,10 +131,10 @@ export default {
   'jobs.open.read': 'Read the post',
   'jobs.back': 'All positions',
   'jobs.unsolicited.title': 'Unsolicited applications',
-  'jobs.unsolicited.body': 'Send your application and CV here. We will get back to you if we need you.',
-  'jobs.unsolicited.subject': 'Unsolicited application',
+  'jobs.unsolicited.body': 'No position that fits? Send us a short video and your CV. We keep your application and reach out if we need you.',
+  'jobs.unsolicited.cta': 'Send an unsolicited application',
+  'jobs.unsolicited.questions': 'Questions? Write to',
   'footer.jobs.prompt': 'Looking for a job? ↘',
-  'jobs.consent': 'By sending an unsolicited application, you consent to us keeping your application and CV so we can reach out if a suitable position comes up later. You can withdraw your consent at any time by writing to job@mors.coffee, and we will delete your details.',
 
   // About page
   'about.title': 'About morˢ',
@@ -211,7 +211,7 @@ export default {
   'seo.business.title': 'Business — coffee for the office | morˢ, Aarhus',
   'seo.business.description': 'Business agreements with the morˢ coffee bar in Aarhus C: staff discounts, coffee on the company account and Friday buns for the office.',
   'seo.jobs.title': 'Jobs at the coffee bar | morˢ, Aarhus',
-  'seo.jobs.description': 'Open positions at the morˢ coffee bar, Klostergade 58 in Aarhus C. Unsolicited applications go to job@mors.coffee.',
+  'seo.jobs.description': 'Open positions at the morˢ coffee bar, Klostergade 58 in Aarhus C. Unsolicited applications are welcome.',
   'seo.contact.title': 'Contact & opening hours | morˢ, Aarhus C',
   'seo.contact.description': 'Find morˢ at Klostergade 58, 8000 Aarhus C. See opening hours, phone number and how to find us.',
   'seo.breakfast.title': 'Breakfast in Aarhus — coffee & pastries | morˢ coffee bar',
