@@ -101,6 +101,7 @@ export default {
   'events.public.fewSeats': 'Few seats left',
   'events.public.kind': 'Event',
   'events.public.danishOnly': 'The booking page is in Danish.',
+  'events.public.close': 'Close',
   'events.private.title': 'Host your own event',
   'events.private.banner': 'Want to host your own event at morˢ?',
   'events.private.lead': 'We do not rent out the room on its own. When you hold an event with us, we are behind the bar with coffee, drinks and pastries.',

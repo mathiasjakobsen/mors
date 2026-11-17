@@ -7,6 +7,7 @@ import { getTicketedEvents, type TicketedEvent } from '../../lib/api';
 import Container from '../shared/Container.astro';
 import PageHero from '../shared/PageHero.astro';
 import PhotoStack from '../shared/PhotoStack.astro';
+import FollowDialog from './FollowDialog.astro';
 // Stand-ins until there are photos from an actual event: swap these for the
 // real ones (back to front), alt texts included.
 import cafe from '../../assets/mors-cafe.jpg';
@@ -22,6 +23,7 @@ const { lang } = Astro.props;
 
 const mailto = (subject: string) => `mailto:${config.email}?subject=${encodeURIComponent(subject)}`;
 // "Giv mig besked" leaves an e-mail in EDB against the event id (EventFollow).
+// It opens in a modal (FollowDialog below); the link is the fallback.
 const followUrl = (id: string) => `${config.eventsUrl}/${encodeURIComponent(id)}/følg`;
 const events = upcomingEvents();
 
@@ -185,6 +187,7 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
                 ) : (
                   <a
                     href={row.cta === 'signup' ? mailto(`${t(lang, 'events.public.signupSubject')}: ${row.title}`) : followUrl(row.key)}
+                    data-follow={row.cta === 'signup' ? undefined : ''}
                     class:list={[
                       'inline-flex items-center justify-center rounded-full px-6 py-3 font-body font-medium text-xs uppercase tracking-widest transition-colors',
                       row.cta === 'signup'
@@ -206,6 +209,8 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
     </div>
   </Container>
 </section>
+
+<FollowDialog lang={lang} />
 
 <!-- Hosting your own: never just the room — we run the bar, with food and
      drinks. The examples are the kinds of events that sit outside our own
