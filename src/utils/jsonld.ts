@@ -180,12 +180,15 @@ export function ticketedEventsSchema(events: TicketedEvent[]) {
         },
       },
       organizer: { '@id': BUSINESS_ID },
+      // We teach the courses ourselves: the host is also who performs.
+      performer: { '@id': BUSINESS_ID },
       ...(d.seatsLeft !== null ? { remainingAttendeeCapacity: d.seatsLeft } : {}),
       offers: {
         '@type': 'Offer',
         url,
         price: e.priceKr.toFixed(2),
         priceCurrency: 'DKK',
+        ...(d.onSaleFrom ? { validFrom: d.onSaleFrom } : {}),
         availability: `https://schema.org/${availability}`,
       },
     };

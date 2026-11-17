@@ -437,6 +437,8 @@ export interface TicketDate {
   soldOut: boolean;
   /** Buy page with this date preselected. */
   url: string;
+  /** When the date went on sale (ISO); absent from an older EDB. */
+  onSaleFrom: string | null;
 }
 
 export interface TicketedEvent {
@@ -460,7 +462,7 @@ interface ApiTicketedEvent {
   price_kr: number;
   url: string;
   photos?: { url: string; alt: string }[];
-  dates: { date: string; starts_at: string; ends_at: string | null; seats_left: number | null; sold_out: boolean; url: string }[];
+  dates: { date: string; starts_at: string; ends_at: string | null; seats_left: number | null; sold_out: boolean; url: string; on_sale_from?: string }[];
 }
 
 let cachedEvents: Promise<TicketedEvent[]> | null = null;
@@ -490,7 +492,7 @@ async function fetchTicketedEvents(): Promise<TicketedEvent[]> {
       photos: e.photos ?? [],
       dates: e.dates.map((d) => ({
         date: d.date, startsAt: d.starts_at, endsAt: d.ends_at,
-        seatsLeft: d.seats_left, soldOut: d.sold_out, url: d.url,
+        seatsLeft: d.seats_left, soldOut: d.sold_out, url: d.url, onSaleFrom: d.on_sale_from ?? null,
       })),
     }));
   } catch (err) {
