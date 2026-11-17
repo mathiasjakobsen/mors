@@ -8,7 +8,7 @@ export default {
   'nav.about': 'Om morˢ',
   'nav.contact': 'Kontakt',
   'nav.jobs': 'Job',
-  'nav.events': 'Kurser · Events',
+  'nav.events': 'Kurser & Events',
   'nav.stampcard': 'Stempelkort',
   'nav.breakfast': 'Morgenmad',
   'nav.brewguides': 'Bryggeguides',
@@ -89,7 +89,7 @@ export default {
   'giftcards.shopNote': '',
 
   // Jobs page
-  'events.title': 'Events',
+  'events.title': 'Kurser & Events',
   'events.public.empty': 'Ingen events på programmet lige nu.',
   'events.public.soon': 'Næste dato annonceres snart.',
   'events.public.notify': 'Giv mig besked',
@@ -204,8 +204,8 @@ export default {
   'seo.notFound.description': 'Vi kunne ikke finde den side. Find vej tilbage til forsiden eller se menuen hos morˢ på Klostergade 58 i Aarhus C.',
   'seo.about.title': 'Om morˢ — kaffebaren på Klostergade i Aarhus',
   'seo.about.description': 'morˢ er inspireret af håndværk og værdier arvet fra vores mødre. Lær os at kende og historien bag kaffebaren på Klostergade i Aarhus.',
-  'seo.events.title': 'Events i kaffebaren | morˢ, Aarhus C',
-  'seo.events.description': 'Events i kaffebaren morˢ på Klostergade 58 i Aarhus C: vores egne, som baristakurser, og jeres – fyraften, kaffesmagning, workshop eller privat fest, med os bag baren.',
+  'seo.events.title': 'Baristakursus, kaffekurser & events i Aarhus C | morˢ',
+  'seo.events.description': 'Baristakursus og pour over-kursus med V60 og AeroPress hos morˢ på Klostergade 58 i Aarhus C. Små hold på 6. Hold også jeres eget event i kaffebaren.',
   'seo.stampcard.title': 'Stempelkort — hver 10. kaffe gratis | morˢ, Aarhus',
   'seo.stampcard.description': 'Saml stempler på et gratis, digitalt stempelkort i Apple eller Google Wallet, og få hver 10. kaffe gratis i kaffebaren morˢ på Klostergade 58, Aarhus C.',
   'seo.business.title': 'Erhvervsaftale — kaffe til kontoret | morˢ, Aarhus',

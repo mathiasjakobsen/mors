@@ -5,6 +5,7 @@ import { config } from '../config';
 import { hours } from '../data/hours';
 import { socialLinks } from '../data/social';
 import { pageUrl } from './url';
+import type { TicketedEvent } from '../lib/api';
 
 /** Stable id of the business node, so every page's JSON-LD points at one place. */
 export const BUSINESS_ID = `${config.siteUrl}/#kaffebar`;
@@ -142,4 +143,51 @@ export function breadcrumbSchema(items: BreadcrumbItem[]) {
       item: pageUrl(item.url),
     })),
   };
+}
+
+/**
+ * schema.org EducationEvent per date on sale in EDB, so a course can show in
+ * Google's event listings with its date, place, price and seats. EDB's buy
+ * page marks up the same dates with the same urls
+ * (EventTicketsHelper#ticket_event_json_ld), so the two agree.
+ */
+export function ticketedEventsSchema(events: TicketedEvent[]) {
+  return events.flatMap((e) => e.dates.map((d) => {
+    const url = d.url.replace(/#.*$/, ''); // the #dato anchor is for people
+    const availability = d.soldOut
+      ? 'SoldOut'
+      : d.seatsLeft !== null && d.seatsLeft <= 3 ? 'LimitedAvailability' : 'InStock';
+    return {
+      '@type': 'EducationEvent',
+      name: e.title,
+      ...(e.description ? { description: e.description.replace(/\s+/g, ' ').trim() } : {}),
+      url,
+      inLanguage: 'da',
+      startDate: d.startsAt,
+      ...(d.endsAt ? { endDate: d.endsAt } : {}),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      ...(e.photos.length ? { image: e.photos.map((p) => p.url) } : {}),
+      location: {
+        '@type': 'Place',
+        name: config.name,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: config.address.street,
+          postalCode: config.address.zip,
+          addressLocality: config.address.city,
+          addressCountry: 'DK',
+        },
+      },
+      organizer: { '@id': BUSINESS_ID },
+      ...(d.seatsLeft !== null ? { remainingAttendeeCapacity: d.seatsLeft } : {}),
+      offers: {
+        '@type': 'Offer',
+        url,
+        price: e.priceKr.toFixed(2),
+        priceCurrency: 'DKK',
+        availability: `https://schema.org/${availability}`,
+      },
+    };
+  }));
 }

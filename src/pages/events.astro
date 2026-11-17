@@ -2,14 +2,19 @@
 import PageLayout from '../layouts/PageLayout.astro';
 import EventsPageBody from '../components/events/EventsPageBody.astro';
 import { t } from '../i18n/ui';
+import { getTicketedEvents } from '../lib/api';
+import { ticketedEventsSchema } from '../utils/jsonld';
 
 const lang = 'da';
+// Each course date as an event for search engines; the page shows the same.
+const jsonLd = ticketedEventsSchema(await getTicketedEvents());
 ---
 
 <PageLayout
   title={t(lang, 'seo.events.title')}
   description={t(lang, 'seo.events.description')}
   lang={lang}
+  jsonLd={jsonLd}
   canonicalPath="/events"
 >
   <EventsPageBody lang={lang} />
