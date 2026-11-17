@@ -76,6 +76,13 @@ const rows: Row[] = [
 const photosOf = (row: Row) => [...(row.tickets?.photos ?? [])].reverse().map((p) => ({ src: p.url, alt: p.alt }));
 const photoColumn = rows.some((row) => photosOf(row).length > 0);
 
+// The text under a title. A course that sells tickets shows EDB's full
+// description (staff keep it there), in Danish only: EDB has no English copy,
+// so /en keeps the site's own. Laid out like Rails' simple_format: a blank
+// line starts a paragraph, a single newline breaks the line.
+const bodyText = (row: Row) => (lang === 'da' && row.tickets?.description?.trim()) || row.body;
+const paragraphs = (text: string) => text.trim().split(/\n\s*\n/).map((p) => p.split('\n'));
+
 const onSale = (row: Row) => !!row.tickets?.dates.some((d) => !d.soldOut);
 
 // A date card's three lines: "tor", "14. jan", "18.30–20.30".
@@ -151,24 +158,39 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
               <div class="min-w-0 md:flex-1">
                 <p class="inline-block rounded-full bg-sage/15 px-2.5 py-1 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-[#4d5c44]">{row.kind}</p>
                 <h3 class="font-display font-semibold text-xl tracking-normal text-deep-red mt-2">{row.title}</h3>
-                {row.body && <p class="font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl">{row.body}</p>}
+                {bodyText(row) && (
+                  <!-- Shown in full without JavaScript; the script below folds a long one. -->
+                  <div
+                    id={`beskrivelse-${row.key}`}
+                    data-more
+                    data-more-label={t(lang, 'events.public.more')}
+                    data-less-label={t(lang, 'events.public.less')}
+                    class="event-more font-body font-light text-ink-light leading-relaxed mt-3 max-w-xl space-y-3"
+                  >
+                    {paragraphs(bodyText(row)).map((lines) => (
+                      <p>{lines.map((line, i) => (i === 0 ? line : [<br />, line]))}</p>
+                    ))}
+                  </div>
+                )}
                 {row.tickets ? (
                   <!-- One small card per date. Cards in a row share a height; a date
-                       down to its last seats gets a red band along the bottom. -->
-                  <ul class="mt-5 grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(8.75rem,1fr))] gap-2.5" aria-label={t(lang, 'events.public.dates')}>
+                       down to its last seats gets a red band along the bottom. EDB's
+                       date picker (event_tickets/show + .date-card in shop.css) draws
+                       the same card: change the two together. -->
+                  <ul class="mt-5 grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-2" aria-label={t(lang, 'events.public.dates')}>
                     {row.tickets.dates.map((d) => {
                       const p = cardParts(d.startsAt, d.endsAt);
                       const few = isFew(d);
                       const body = (
                         <Fragment>
-                          <span class="px-3.5 pt-3 font-body font-medium text-[10px] uppercase tracking-[0.15em] text-ink-muted">{p.weekday}</span>
-                          <time datetime={d.startsAt} class:list={['px-3.5 font-display font-semibold text-lg leading-tight', d.soldOut ? 'text-ink-muted line-through decoration-ink/30' : 'text-deep-red']}>{p.day}</time>
-                          <span class="px-3.5 pb-3 font-body text-xs tabular-nums text-ink-light">{p.time}</span>
+                          <span class="px-3 pt-2.5 font-body font-medium text-[10px] leading-[1.4] uppercase tracking-[0.15em] text-ink-muted">{p.weekday}</span>
+                          <time datetime={d.startsAt} class:list={['px-3 font-display font-semibold text-[15px] leading-tight', d.soldOut ? 'text-ink-muted line-through decoration-ink/30' : 'text-deep-red']}>{p.day}</time>
+                          <span class="px-3 pb-2.5 font-body text-xs leading-[1.4] tabular-nums text-ink-light">{p.time}</span>
                           {few && (
-                            <span class="mt-auto bg-deep-red px-3.5 py-1.5 font-body font-medium text-[11px] leading-snug text-cream">{fewSeats(d.seatsLeft!)}</span>
+                            <span class="mt-auto bg-deep-red px-3 py-1.5 font-body font-medium text-[11px] leading-snug text-cream">{fewSeats(d.seatsLeft!)}</span>
                           )}
                           {d.soldOut && (
-                            <span class="mt-auto border-t border-ink/10 px-3.5 py-1.5 font-body font-medium text-[11px] text-ink-muted">{t(lang, 'events.public.soldOut')}</span>
+                            <span class="mt-auto border-t border-ink/10 px-3 py-1.5 font-body font-medium text-[11px] leading-snug text-ink-muted">{t(lang, 'events.public.soldOut')}</span>
                           )}
                         </Fragment>
                       );
@@ -285,3 +307,50 @@ const asks = (['what', 'when', 'howMany', 'wishes'] as const).map((k) => t(lang,
     </div>
   </Container>
 </section>
+
+<style>
+  /* "Læs mere": the script folds a long description under a fade. */
+  .event-more.is-folded:not(.is-open) {
+    max-height: var(--fold);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  }
+</style>
+
+<script>
+  // Fold a description taller than about six lines, with a button to open it.
+  // Without JavaScript the full text simply shows.
+  document.querySelectorAll<HTMLElement>('[data-more]').forEach((box) => {
+    const line = parseFloat(getComputedStyle(box).lineHeight) || 26;
+    const fold = Math.round(line * 6);
+    if (box.scrollHeight <= fold + line * 2) return; // not worth folding two lines
+
+    const more = box.dataset.moreLabel ?? 'Læs mere';
+    const less = box.dataset.lessLabel ?? 'Vis mindre';
+    box.style.setProperty('--fold', `${fold}px`);
+    box.classList.add('is-folded');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mt-2 inline-flex items-center gap-1.5 font-body font-medium text-sm text-deep-red underline decoration-deep-red/30 underline-offset-4 hover:decoration-deep-red';
+    btn.setAttribute('aria-controls', box.id);
+    btn.setAttribute('aria-expanded', 'false');
+    const label = document.createElement('span');
+    label.textContent = more;
+    const arrow = document.createElement('span');
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.className = 'transition-transform duration-200 motion-reduce:transition-none';
+    arrow.textContent = '↓';
+    btn.append(label, arrow);
+    box.after(btn);
+
+    btn.addEventListener('click', () => {
+      const open = box.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? less : more;
+      arrow.style.transform = open ? 'rotate(180deg)' : '';
+      if (!open) box.scrollIntoView({ block: 'nearest' });
+    });
+  });
+</script>

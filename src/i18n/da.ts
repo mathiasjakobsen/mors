@@ -101,6 +101,8 @@ export default {
   'events.public.fewSeats': 'Kun {n} pladser tilbage',
   'events.public.fewSeatsOne': 'Kun 1 plads tilbage',
   'events.public.dates': 'Datoer',
+  'events.public.more': 'Læs mere',
+  'events.public.less': 'Vis mindre',
   'events.public.kind': 'Event',
   'events.public.danishOnly': '',
   'events.public.close': 'Luk',

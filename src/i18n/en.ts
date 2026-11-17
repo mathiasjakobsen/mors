@@ -101,6 +101,8 @@ export default {
   'events.public.fewSeats': 'Only {n} seats left',
   'events.public.fewSeatsOne': 'Only 1 seat left',
   'events.public.dates': 'Dates',
+  'events.public.more': 'Read more',
+  'events.public.less': 'Show less',
   'events.public.kind': 'Event',
   'events.public.danishOnly': 'The booking page is in Danish.',
   'events.public.close': 'Close',
