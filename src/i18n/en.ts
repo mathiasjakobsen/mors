@@ -8,7 +8,7 @@ export default {
   'nav.about': 'About',
   'nav.contact': 'Contact',
   'nav.jobs': 'Jobs',
-  'nav.events': 'Events',
+  'nav.events': 'Courses · Events',
   'nav.stampcard': 'Stamp card',
   'nav.breakfast': 'Breakfast',
   'nav.brewguides': 'Brew guides',

@@ -8,7 +8,7 @@ export default {
   'nav.about': 'Om morˢ',
   'nav.contact': 'Kontakt',
   'nav.jobs': 'Job',
-  'nav.events': 'Events',
+  'nav.events': 'Kurser · Events',
   'nav.stampcard': 'Stempelkort',
   'nav.breakfast': 'Morgenmad',
   'nav.brewguides': 'Bryggeguides',

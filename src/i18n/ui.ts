@@ -84,7 +84,7 @@ export function getNavItems(lang: Lang) {
     { key: 'menu',      inHeader: true,  label: t(lang, 'nav.menu'),      href: lang === 'da' ? '/menu' : '/en/menu',                          match: lang === 'da' ? '/menu' : '/en/menu' },
     { key: 'giftcards', inHeader: true,  label: t(lang, 'nav.giftcards'), href: lang === 'da' ? '/gavekort' : '/en/giftcard',                  match: lang === 'da' ? '/gavekort' : '/en/giftcard' },
     { key: 'beans',     inHeader: true,  label: t(lang, 'nav.beans'),     href: lang === 'da' ? '/kaffe' : '/en/coffee',                       match: lang === 'da' ? '/kaffe' : '/en/coffee' },
-    { key: 'products',  inHeader: true,  label: t(lang, 'nav.products'),  href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/', match: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
+    { key: 'products',  inHeader: false, label: t(lang, 'nav.products'),  href: lang === 'da' ? '/haandvaerk/keramik/' : '/en/crafts/ceramics/', match: lang === 'da' ? '/haandvaerk' : '/en/crafts' },
     { key: 'events',    inHeader: true,  label: t(lang, 'nav.events'),    href: lang === 'da' ? '/events' : '/en/events',                       match: lang === 'da' ? '/events' : '/en/events' },
     { key: 'about',     inHeader: false, label: t(lang, 'nav.about'),     href: lang === 'da' ? '/om' : '/en/about',                           match: lang === 'da' ? '/om' : '/en/about' },
     { key: 'contact',   inHeader: false, label: t(lang, 'nav.contact'),   href: lang === 'da' ? '/kontakt' : '/en/contact',                    match: lang === 'da' ? '/kontakt' : '/en/contact' },
