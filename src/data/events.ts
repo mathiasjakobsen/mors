@@ -43,12 +43,12 @@ const publicEvents: PublicEvent[] = [
     cta: 'notify',
   },
   {
-    id: 'pour-over-cupping',
+    id: 'pour-over',
     kind: { da: 'Kursus', en: 'Course' },
-    title: { da: 'Pour over & cupping', en: 'Pour over & cupping' },
+    title: { da: 'Pour over & håndbryg', en: 'Pour over & manual brewing' },
     body: {
-      da: 'En aften om filterkaffe, så den bliver bedre derhjemme. Vi cupper et par af de bønner, vi har på hylden, og smager os frem til, hvad der er forskellen. Bagefter brygger vi pour over sammen og skruer på kværn, vand og tid, til du ved, hvad du skal gøre, når koppen smager forkert.',
-      en: 'An evening about filter coffee, so it gets better at home. We cup a few of the beans on our shelf and taste our way to what sets them apart. Then we brew pour over together and adjust grind, water and time until you know what to do when the cup tastes wrong.',
+      da: 'En aften om filterkaffe, og om hvordan den bliver bedre derhjemme. Vi brygger på V60 og AeroPress og skruer på én ting ad gangen (kværn, vand, temperatur og tid), mens vi smager forskellen side om side. Så ved du, hvad du skal ændre, når koppen er for sur, for bitter eller bare lidt flad. Tag gerne din egen brygger med.',
+      en: 'An evening about filter coffee, and how to make it better at home. We brew on a V60 and an AeroPress and change one thing at a time (grind, water, temperature and time), tasting the difference side by side. Then you know what to change when the cup is too sour, too bitter or just a bit flat. Feel free to bring your own brewer.',
     },
     duration: { da: '2 timer', en: '2 hours' },
     priceKr: 300,
