@@ -8,7 +8,7 @@ export default {
   'nav.about': 'Om morˢ',
   'nav.contact': 'Kontakt',
   'nav.jobs': 'Job',
-  'nav.events': 'Kurser & Events',
+  'nav.events': 'Kaffekurser & Events',
   'nav.stampcard': 'Stempelkort',
   'nav.breakfast': 'Morgenmad',
   'nav.brewguides': 'Bryggeguides',
@@ -89,7 +89,7 @@ export default {
   'giftcards.shopNote': '',
 
   // Jobs page
-  'events.title': 'Kurser & Events',
+  'events.title': 'Kaffekurser & Events',
   'events.public.empty': 'Ingen events på programmet lige nu.',
   'events.public.soon': 'Næste dato annonceres snart.',
   'events.public.notify': 'Giv mig besked',
